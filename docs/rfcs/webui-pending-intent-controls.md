@@ -3,9 +3,9 @@
 - **Status:** Proposed
 - **Author:** @franksong2702
 - **Created:** 2026-05-28
-- **Tracking issue:** [#3058](https://github.com/nesquena/nasmusicui/issues/3058)
-- **Parent RFC:** [`live-to-final-assistant-replies.md`](live-to-final-assistant-replies.md) / [#3400](https://github.com/nesquena/nasmusicui/issues/3400)
-- **Related issues/PRs:** [#2555](https://github.com/nesquena/nasmusicui/issues/2555), [#3108](https://github.com/nesquena/nasmusicui/issues/3108), [#3808](https://github.com/nesquena/nasmusicui/issues/3808), [#3822](https://github.com/nesquena/nasmusicui/pull/3822), [NousResearch/NasTech-Agent#28172](https://github.com/NousResearch/NasTech-Agent/issues/28172)
+- **Tracking issue:** [#3058](https://github.com/nastech-ai/NasWebUI/issues/3058)
+- **Parent RFC:** [`live-to-final-assistant-replies.md`](live-to-final-assistant-replies.md) / [#3400](https://github.com/nastech-ai/NasWebUI/issues/3400)
+- **Related issues/PRs:** [#2555](https://github.com/nastech-ai/NasWebUI/issues/2555), [#3108](https://github.com/nastech-ai/NasWebUI/issues/3108), [#3808](https://github.com/nastech-ai/NasWebUI/issues/3808), [#3822](https://github.com/nastech-ai/NasWebUI/pull/3822), [NousResearch/NasTech-Agent#28172](https://github.com/NousResearch/NasTech-Agent/issues/28172)
 - **Related docs:** [`webui-run-state-consistency-contract.md`](webui-run-state-consistency-contract.md), [`nastech-run-adapter-contract.md`](nastech-run-adapter-contract.md), [`turn-journal.md`](turn-journal.md)
 
 ## RFC Positioning
@@ -430,23 +430,23 @@ when the visible queue/steer/stop surfaces change.
 
 ## Issue / PR Routing
 
-- [#3400](https://github.com/nesquena/nasmusicui/issues/3400): Live-to-Final
+- [#3400](https://github.com/nastech-ai/NasWebUI/issues/3400): Live-to-Final
   umbrella. Tracks live-to-final invariants affected by pending intent, but does
   not own Queue/Steer/Stop-and-send command semantics.
-- [#3058](https://github.com/nesquena/nasmusicui/issues/3058): Pending intent
+- [#3058](https://github.com/nastech-ai/NasWebUI/issues/3058): Pending intent
   controls umbrella.
-- [#3061](https://github.com/nesquena/nasmusicui/pull/3061): RFC PR for this
+- [#3061](https://github.com/nastech-ai/NasWebUI/pull/3061): RFC PR for this
   contract.
-- [#3108](https://github.com/nesquena/nasmusicui/issues/3108): Queue/draft
+- [#3108](https://github.com/nastech-ai/NasWebUI/issues/3108): Queue/draft
   durability.
-- [#2555](https://github.com/nesquena/nasmusicui/issues/2555): Steer runtime
+- [#2555](https://github.com/nastech-ai/NasWebUI/issues/2555): Steer runtime
   behavior, tool-call boundary, traceability, applied signal.
-- [#3808](https://github.com/nesquena/nasmusicui/issues/3808): legacy
+- [#3808](https://github.com/nastech-ai/NasWebUI/issues/3808): legacy
   interrupt-and-send ownership bug.
-- [#3822](https://github.com/nesquena/nasmusicui/pull/3822): focused safety
+- [#3822](https://github.com/nastech-ai/NasWebUI/pull/3822): focused safety
   fix for #3808. It does not preserve Interrupt as default busy mode and does
   not complete pending intent controls.
-- [#1925](https://github.com/nesquena/nasmusicui/issues/1925):
+- [#1925](https://github.com/nastech-ai/NasWebUI/issues/1925):
   RuntimeAdapter / runtime ownership boundary.
 - NasTech Agent / TUI Gateway follow-up: required for reliable applied/consumed
   Steer evidence.

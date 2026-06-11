@@ -3,8 +3,8 @@
 - **Status:** Proposed
 - **Author:** @ai-ag2026
 - **Created:** 2026-05-25
-- **Tracking issue:** [#2361](https://github.com/nesquena/nasmusicui/issues/2361)
-- **Related architecture:** [#1925](https://github.com/nesquena/nasmusicui/issues/1925), [`webui-run-state-consistency-contract.md`](webui-run-state-consistency-contract.md)
+- **Tracking issue:** [#2361](https://github.com/nastech-ai/NasWebUI/issues/2361)
+- **Related architecture:** [#1925](https://github.com/nastech-ai/NasWebUI/issues/1925), [`webui-run-state-consistency-contract.md`](webui-run-state-consistency-contract.md)
 
 ## Problem
 

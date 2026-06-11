@@ -6477,8 +6477,8 @@ def handle_get(handler, parsed) -> bool:
                         "current_sha": "abc1234",
                         "latest_sha": "def5678",
                         "branch": "master",
-                        "repo_url": "https://github.com/nesquena/nasmusicui",
-                        "compare_url": "https://github.com/nesquena/nasmusicui/compare/abc1234...def5678",
+                        "repo_url": "https://github.com/nastech-ai/NasWebUI",
+                        "compare_url": "https://github.com/nastech-ai/NasWebUI/compare/abc1234...def5678",
                     },
                     "agent": {
                         "name": "agent",

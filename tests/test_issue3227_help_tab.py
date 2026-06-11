@@ -18,7 +18,7 @@ def test_help_nav_button_present():
 def test_help_pane_present():
     assert 'id="settingsPaneHelp"' in INDEX_HTML
     assert 'href="https://github.com/nastech-ai/NasTech-Agent/"' in INDEX_HTML
-    assert 'href="https://github.com/nesquena/nasmusicui/issues"' in INDEX_HTML
+    assert 'href="https://github.com/nastech-ai/NasWebUI/issues"' in INDEX_HTML
 
 
 def test_help_pane_links_are_outbound():

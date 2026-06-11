@@ -54,7 +54,7 @@ for an app-like experience.
 
 ### Community field report: ARM64 Android via AVF
 
-A community report in [#2364](https://github.com/nesquena/nasmusicui/issues/2364)
+A community report in [#2364](https://github.com/nastech-ai/NasWebUI/issues/2364)
 documents NasTech Agent + WebUI running on a mid-range ARM64 Android phone inside
 a Debian 12 VM via Android Virtualization Framework (AVF). The reported setup
 used a Xiaomi Redmi Note 13 Pro 4G, 3.8 GiB RAM allocated to the VM, 8 visible

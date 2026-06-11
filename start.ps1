@@ -43,7 +43,7 @@
     # Bind to all interfaces (set a password first via env or Settings).
 
 .LINK
-    https://github.com/nesquena/nasmusicui/issues/1952
+    https://github.com/nastech-ai/NasWebUI/issues/1952
 #>
 
 [CmdletBinding()]
@@ -95,7 +95,7 @@ if (-not $Python) {
 # an explicit override pointing at a missing dir should fail FAST
 # with a clear message, not silently progress into a python3 launch
 # that's about to crash on missing imports. Smoke-test feedback on
-# PR #2783: nesquena/nasmusicui requested this guard.
+# PR #2783: nastech-ai/NasWebUI requested this guard.
 $AgentDir = $env:NASMUSICUI_AGENT_DIR
 if ($AgentDir -and -not (Test-Path (Join-Path $AgentDir 'nastech_cli') -PathType Container)) {
     Write-Error "NASMUSICUI_AGENT_DIR is set to '$AgentDir' but no nastech_cli/ folder exists there. Unset the variable to fall back to auto-discovery, or fix the path."

@@ -3,8 +3,8 @@
 - **Status:** Proposed
 - **Author:** @franksong2702
 - **Created:** 2026-06-10
-- **Tracking issue:** [#3926](https://github.com/nesquena/nasmusicui/issues/3926)
-- **Parent contract:** [Live-to-Final Assistant Replies](./live-to-final-assistant-replies.md) ([#3400](https://github.com/nesquena/nasmusicui/issues/3400))
+- **Tracking issue:** [#3926](https://github.com/nastech-ai/NasWebUI/issues/3926)
+- **Parent contract:** [Live-to-Final Assistant Replies](./live-to-final-assistant-replies.md) ([#3400](https://github.com/nastech-ai/NasWebUI/issues/3400))
 - **Related RFCs:** [Transparent Stream](./transparent-stream-activity-mode.md), [NasTech Run Adapter Contract](./nastech-run-adapter-contract.md), [WebUI Run State Consistency Contract](./webui-run-state-consistency-contract.md), [Turn Journal](./turn-journal.md), [Pending Intent Controls](./webui-pending-intent-controls.md)
 
 ## Problem

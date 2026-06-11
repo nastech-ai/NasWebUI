@@ -5,7 +5,7 @@
 - **Updated by:** @franksong2702
 - **Created:** 2026-05-11
 - **Revised:** 2026-05-23
-- **Tracking issue:** [#1925](https://github.com/nesquena/nasmusicui/issues/1925)
+- **Tracking issue:** [#1925](https://github.com/nastech-ai/NasWebUI/issues/1925)
 
 ## Credit and Scope
 
@@ -58,7 +58,7 @@ Slice 1 is now past the first active validation gate:
 
 - #2283 shipped the run-journal replay layer in v0.51.71.
 - A 100-trial synthetic replay/restart validation pass against current
-  `origin/master` passed on 2026-05-16. The matrix covered completed-run replay,
+  `origin/main` passed on 2026-05-16. The matrix covered completed-run replay,
   interrupted stale-pending recovery, fresh-pending grace handling, StreamChannel
   reconnect ordering, duplicate-prevention merge behavior, many-session recovery,
   large-journal derivation, and stream-to-turn-id lifecycle linking.

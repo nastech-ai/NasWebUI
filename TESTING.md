@@ -55,8 +55,8 @@ maintainer-run, safe-fixes-only decision (tracked in #3273).
 ```bash
 # one-time dev setup (ruff is a dev-only tool):
 pip install ruff            # or: uv tool install ruff / uvx ruff ...
-# the gate (only flags violations on lines you added/changed vs origin/master):
-python3 scripts/ruff_lint.py --diff origin/master
+# the gate (only flags violations on lines you added/changed vs origin/main):
+python3 scripts/ruff_lint.py --diff origin/main
 # whole-tree backlog report (informational — never blocks):
 python3 scripts/ruff_lint.py --all
 ```

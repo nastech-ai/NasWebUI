@@ -456,7 +456,7 @@ function _cronGatewayNoticeHtml(status) {
       : isRemoteUnreachable
         ? 'The gateway health endpoint is not reachable from WebUI. Verify the configured gateway URL env var (`GATEWAY_HEALTH_URL`, `NASTECH_GATEWAY_HEALTH_URL`, `NASTECH_API_URL`, or `NASMUSICUI_GATEWAY_BASE_URL`) points to a reachable gateway service and network path before relying on cron ticking.'
         : 'In NasMusicUI, scheduled jobs require the NasTech gateway daemon to be running. Start the gateway container or `nastech gateway` before relying on offline scheduled runs.';
-  const docsHref = 'https://github.com/nesquena/nasmusicui/blob/master/docs/docker.md#scheduled-jobs-and-the-gateway-daemon';
+  const docsHref = 'https://github.com/nastech-ai/NasWebUI/blob/main/docs/docker.md#scheduled-jobs-and-the-gateway-daemon';
   const helpLink = notConfigured || isRemoteUnreachable || isStaleMetadata
     ? `<p><a href="${docsHref}" target="_blank" rel="noopener">How to enable scheduled jobs in Docker ↗</a></p>`
     : '';

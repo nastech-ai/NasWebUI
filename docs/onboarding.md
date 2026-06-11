@@ -20,7 +20,7 @@ skills, config, cron jobs, and provider credentials belong to NasTech Agent.
 
 The bootstrap supports Linux, macOS, and WSL2. Native Windows is not supported
 by the bootstrap yet. A community native Windows setup is being tracked in
-[#1952](https://github.com/nesquena/nasmusicui/issues/1952), including:
+[#1952](https://github.com/nastech-ai/NasWebUI/issues/1952), including:
 
 - [Native Windows guide](https://github.com/markwang2658/nastech-windows-native-guide)
 - [Native Windows setup scripts](https://github.com/markwang2658/nastech-windows-native)

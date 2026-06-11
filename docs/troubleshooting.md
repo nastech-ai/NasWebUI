@@ -2,7 +2,7 @@
 
 Concrete diagnostic flows for the most common failure modes when running NasMusicUI. Each entry has the symptom, the diagnostic commands you should run *before* opening an issue, and the fix that has worked for past reporters.
 
-If your symptom isn't listed and the diagnostics don't narrow it down, file a bug at https://github.com/nesquena/nasmusicui/issues — include the relevant command output after redacting secrets, private paths, full `.env` files, full `auth.json` files, cookies, tokens, and password hashes.
+If your symptom isn't listed and the diagnostics don't narrow it down, file a bug at https://github.com/nastech-ai/NasWebUI/issues — include the relevant command output after redacting secrets, private paths, full `.env` files, full `auth.json` files, cookies, tokens, and password hashes.
 
 ---
 
@@ -77,7 +77,7 @@ If adding PYTHONPATH fixes it, persist the path either via `pip install -e .` (p
 
 ### When to file a bug
 
-If after running steps 1-4 the import still fails *and* `pip install -e .` succeeded *and* `PYTHONPATH=... python -c "from run_agent import AIAgent"` succeeds — that's a real WebUI bug. File at https://github.com/nesquena/nasmusicui/issues with:
+If after running steps 1-4 the import still fails *and* `pip install -e .` succeeded *and* `PYTHONPATH=... python -c "from run_agent import AIAgent"` succeeds — that's a real WebUI bug. File at https://github.com/nastech-ai/NasWebUI/issues with:
 
 - The output of every command in steps 1-4
 - The full diagnostic block printed by the WebUI's `ImportError` (v0.51.6+)

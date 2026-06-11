@@ -88,19 +88,19 @@ class TestUpdateChecker:
         import api.updates as upd
 
         assert upd._build_compare_url(
-            'https://github.com/nesquena/nasmusicui', 'abc1234', 'def5678'
-        ) == 'https://github.com/nesquena/nasmusicui/compare/abc1234...def5678'
+            'https://github.com/nastech-ai/NasWebUI', 'abc1234', 'def5678'
+        ) == 'https://github.com/nastech-ai/NasWebUI/compare/abc1234...def5678'
         assert upd._build_compare_url(None, 'abc1234', 'def5678') is None
-        assert upd._build_compare_url('https://github.com/nesquena/nasmusicui', None, 'def5678') is None
-        assert upd._build_compare_url('https://github.com/nesquena/nasmusicui', 'abc1234', None) is None
+        assert upd._build_compare_url('https://github.com/nastech-ai/NasWebUI', None, 'def5678') is None
+        assert upd._build_compare_url('https://github.com/nastech-ai/NasWebUI', 'abc1234', None) is None
 
     def test_build_compare_url_rejects_unsafe_remote_urls(self):
         import api.updates as upd
 
         assert upd._build_compare_url('javascript:alert(1)', 'abc1234', 'def5678') is None
         assert upd._build_compare_url('file:///tmp/nasmusicui', 'abc1234', 'def5678') is None
-        assert upd._build_compare_url('https:github.com/nesquena/nasmusicui', 'abc1234', 'def5678') is None
-        assert upd._build_compare_url('https://github.com/nesquena/nasmusicui', 'abc1234', 'def5678')
+        assert upd._build_compare_url('https:github.com/nastech-ai/NasWebUI', 'abc1234', 'def5678') is None
+        assert upd._build_compare_url('https://github.com/nastech-ai/NasWebUI', 'abc1234', 'def5678')
 
     def test_check_repo_includes_compare_url_from_normalized_remote_and_merge_base(self, tmp_path, monkeypatch):
         import api.updates as upd
@@ -149,7 +149,7 @@ class TestUpdateChecker:
             if args[:3] == ['rev-parse', '--short', 'origin/master']:
                 return 'def5678', True
             if args[:2] == ['remote', 'get-url']:
-                return 'https://github.com/nesquena/nasmusicui.git', True
+                return 'https://github.com/nastech-ai/NasWebUI.git', True
             return '', True
 
         monkeypatch.setattr(upd, '_run_git', fake_run)
@@ -176,13 +176,13 @@ class TestUpdateChecker:
             if args[:2] == ['rev-parse', '--short']:
                 return 'abcdef1', True
             if args[:2] == ['remote', 'get-url']:
-                return 'https://github.com/nesquena/nasmusicui.git', True
+                return 'https://github.com/nastech-ai/NasWebUI.git', True
             return '', True
 
         monkeypatch.setattr(upd, '_run_git', fake_run)
         result = upd._check_repo(tmp_path, 'webui')
 
-        assert result['repo_url'] == 'https://github.com/nesquena/nasmusicui'
+        assert result['repo_url'] == 'https://github.com/nastech-ai/NasWebUI'
 
     def test_repo_url_converts_ssh_and_strips_only_dot_git_suffix(self, tmp_path, monkeypatch):
         import api.updates as upd
@@ -226,13 +226,13 @@ class TestUpdateChecker:
             if args[:2] == ['rev-parse', '--short']:
                 return 'abcdef1', True
             if args[:2] == ['remote', 'get-url']:
-                return 'https://github.com/nesquena/nasmusicui.git/', True
+                return 'https://github.com/nastech-ai/NasWebUI.git/', True
             return '', True
 
         monkeypatch.setattr(upd, '_run_git', fake_run)
         result = upd._check_repo(tmp_path, 'webui')
 
-        assert result['repo_url'] == 'https://github.com/nesquena/nasmusicui'
+        assert result['repo_url'] == 'https://github.com/nastech-ai/NasWebUI'
 
     def test_release_check_ignores_post_release_branch_commits(self, tmp_path, monkeypatch):
         import api.updates as upd
@@ -279,7 +279,7 @@ class TestUpdateChecker:
             if args == ['merge-base', '--is-ancestor', 'HEAD', 'v0.51.35']:
                 return '', True
             if args[:2] == ['remote', 'get-url']:
-                return 'https://github.com/nesquena/nasmusicui.git', True
+                return 'https://github.com/nastech-ai/NasWebUI.git', True
             return '', False
 
         monkeypatch.setattr(upd, '_run_git', fake_run)
@@ -1583,8 +1583,8 @@ class TestSequentialUpdateRestartCoordination:
 class TestUpdateCompareSource:
     def test_simulated_update_check_payload_includes_both_safe_compare_urls(self):
         src = read('api/routes.py')
-        assert '"repo_url": "https://github.com/nesquena/nasmusicui"' in src
-        assert '"compare_url": "https://github.com/nesquena/nasmusicui/compare/abc1234...def5678"' in src
+        assert '"repo_url": "https://github.com/nastech-ai/NasWebUI"' in src
+        assert '"compare_url": "https://github.com/nastech-ai/NasWebUI/compare/abc1234...def5678"' in src
         assert '"repo_url": "https://github.com/NousResearch/NasTech-Agent"' in src
         assert '"compare_url": "https://github.com/NousResearch/NasTech-Agent/compare/aaa0001...bbb0002"' in src
 

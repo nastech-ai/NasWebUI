@@ -372,8 +372,8 @@ def test_lost_response_recovered_on_second_read(nasmusicui_home):
         "tool",
         {
             "name": "terminal",
-            "preview": "gh pr list --repo nesquena/nasmusicui",
-            "args": {"command": "gh pr list --repo nesquena/nasmusicui"},
+            "preview": "gh pr list --repo nastech-ai/NasWebUI",
+            "args": {"command": "gh pr list --repo nastech-ai/NasWebUI"},
         },
     )
     append_run_event(

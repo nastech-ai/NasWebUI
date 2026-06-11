@@ -2,7 +2,7 @@
 
 - **Status:** Proposed
 - **Created:** 2026-05-17
-- **Tracking issue:** [#2453](https://github.com/nesquena/nasmusicui/issues/2453)
+- **Tracking issue:** [#2453](https://github.com/nastech-ai/NasWebUI/issues/2453)
 
 ## Problem
 
@@ -36,7 +36,7 @@ not require mounting the live source checkout.
 
 | WebUI capability | Current dependency | Desired API / contract | Notes |
 |---|---|---|---|
-| Browser chat execution | `run_agent.AIAgent` imported by `api/streaming.py` | Run lifecycle API: start, observe, status, cancel, approval, clarify, final usage | Covered by the runtime-adapter migration in [#1925](https://github.com/nesquena/nasmusicui/issues/1925), but still source-backed today. |
+| Browser chat execution | `run_agent.AIAgent` imported by `api/streaming.py` | Run lifecycle API: start, observe, status, cancel, approval, clarify, final usage | Covered by the runtime-adapter migration in [#1925](https://github.com/nastech-ai/NasWebUI/issues/1925), but still source-backed today. |
 | Runtime event rendering | WebUI callbacks around Agent token/reasoning/tool events | Stable event envelope for tokens, reasoning, progress, tool lifecycle, approvals, clarify, errors, and final usage | The existing run-adapter RFC describes the browser-facing shape; Agent still needs a durable producer contract. |
 | Profile list/create/delete/seed | `nastech_cli.profiles` from `api/profiles.py` | Profile management API with profile metadata, env/runtime context, seed/delete operations, and validation errors | WebUI has fallback filesystem handling for some operations, but feature parity follows NasTech CLI internals. |
 | Goal command state | `nastech_cli.goals` from `api/goals.py` | Goal CRUD/control API: get, save, pause/resume/clear, and status | Should preserve current `/goal` WebUI behavior without direct module import. |

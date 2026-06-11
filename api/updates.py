@@ -405,7 +405,7 @@ def _detect_default_branch(path):
     """Detect the remote default branch (master or main)."""
     out, ok = _run_git(['symbolic-ref', 'refs/remotes/origin/HEAD'], path)
     if ok and out:
-        # refs/remotes/origin/master -> master
+        # refs/remotes/origin/main -> master
         return out.split('/')[-1]
     # Fallback: try master, then main
     for branch in ('master', 'main'):

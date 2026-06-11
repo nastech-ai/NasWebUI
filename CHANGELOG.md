@@ -2260,7 +2260,7 @@ PR #2636 went through the full multi-viewport screenshot gate (390 mobile, 1280 
 
 ### Infrastructure
 
-- **PR #2490** by @nesquena-nastech — Add a Docker runtime smoke gate (`.github/workflows/docker-smoke.yml`) triggered on PRs and pushes to `master` that modify `Dockerfile`, `docker_init.bash`, `docker-compose*.yml`, `.dockerignore`, or `.env.docker.example`. Validates every compose file parses (`docker compose config`), then matrix-runs the single, two-container, and three-container variants end-to-end: rebuilds the local `Dockerfile` and re-tags it as `ghcr.io/nesquena/nasmusicui:latest` so the multi-container variants exercise PR-level changes rather than the previously-released registry image, `docker compose up -d --wait`s with a 120s health window, probes `/health`, and greps startup logs for known-bad signatures (`EROFS`, `Traceback`, `PermissionError`, `error_exit`, `!! ERROR`, `!! Exiting script`, `groupmod: cannot`, `usermod: cannot`, `Failed to set`). Closes the source-only-test gap that let v0.51.84's `:ro`-mount × `chown -h ... {} +` startup regression reach review with 5800+ green pytests. Workflow runs with `permissions: contents: read`, uses per-run project names and a pre-flight orphan reaper for safe concurrency, and unconditionally tears down all volumes/networks in an `EXIT` trap. Two new source-level invariants in `tests/test_docker_docs_and_readonly.py` pin the staging path so the underlying `:ro`-incompatible call doesn't regress.
+- **PR #2490** by @nesquena-nastech — Add a Docker runtime smoke gate (`.github/workflows/docker-smoke.yml`) triggered on PRs and pushes to `master` that modify `Dockerfile`, `docker_init.bash`, `docker-compose*.yml`, `.dockerignore`, or `.env.docker.example`. Validates every compose file parses (`docker compose config`), then matrix-runs the single, two-container, and three-container variants end-to-end: rebuilds the local `Dockerfile` and re-tags it as `ghcr.io/nastech-ai/NasWebUI:latest` so the multi-container variants exercise PR-level changes rather than the previously-released registry image, `docker compose up -d --wait`s with a 120s health window, probes `/health`, and greps startup logs for known-bad signatures (`EROFS`, `Traceback`, `PermissionError`, `error_exit`, `!! ERROR`, `!! Exiting script`, `groupmod: cannot`, `usermod: cannot`, `Failed to set`). Closes the source-only-test gap that let v0.51.84's `:ro`-mount × `chown -h ... {} +` startup regression reach review with 5800+ green pytests. Workflow runs with `permissions: contents: read`, uses per-run project names and a pre-flight orphan reaper for safe concurrency, and unconditionally tears down all volumes/networks in an `EXIT` trap. Two new source-level invariants in `tests/test_docker_docs_and_readonly.py` pin the staging path so the underlying `:ro`-incompatible call doesn't regress.
 
 ## [v0.51.86] — 2026-05-17 — Release BJ (stage-379 — 4-PR review-bypass batch — memory-provider session lifecycle + cross-provider /model alias + RuntimeAdapter cancel seam + Fork-from-here messaging coord)
 
@@ -2293,7 +2293,7 @@ PR #2636 went through the full multi-viewport screenshot gate (390 mobile, 1280 
 
 ### Documentation
 
-- **PR #2470** — `docs/docker.md` gains an **"Upgrading the agent container"** section documenting the root cause of [#1416](https://github.com/nesquena/nasmusicui/issues/1416): the `NasTech-Agent-src` named volume caches the agent's `/opt/nastech` source tree on first run, and Docker reuses the cached volume on every subsequent `compose up` — even after `docker pull` of a newer agent image. The new section gives the canonical `down → docker volume rm → pull → up -d` recipe and the same upgrade pointer is mirrored as a comment block in both multi-container compose files. A new **"What the multi-container setup isolates (and what it doesn't)"** section explicitly frames the two/three-container setups as **process, network, and resource isolation, not filesystem isolation** — calibrating expectations for users who reach for multi-container expecting a trust boundary between the chat UI and the agent.
+- **PR #2470** — `docs/docker.md` gains an **"Upgrading the agent container"** section documenting the root cause of [#1416](https://github.com/nastech-ai/NasWebUI/issues/1416): the `NasTech-Agent-src` named volume caches the agent's `/opt/nastech` source tree on first run, and Docker reuses the cached volume on every subsequent `compose up` — even after `docker pull` of a newer agent image. The new section gives the canonical `down → docker volume rm → pull → up -d` recipe and the same upgrade pointer is mirrored as a comment block in both multi-container compose files. A new **"What the multi-container setup isolates (and what it doesn't)"** section explicitly frames the two/three-container setups as **process, network, and resource isolation, not filesystem isolation** — calibrating expectations for users who reach for multi-container expecting a trust boundary between the chat UI and the agent.
 
 ## [v0.51.83] — 2026-05-17 — Release BG (stage-376 — 12-PR contributor batch — chat-start adapter parity + populated-core journal recovery + thinking card dedup + context metadata refresh + model cache fingerprint + stream fade cap + manual cron delivery + active-session spinner + email gateway label + thinking copy button + /theme i18n + compact activity semantics)
 
@@ -2367,7 +2367,7 @@ PR #2636 went through the full multi-viewport screenshot gate (390 mobile, 1280 
 
 ### Documentation
 
-- **PR #2407** by @Michaelyklam — Document the #1925 runtime-adapter gate update: Slice 1 run-journal replay has now passed a 100-trial synthetic replay/restart validation pass on current `origin/master`, #2313's selected-session chat SSE cap is shipped, and Slice 2 is ready for a reversible adapter-seam planning PR without moving execution ownership yet.
+- **PR #2407** by @Michaelyklam — Document the #1925 runtime-adapter gate update: Slice 1 run-journal replay has now passed a 100-trial synthetic replay/restart validation pass on current `origin/main`, #2313's selected-session chat SSE cap is shipped, and Slice 2 is ready for a reversible adapter-seam planning PR without moving execution ownership yet.
 
 ### Test infrastructure
 
@@ -3324,7 +3324,7 @@ Three nice-to-have polish items called out by Opus that don't block this release
 - **Profile-cache invalidation hook** for `_kanbanProfileNamesCache` so profile create/delete from elsewhere in the WebUI propagates without a reload. Current behavior is graceful degradation (orphaned-profile assignee → dispatcher logs `skipped_nonspawnable`, user can re-edit).
 - **Status-display hint** near the modal status `<select>` for non-editable original states (running/blocked/done/archived → mapped to `triage` in the dropdown). The tracker fix makes untouched-submit harmless, but a small visual hint like "(real status: running)" would reduce user confusion.
 
-- **bug(profile/mcp): non-default profile MCP servers never load** ([#1968](https://github.com/nesquena/nasmusicui/issues/1968)). `_run_agent_streaming` called `discover_mcp_tools()` ~100 lines BEFORE the per-session `os.environ['NASTECH_HOME'] = _profile_home` mutation, so MCP discovery always read the default profile's `~/.nastech/config.yaml` regardless of which profile the session was stamped with. Result: switching profiles in the WebUI dropdown was effectively cosmetic for MCP — non-default profiles never registered their stdio (npx/node) MCP servers. Fix relocates the `discover_mcp_tools()` call past the `_ENV_LOCK` env-mutation block so `get_nastech_home()` resolves to the session's actual profile home. Adds 4 static regression tests (`tests/test_issue1968_mcp_profile_discovery.py`) pinning the call ordering, lock-release placement, single call site, and try/except wrapping. **Caveat (out of scope, agent-side):** `_servers` in `tools/mcp_tool.py` is a process-global dict keyed only by server name, so concurrent use of multiple non-default profiles in the same WebUI process still has a "first profile wins per name" issue. Fully fixing that requires keying `_servers` by `(profile_home, name)` upstream in NasTech-Agent. This PR ships layer 1 only.
+- **bug(profile/mcp): non-default profile MCP servers never load** ([#1968](https://github.com/nastech-ai/NasWebUI/issues/1968)). `_run_agent_streaming` called `discover_mcp_tools()` ~100 lines BEFORE the per-session `os.environ['NASTECH_HOME'] = _profile_home` mutation, so MCP discovery always read the default profile's `~/.nastech/config.yaml` regardless of which profile the session was stamped with. Result: switching profiles in the WebUI dropdown was effectively cosmetic for MCP — non-default profiles never registered their stdio (npx/node) MCP servers. Fix relocates the `discover_mcp_tools()` call past the `_ENV_LOCK` env-mutation block so `get_nastech_home()` resolves to the session's actual profile home. Adds 4 static regression tests (`tests/test_issue1968_mcp_profile_discovery.py`) pinning the call ordering, lock-release placement, single call site, and try/except wrapping. **Caveat (out of scope, agent-side):** `_servers` in `tools/mcp_tool.py` is a process-global dict keyed only by server name, so concurrent use of multiple non-default profiles in the same WebUI process still has a "first profile wins per name" issue. Fully fixing that requires keying `_servers` by `(profile_home, name)` upstream in NasTech-Agent. This PR ships layer 1 only.
 
 ## [v0.51.31] — 2026-05-09 — Release H (12-PR contributor batch: image-mode + race fixes + composer drafts + locale parity)
 
@@ -4737,7 +4737,7 @@ Closes #1360, #1451, #1463, #1618, #1619 (5 issues).
 
 - **Forked session sidebar indicator is now recognizable and less noisy** (#1621 by @franksong2702, fixes #1613) — replaced the permanent `⑂` OCR glyph with the existing `git-branch` SVG icon, made the indicator subtle (.35 opacity) until row hover/focus/active states (.85 opacity), changed the tooltip to prefer the parent session title with a truncated-id fallback, and removed the hidden click-to-parent behavior from the sidebar row (was unpredictable). The `/branch` command and fork data model are unchanged.
 
-- **Update banner now shows tracked branches in labels** (#1605 by @ai-ag2026) — `static/ui.js` and `static/panels.js` use a new `_formatUpdateTargetStatus(label, info)` formatter that includes `info.branch` parenthetical, so `WebUI (origin/master): 0 updates, Agent (origin/main): 32 updates` is displayed in mixed states instead of the generic `Agent: 32 updates` that could be misread as the WebUI being behind. Settings panel uses a typeof-guarded fallback to a local formatter for back-compat with older boot states.
+- **Update banner now shows tracked branches in labels** (#1605 by @ai-ag2026) — `static/ui.js` and `static/panels.js` use a new `_formatUpdateTargetStatus(label, info)` formatter that includes `info.branch` parenthetical, so `WebUI (origin/main): 0 updates, Agent (origin/main): 32 updates` is displayed in mixed states instead of the generic `Agent: 32 updates` that could be misread as the WebUI being behind. Settings panel uses a typeof-guarded fallback to a local formatter for back-compat with older boot states.
 
 - **Update compare URLs preserve git remote names ending in g/i/t** (#1603 by @ai-ag2026) — `api/updates.py` was using `str.rstrip('.git')` for the remote URL trim, which is a CHARACTER-CLASS strip — `'nasmusicui.git'` became `'nastech-webu'` (it strips trailing `g`, then `i`, then `.`, then more `i`'s, then `u`...). The updated logic checks `endswith('.git')` and slices the literal suffix, leaving `nasmusicui`/`NasTech-Agent` and any other remote name intact. Both HTTPS and SSH origin forms covered.
 
@@ -4774,7 +4774,7 @@ Closes #1578, #1583, #1584, #1595, #1613, #1620.
 
 ### Fixed (1 PR — "What's new?" link 404 — closes #1579)
 
-- **"What's new?" update-banner link no longer 404s when local HEAD diverges from upstream** (closes #1579, reported by @ai-ag2026) — `api/updates.py` was building the GitHub compare URL from local-`HEAD` short SHA: `repoUrl + '/compare/' + curSha + '...' + newSha` where `curSha = git rev-parse --short HEAD`. Whenever the local checkout had commits that weren't in the upstream repo — unpushed work, dirty stage branches, forks, in-flight rebases, release-time merge commits — the compare URL pointed at a SHA that github.com had never seen and returned its standard 404 page. Reporter saw `https://github.com/nesquena/nasmusicui/compare/c660c7f...86cb22e` produce a 404 because `c660c7f` was an unpushed local commit. **Fix:** replace `git rev-parse --short HEAD` with `git merge-base HEAD <compare_ref>` then `git rev-parse --short` on that result. The merge-base is the most recent commit both local and upstream share, and (since `git fetch` succeeded just before) is guaranteed to exist on the upstream GitHub repo. For the common case (pure-behind clone, no local commits) the merge-base equals local HEAD and the URL is unchanged from prior behavior. For the divergent case (the #1579 reporter scenario) the URL points at the public ancestor, which github.com always knows. If `merge-base` itself fails (shallow clone with no shared history), fall back to `current_sha=None` so the existing JS link guard (`if(repoUrl && curSha && newSha)`) suppresses the link entirely rather than emitting a known-broken URL. Also hardens `static/ui.js` to **clear** the link's `href` and `display:none` it on every banner render, so a stale link from a prior render can't survive a re-render where the new payload's `current_sha` is null. 6 regression tests covering merge-base correctness, backward-compat for pure-behind clones, merge-base-failure fallback, JS link reset on every render, JS conditional guard shape, and an end-to-end verification of the reporter's exact scenario.
+- **"What's new?" update-banner link no longer 404s when local HEAD diverges from upstream** (closes #1579, reported by @ai-ag2026) — `api/updates.py` was building the GitHub compare URL from local-`HEAD` short SHA: `repoUrl + '/compare/' + curSha + '...' + newSha` where `curSha = git rev-parse --short HEAD`. Whenever the local checkout had commits that weren't in the upstream repo — unpushed work, dirty stage branches, forks, in-flight rebases, release-time merge commits — the compare URL pointed at a SHA that github.com had never seen and returned its standard 404 page. Reporter saw `https://github.com/nastech-ai/NasWebUI/compare/c660c7f...86cb22e` produce a 404 because `c660c7f` was an unpushed local commit. **Fix:** replace `git rev-parse --short HEAD` with `git merge-base HEAD <compare_ref>` then `git rev-parse --short` on that result. The merge-base is the most recent commit both local and upstream share, and (since `git fetch` succeeded just before) is guaranteed to exist on the upstream GitHub repo. For the common case (pure-behind clone, no local commits) the merge-base equals local HEAD and the URL is unchanged from prior behavior. For the divergent case (the #1579 reporter scenario) the URL points at the public ancestor, which github.com always knows. If `merge-base` itself fails (shallow clone with no shared history), fall back to `current_sha=None` so the existing JS link guard (`if(repoUrl && curSha && newSha)`) suppresses the link entirely rather than emitting a known-broken URL. Also hardens `static/ui.js` to **clear** the link's `href` and `display:none` it on every banner render, so a stale link from a prior render can't survive a re-render where the new payload's `current_sha` is null. 6 regression tests covering merge-base correctness, backward-compat for pure-behind clones, merge-base-failure fallback, JS link reset on every render, JS conditional guard shape, and an end-to-end verification of the reporter's exact scenario.
 
 ### Tests
 
@@ -4783,7 +4783,7 @@ Closes #1578, #1583, #1584, #1595, #1613, #1620.
 ### Pre-release verification
 
 - Self-built fix (nesquena-nastech) with **independent review APPROVED by nesquena** — full end-to-end behavioral harness using throwaway local+upstream git fixtures verified the reporter's exact scenario produces a 404 pre-fix and resolves post-fix. Cross-tool audit (webui-only, no agent surface). Security audit clean. Race/state analysis: `_check_repo` is single-threaded per request, `_run_git` spawns subprocesses with no shared state. Edge-case trace covered 8 scenarios including pure-behind clone (URL unchanged from pre-fix), 2-unpushed-3-upstream (the reporter's case), pure-ahead, fork checkout, mid-rebase, shallow clone, transient `git merge-base` errors, and stale link from prior render with null current_sha.
-- Bug repro confirmed locally: simulated 2 unpushed commits + 3 upstream commits; `git rev-parse --short HEAD` returns SHA absent from upstream history (verifiable with `git cat-file -e $sha origin/master` failing); `git merge-base HEAD origin/master` returns SHA present in upstream history. Compare URL constructed from merge-base resolves on github.com; URL constructed from local HEAD 404s.
+- Bug repro confirmed locally: simulated 2 unpushed commits + 3 upstream commits; `git rev-parse --short HEAD` returns SHA absent from upstream history (verifiable with `git cat-file -e $sha origin/main` failing); `git merge-base HEAD origin/main` returns SHA present in upstream history. Compare URL constructed from merge-base resolves on github.com; URL constructed from local HEAD 404s.
 - All other tests in `test_update_checker.py` (12) and `test_version_badge.py` (21) still pass — no behavioral changes to the diagnostic / version-detection paths.
 
 ## [v0.50.290] — 2026-05-04
@@ -4846,7 +4846,7 @@ Two stale source-string assertions were broken by #1591's compact() and messages
 
 ### Maintainer in-stage actions
 
-- **PR rebase** (REBASE-DEFAULT rule): PR base was 111 commits behind `origin/master` (forked at `6c3ff3ff`, pre-v0.50.275). Rebased onto current master. Clean, no conflicts. Re-tested on rebased branch → 4094 passed, no regressions.
+- **PR rebase** (REBASE-DEFAULT rule): PR base was 111 commits behind `origin/main` (forked at `6c3ff3ff`, pre-v0.50.275). Rebased onto current master. Clean, no conflicts. Re-tested on rebased branch → 4094 passed, no regressions.
 
 ## [v0.50.288] — 2026-05-03
 
@@ -4909,7 +4909,7 @@ Two stale source-string assertions were broken by #1591's compact() and messages
 - All 4051 tests pass in the full suite (110s).
 - Browser sanity (HTTP API checks against port 8789): 11/11 endpoints verified.
 - All modified JS files (`static/i18n.js`, `static/panels.js`) pass `node -c` syntax check.
-- PR rebase verified clean: `git diff origin/master --stat` shows ONLY the 6 files PR #1561 touches (no spurious deletions of v0.50.284/v0.50.285 test files that the older PR base would have dropped).
+- PR rebase verified clean: `git diff origin/main --stat` shows ONLY the 6 files PR #1561 touches (no spurious deletions of v0.50.284/v0.50.285 test files that the older PR base would have dropped).
 
 ## [v0.50.285] — 2026-05-03
 
@@ -7494,7 +7494,7 @@ The hardcoded lists in `_PROVIDER_MODELS` remain as credential-missing / network
 - 18 new tests covering all IP resolution paths (`TestOnboardingIPLogic`, `TestOnboardingSetupEndpoint`)
 
 > Living document. Updated at the end of every sprint.
-> Repository: https://github.com/nesquena/nasmusicui
+> Repository: https://github.com/nastech-ai/NasWebUI
 
 ---
 
@@ -7709,7 +7709,7 @@ Major UI overhaul by **[@aronprins](https://github.com/aronprins)** — the bigg
 
 - **Self-update git pull diagnostics** (PR #287): Fixes multiple failure modes in the WebUI self-update flow when the repo has a non-trivial git state.
   - `_run_git()` now returns stderr on failure (stdout fallback, then exit-code message) — users see actionable git errors instead of empty strings
-  - New `_split_remote_ref()` helper splits `origin/master` into `('origin', 'master')` before `git pull --ff-only` — fixes silent failures where git misinterpreted the combined string as a repository name
+  - New `_split_remote_ref()` helper splits `origin/main` into `('origin', 'master')` before `git pull --ff-only` — fixes silent failures where git misinterpreted the combined string as a repository name
   - `--untracked-files=no` added to `git status --porcelain` — prevents spurious stash failures in repos with untracked files
   - Early merge-conflict detection via porcelain status codes before attempting pull
   - 4 new unit tests in `tests/test_updates.py`
@@ -7872,7 +7872,7 @@ Major UI overhaul by **[@aronprins](https://github.com/aronprins)** — the bigg
 - **Slow-client thread exhaustion** (PR #198): Added `Handler.timeout = 30` to kill
   idle/stalled connections before they exhaust the thread pool.
 - **False update alerts on feature branches** (PR #201): Update checker compared
-  `HEAD..origin/master` even when on a feature branch, counting unrelated master
+  `HEAD..origin/main` even when on a feature branch, counting unrelated master
   commits as missing updates. Now uses `git rev-parse --abbrev-ref @{upstream}` to
   track the current branch's upstream. Falls back to default branch when no upstream
   is set.
@@ -8165,9 +8165,9 @@ Major UI overhaul by **[@aronprins](https://github.com/aronprins)** — the bigg
 ### Features
 - **GitHub Actions CI.** New workflow triggers on tag push (`v*`). Builds
   multi-arch Docker images (linux/amd64 + linux/arm64), pushes to
-  `ghcr.io/nesquena/nasmusicui`, and creates a GitHub Release with
+  `ghcr.io/nastech-ai/NasWebUI`, and creates a GitHub Release with
   auto-generated release notes. Uses GHA layer caching for fast rebuilds.
-- **Pre-built container images.** Users can now `docker pull ghcr.io/nesquena/nasmusicui:latest`
+- **Pre-built container images.** Users can now `docker pull ghcr.io/nastech-ai/NasWebUI:latest`
   instead of building locally.
 
 ---

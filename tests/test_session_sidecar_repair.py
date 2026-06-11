@@ -657,8 +657,8 @@ class TestNonEmptyMessagesPendingCleared:
             "tool",
             {
                 "name": "terminal",
-                "preview": "gh pr list --repo nesquena/nasmusicui",
-                "args": {"command": "gh pr list --repo nesquena/nasmusicui"},
+                "preview": "gh pr list --repo nastech-ai/NasWebUI",
+                "args": {"command": "gh pr list --repo nastech-ai/NasWebUI"},
             },
         )
         append_run_event(
@@ -792,8 +792,8 @@ class TestNonEmptyMessagesPendingCleared:
             "tool",
             {
                 "name": "terminal",
-                "preview": "gh pr list --repo nesquena/nasmusicui",
-                "args": {"command": "gh pr list --repo nesquena/nasmusicui"},
+                "preview": "gh pr list --repo nastech-ai/NasWebUI",
+                "args": {"command": "gh pr list --repo nastech-ai/NasWebUI"},
             },
         )
         append_run_event(
@@ -896,8 +896,8 @@ class TestNonEmptyMessagesPendingCleared:
         core_tool_calls = [
             {
                 "name": "terminal",
-                "preview": "gh pr list --repo nesquena/nasmusicui",
-                "snippet": "gh pr list --repo nesquena/nasmusicui",
+                "preview": "gh pr list --repo nastech-ai/NasWebUI",
+                "snippet": "gh pr list --repo nastech-ai/NasWebUI",
                 "assistant_msg_idx": 1,
                 "done": True,
             },
@@ -921,8 +921,8 @@ class TestNonEmptyMessagesPendingCleared:
             "tool",
             {
                 "name": "terminal",
-                "preview": "gh pr list --repo nesquena/nasmusicui",
-                "args": {"command": "gh pr list --repo nesquena/nasmusicui"},
+                "preview": "gh pr list --repo nastech-ai/NasWebUI",
+                "args": {"command": "gh pr list --repo nastech-ai/NasWebUI"},
             },
         )
 

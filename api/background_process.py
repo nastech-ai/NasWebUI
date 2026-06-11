@@ -819,7 +819,7 @@ def _process_one(evt: dict) -> None:
     # If the upstream A-drain already delivered this process_id (A-first
     # order), it marked _completion_consumed; B must early-return here or it
     # would double-fire a wakeup. This guard aligns our B-drain to the real
-    # upstream key (verified against origin/master streaming.py).
+    # upstream key (verified against origin/main streaming.py).
     if process_id:
         try:
             if _process_registry is not None and _process_registry.is_completion_consumed(process_id):

@@ -9,7 +9,7 @@ This is the comprehensive Docker reference. For a 5-minute quickstart, see the [
 | **Single-container** (recommended) | You just want chat working. WebUI runs the agent in-process. | `docker-compose.yml` |
 | **Two-container** | You want isolation between gateway (CLI/Telegram/cron) and chat UI. | `docker-compose.two-container.yml` |
 | **Three-container** | Two-container PLUS the dashboard for monitoring. | `docker-compose.three-container.yml` |
-| **All-in-one image** (community fork — third-party, not maintained by us) | Podman 3.4 / multi-arch / supervisord-style preference. | [sunnysktsang/nastech-suite](https://github.com/sunnysktsang/nastech-suite) — see [#1399](https://github.com/nesquena/nasmusicui/issues/1399) for the original discussion |
+| **All-in-one image** (community fork — third-party, not maintained by us) | Podman 3.4 / multi-arch / supervisord-style preference. | [sunnysktsang/nastech-suite](https://github.com/sunnysktsang/nastech-suite) — see [#1399](https://github.com/nastech-ai/NasWebUI/issues/1399) for the original discussion |
 
 > **Note (v0.14+):** If you use `docker-compose.three-container.yml`, both
 > `NasTech-Agent` and `nastech-dashboard` initialise from the same image and write
@@ -42,7 +42,7 @@ those tools in a dev-only Dockerfile instead of reintroducing passwordless sudo 
 ## 5-minute quickstart (single container)
 
 ```bash
-git clone https://github.com/nesquena/nasmusicui
+git clone https://github.com/nastech-ai/NasWebUI
 cd nasmusicui
 cp .env.docker.example .env
 # Edit .env if needed (most users can skip this on Linux)
@@ -196,7 +196,7 @@ The three-service pattern uses two containers:
 | Service | Image | Ports |
 |---|---|---|
 | `NasTech-Agent` | `nousresearch/NasTech-Agent:latest` | 8642 (gateway), 9119 (dashboard) |
-| `nasmusicui` | `ghcr.io/nesquena/nasmusicui:latest` | 8787 (chat UI) |
+| `nasmusicui` | `ghcr.io/nastech-ai/NasWebUI:latest` | 8787 (chat UI) |
 
 Example compose snippet (save as `docker-compose.three-service.yml` or inline into your own file):
 
@@ -223,7 +223,7 @@ services:
       - nastech-net
 
   nasmusicui:
-    image: ghcr.io/nesquena/nasmusicui:latest
+    image: ghcr.io/nastech-ai/NasWebUI:latest
     container_name: nasmusicui
     depends_on:
       - NasTech-Agent
@@ -269,7 +269,7 @@ starts its own init pass.
 
 WebUI shows the version it is currently running, but that display does not in itself guarantee tested compatibility with your agent release.
 
-Until the compatibility boundary work in [#1925](https://github.com/nesquena/nasmusicui/issues/1925) and [#2491](https://github.com/nesquena/nasmusicui/issues/2491) land, the WebUI and NasTech Agent deployment should be treated as a release pair: the WebUI release is tested against its matching agent release and should be upgraded/pinned together.
+Until the compatibility boundary work in [#1925](https://github.com/nastech-ai/NasWebUI/issues/1925) and [#2491](https://github.com/nastech-ai/NasWebUI/issues/2491) land, the WebUI and NasTech Agent deployment should be treated as a release pair: the WebUI release is tested against its matching agent release and should be upgraded/pinned together.
 
 If you use `latest`, use it consistently on both sides and avoid mixing a fixed tag with `latest`:
 - fixed WebUI tag + `NasTech-Agent:latest`
@@ -426,7 +426,7 @@ The WebUI container doesn't ship with the agent's Python deps — at startup it 
 
 The `NasTech-Agent-src` named volume is initialised from the agent image's `/opt/nastech` on first `up`. Docker reuses the volume verbatim on every subsequent `up` — **even after `docker pull` of a newer agent image**. The cached volume content masks the new image's source tree, so a fresh `docker pull` of `nousresearch/NasTech-Agent:latest` does not by itself give you the new agent code, dependencies, or entrypoint.
 
-This is the root cause of [#1416](https://github.com/nesquena/nasmusicui/issues/1416): the symptom looked like a missing entrypoint, but the entrypoint was actually present in the new image and hidden behind the stale named volume.
+This is the root cause of [#1416](https://github.com/nastech-ai/NasWebUI/issues/1416): the symptom looked like a missing entrypoint, but the entrypoint was actually present in the new image and hidden behind the stale named volume.
 
 To upgrade the agent image cleanly, drop the source volume before recreating:
 
@@ -465,7 +465,7 @@ What multi-container does **not** isolate:
 
 If you need **filesystem isolation** between the chat UI and the agent (e.g. you don't trust the WebUI to read agent state), the multi-container setup is not enough — run the agent on a separate host and connect the WebUI to it via the gateway HTTP API. If you don't need any boundary, the single-container setup is simpler.
 
-The direct source mount is a compatibility bridge, not the long-term API contract. The current source/API boundary inventory and decoupling task list live in [`docs/rfcs/agent-source-boundary.md`](rfcs/agent-source-boundary.md) for [#2453](https://github.com/nesquena/nasmusicui/issues/2453). If you customize the compose files with bind mounts, keep the WebUI-side agent source mount read-only unless you are intentionally doing local development; `docker_init.bash` warns at startup when that path is writable.
+The direct source mount is a compatibility bridge, not the long-term API contract. The current source/API boundary inventory and decoupling task list live in [`docs/rfcs/agent-source-boundary.md`](rfcs/agent-source-boundary.md) for [#2453](https://github.com/nastech-ai/NasWebUI/issues/2453). If you customize the compose files with bind mounts, keep the WebUI-side agent source mount read-only unless you are intentionally doing local development; `docker_init.bash` warns at startup when that path is writable.
 
 ## Bind-mount migration (advanced)
 
@@ -516,7 +516,7 @@ volumes:
 - #668 — auto-detect UID/GID from mounted volume
 - #569 — UID/GID detection priority order
 
-If you hit a new failure mode not covered here, please [open an issue](https://github.com/nesquena/nasmusicui/issues/new) with:
+If you hit a new failure mode not covered here, please [open an issue](https://github.com/nastech-ai/NasWebUI/issues/new) with:
 
 1. Which compose file you used
 2. The error from `docker logs nasmusicui`

@@ -468,7 +468,7 @@ else
     echo "!! To fix: mount the agent source volume into the container:"
     echo "!!   -v /path/to/NasTech-Agent:/home/nasmusicuiwebui/.nastech/NasTech-Agent"
     echo "!! Or see the two-container compose example:"
-    echo "!!   https://github.com/nesquena/nasmusicui/blob/master/docker-compose.two-container.yml"
+    echo "!!   https://github.com/nastech-ai/NasWebUI/blob/main/docker-compose.two-container.yml"
     echo ""
   fi
   touch /app/venv/.deps_installed

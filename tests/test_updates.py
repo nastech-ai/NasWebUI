@@ -16,7 +16,7 @@ def _fake_git_for_release_fetch_failure(args, cwd, timeout=10):
     if args == ['merge-base', '--is-ancestor', 'HEAD', 'v0.51.106']:
         return '', True
     if args == ['remote', 'get-url', 'origin']:
-        return 'https://github.com/nesquena/nasmusicui.git', True
+        return 'https://github.com/nastech-ai/NasWebUI.git', True
     raise AssertionError(f'unexpected git args: {args!r}')
 
 
@@ -323,7 +323,7 @@ def test_check_repo_recovers_from_remote_retag(tmp_path):
         if args == ['describe', '--tags', '--always']:
             return 'v0.51.110', True
         if args == ['remote', 'get-url', 'origin']:
-            return 'https://github.com/nesquena/nasmusicui.git', True
+            return 'https://github.com/nastech-ai/NasWebUI.git', True
         # Branch-check fallback is fine to no-op for this assertion.
         return '', True
 
@@ -392,7 +392,7 @@ def test_check_repo_release_not_affected_when_head_exactly_on_tag(tmp_path):
         if args == ['describe', '--tags', '--always']:
             return 'v2026.5.16', True
         if args == ['remote', 'get-url', 'origin']:
-            return 'https://github.com/nesquena/NasTech-Agent.git', True
+            return 'https://github.com/nastech-ai/NasTech-Agent.git', True
         raise AssertionError(f'unexpected git args: {args!r}')
 
     with patch.object(updates, '_run_git', side_effect=fake_git):
@@ -435,7 +435,7 @@ def test_check_repo_branch_check_runs_for_post_tag_commits(tmp_path):
         if args[:2] == ['rev-parse', '--short']:
             return 'abc1234', True
         if args == ['remote', 'get-url', 'origin']:
-            return 'https://github.com/nesquena/NasTech-Agent.git', True
+            return 'https://github.com/nastech-ai/NasTech-Agent.git', True
         return '', True
 
     with patch.object(updates, '_run_git', side_effect=fake_git):
