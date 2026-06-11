@@ -5,6 +5,7 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   # Forward-looking Python lint gate (ruff). The Python twin of the ESLint runtime
