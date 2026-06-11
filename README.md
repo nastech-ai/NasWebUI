@@ -1,5 +1,13 @@
 # NasMusicUI
 
+[![CI — Self-Hosted](https://github.com/nastech-ai/NasWebUI/actions/workflows/ci-self-hosted.yml/badge.svg)](https://github.com/nastech-ai/NasWebUI/actions/workflows/ci-self-hosted.yml)
+[![Tests](https://github.com/nastech-ai/NasWebUI/actions/workflows/tests.yml/badge.svg)](https://github.com/nastech-ai/NasWebUI/actions/workflows/tests.yml)
+[![Browser Smoke](https://github.com/nastech-ai/NasWebUI/actions/workflows/browser-smoke.yml/badge.svg)](https://github.com/nastech-ai/NasWebUI/actions/workflows/browser-smoke.yml)
+[![Docker Smoke](https://github.com/nastech-ai/NasWebUI/actions/workflows/docker-smoke.yml/badge.svg)](https://github.com/nastech-ai/NasWebUI/actions/workflows/docker-smoke.yml)
+[![Windows Startup](https://github.com/nastech-ai/NasWebUI/actions/workflows/native-windows-startup.yml/badge.svg)](https://github.com/nastech-ai/NasWebUI/actions/workflows/native-windows-startup.yml)
+[![Release](https://github.com/nastech-ai/NasWebUI/actions/workflows/release.yml/badge.svg)](https://github.com/nastech-ai/NasWebUI/actions/workflows/release.yml)
+
+
 <p align="center">
   <img src="static/NasBanner.png" alt="NasMusicUI" width="360"/>
 </p>
