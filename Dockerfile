@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-LABEL maintainer="nesquena"
+LABEL maintainer="nastech-ai"
 LABEL description="NasMusicUI Web UI — browser interface for NasMusicUI Agent"
 
 # Install system packages

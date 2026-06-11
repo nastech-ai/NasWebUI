@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Need history so the gate can diff against the merge-base with master.
+          # Need history so the gate can diff against the merge-base with main.
           fetch-depth: 0
 
       - name: Set up Python

@@ -81,7 +81,7 @@ services:
       - nastech-net
 
   nasmusicui:
-    image: ghcr.io/nesquena/nasmusicui:latest
+    image: ghcr.io/nastech-ai/nasmusicui:latest
     container_name: nasmusicui
     depends_on:
       - NasTech-Agent
