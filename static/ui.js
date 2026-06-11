@@ -4914,6 +4914,10 @@ function speakMessage(btn){
     _playEdgeTtsChunked(clean, btn);
     return;
   }
+  if(engine==='elevenlabs'){
+    _playElevenLabsTts(clean, btn);
+    return;
+  }
 
   if(!('speechSynthesis' in window)){
     showToast(t('tts_not_supported')||'Speech synthesis not supported in this browser.');
@@ -4931,6 +4935,54 @@ function speakMessage(btn){
   speechSynthesis.speak(utter);
 }
 
+let _playingElevenLabsAudio=null;
+
+function _playElevenLabsTts(text, btn){
+  const apiKey=localStorage.getItem('nastech-elevenlabs-key')||'';
+  if(!apiKey){
+    showToast('ElevenLabs: No API key set. Go to Settings → Voice/TTS to add your key.');
+    if(btn) btn.dataset.speaking='0';
+    return;
+  }
+  const voice=localStorage.getItem('nastech-tts-voice')||'21m00Tcm4TlvDq8ikWAM';
+  const chunks=_splitForTTS(text, 400);
+  _ttsSpeaking=true;
+  _ttsActiveBtn=btn;
+  if(btn) btn.dataset.speaking='1';
+  const _playOne=function(idx){
+    if(!_ttsSpeaking||idx>=chunks.length){
+      _ttsSpeaking=false;_playingElevenLabsAudio=null;
+      if(btn) btn.dataset.speaking='0';
+      return;
+    }
+    const chunk=chunks[idx];
+    fetch('https://api.elevenlabs.io/v1/text-to-speech/'+encodeURIComponent(voice)+'/stream',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','xi-api-key':apiKey,'Accept':'audio/mpeg'},
+      body:JSON.stringify({text:chunk,model_id:'eleven_monolingual_v1',voice_settings:{stability:0.5,similarity_boost:0.75}})
+    })
+    .then(function(r){
+      if(!r.ok) throw new Error('ElevenLabs '+r.status);
+      return r.blob();
+    })
+    .then(function(blob){
+      if(!_ttsSpeaking) return;
+      const url=URL.createObjectURL(blob);
+      const audio=new Audio(url);
+      _playingElevenLabsAudio=audio;
+      audio.onended=function(){URL.revokeObjectURL(url);_playingElevenLabsAudio=null;if(_ttsSpeaking) _playOne(idx+1);};
+      audio.onerror=function(){URL.revokeObjectURL(url);_playingElevenLabsAudio=null;_ttsSpeaking=false;if(btn) btn.dataset.speaking='0';};
+      audio.play().catch(function(e){URL.revokeObjectURL(url);_playingElevenLabsAudio=null;_ttsSpeaking=false;if(btn) btn.dataset.speaking='0';if(typeof showToast==='function') showToast('ElevenLabs play error: '+(e&&e.message||e));});
+    })
+    .catch(function(e){
+      _ttsSpeaking=false;_playingElevenLabsAudio=null;
+      if(btn) btn.dataset.speaking='0';
+      if(typeof showToast==='function') showToast('ElevenLabs error: '+(e&&e.message||e));
+    });
+  };
+  _playOne(0);
+}
+
 function stopTTS(){
   if('speechSynthesis' in window){
     speechSynthesis.cancel();
@@ -4939,6 +4991,11 @@ function stopTTS(){
   if(_playingEdgeAudio){
     try{ _playingEdgeAudio.pause(); _playingEdgeAudio.currentTime=0; }catch(_){}
     _playingEdgeAudio=null;
+  }
+  // Stop ElevenLabs audio
+  if(_playingElevenLabsAudio){
+    try{ _playingElevenLabsAudio.pause(); _playingElevenLabsAudio.currentTime=0; }catch(_){}
+    _playingElevenLabsAudio=null;
   }
   _ttsSpeaking=false;
   _ttsCurrentUtterance=null;
@@ -4964,6 +5021,10 @@ function autoReadLastAssistant(){
   if(!clean) return;
   if(engine==='edge'){
     _playEdgeTtsChunked(clean, null);
+    return;
+  }
+  if(engine==='elevenlabs'){
+    _playElevenLabsTts(clean, null);
     return;
   }
   // Use chunked playback for browser TTS
@@ -11760,3 +11821,269 @@ async function uploadPendingFiles(){
     }
   })();
   
+// ═══════════════════════════════════════════════════════════════════
+// NasMusicUI Extras: Cloudflare Tunnel UI + Link Preview + Composer
+// ═══════════════════════════════════════════════════════════════════
+
+// ── Cloudflare Tunnel ──
+let _cfTunnelActive = false;
+let _cfPollTimer = null;
+
+function openCfTunnel() {
+  const overlay = document.getElementById('cfTunnelOverlay');
+  if (overlay) overlay.classList.add('open');
+  _cfPollStatus();
+}
+function closeCfTunnel() {
+  const overlay = document.getElementById('cfTunnelOverlay');
+  if (overlay) overlay.classList.remove('open');
+  clearInterval(_cfPollTimer);
+  _cfPollTimer = null;
+}
+function _cfSetStatus(running, url, loading) {
+  const dot = document.getElementById('cfStatusDot');
+  const txt = document.getElementById('cfStatusText');
+  const urlBox = document.getElementById('cfUrlBox');
+  const startBtn = document.getElementById('cfStartBtn');
+  const stopBtn = document.getElementById('cfStopBtn');
+  const copyBtn = document.getElementById('cfCopyBtn');
+  if (!dot) return;
+  dot.className = 'cf-status-dot' + (loading ? ' loading' : running ? ' active' : '');
+  if (txt) txt.textContent = loading ? 'Starting…' : running ? 'Active' : 'Not running';
+  if (urlBox) urlBox.textContent = url || '—';
+  if (startBtn) startBtn.style.display = running || loading ? 'none' : '';
+  if (stopBtn) stopBtn.style.display = running ? '' : 'none';
+  if (copyBtn) copyBtn.style.display = running && url ? '' : 'none';
+  const makePublicBtn = document.getElementById('btnMakePublic');
+  if (makePublicBtn) makePublicBtn.style.color = running ? 'var(--accent-text)' : '';
+}
+function _cfPollStatus() {
+  fetch('api/tunnel/status')
+    .then(r => r.json())
+    .then(d => {
+      _cfTunnelActive = d.running;
+      _cfSetStatus(d.running, d.url, false);
+      if (d.log && d.log.length) {
+        const logEl = document.getElementById('cfLog');
+        if (logEl) { logEl.textContent = d.log.join('\n'); logEl.classList.add('visible'); logEl.scrollTop = logEl.scrollHeight; }
+      }
+    })
+    .catch(() => {});
+}
+function cfTunnelStart() {
+  _cfSetStatus(false, '', true);
+  const startBtn = document.getElementById('cfStartBtn');
+  if (startBtn) startBtn.disabled = true;
+  fetch('api/tunnel/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+    .then(r => r.json())
+    .then(d => {
+      if (startBtn) startBtn.disabled = false;
+      _cfSetStatus(d.ok && !!d.url, d.url || '', false);
+      if (!d.url) {
+        // Keep polling for URL
+        if (!_cfPollTimer) _cfPollTimer = setInterval(_cfPollStatus, 2000);
+      }
+    })
+    .catch(() => { if (startBtn) startBtn.disabled = false; _cfSetStatus(false, '', false); });
+}
+function cfTunnelStop() {
+  fetch('api/tunnel/stop', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+    .then(r => r.json())
+    .then(() => { _cfTunnelActive = false; _cfSetStatus(false, '', false); clearInterval(_cfPollTimer); _cfPollTimer = null; })
+    .catch(() => {});
+}
+function cfCopyUrl() {
+  const urlBox = document.getElementById('cfUrlBox');
+  const url = urlBox && urlBox.textContent !== '—' ? urlBox.textContent.trim() : '';
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(() => {
+    if (typeof showToast === 'function') showToast('Tunnel URL copied!');
+  });
+}
+
+// ── Link Preview Cards ──
+const _linkPreviewCache = {};
+
+function _fetchLinkPreview(url) {
+  if (_linkPreviewCache[url]) return Promise.resolve(_linkPreviewCache[url]);
+  return fetch('api/link-preview', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url })
+  })
+  .then(r => r.json())
+  .then(d => { _linkPreviewCache[url] = d; return d; })
+  .catch(() => null);
+}
+
+function _isYouTubeUrl(url) {
+  return /(?:youtube\.com\/watch|youtu\.be\/|youtube\.com\/embed\/)/.test(url);
+}
+function _getYouTubeId(url) {
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+function _isVideoUrl(url) {
+  return /\.(mp4|webm|ogg|ogv)(\?|$)/i.test(url);
+}
+function _isAudioUrl(url) {
+  return /\.(mp3|wav|ogg|flac|aac|m4a)(\?|$)/i.test(url);
+}
+
+function renderLinkPreviews(container) {
+  if (!container) return;
+  // Find all plain <a> links not already inside a preview or media player
+  const links = Array.from(container.querySelectorAll('a[href]')).filter(a => {
+    const url = a.href;
+    if (!url.startsWith('http')) return false;
+    if (a.closest('.link-preview-card,.nas-video-embed,.nas-video-embed-thumb,.msg-media-player')) return false;
+    if (a.dataset.previewDone) return false;
+    a.dataset.previewDone = '1';
+    return true;
+  });
+  links.forEach(a => {
+    const url = a.href;
+    // YouTube: embed player on click
+    if (_isYouTubeUrl(url)) {
+      const vid = _getYouTubeId(url);
+      if (vid) {
+        const wrap = document.createElement('div');
+        wrap.className = 'nas-video-embed-thumb';
+        wrap.style.maxWidth = '480px';
+        wrap.style.marginTop = '8px';
+        wrap.innerHTML = `<img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="YouTube video" loading="lazy">
+          <div class="nas-video-play-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,0.6)"/><polygon points="10,8 18,12 10,16" fill="white"/></svg>
+          </div>`;
+        wrap.onclick = function() {
+          const iframe = document.createElement('div');
+          iframe.className = 'nas-video-embed';
+          iframe.style.maxWidth = '480px';
+          iframe.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>`;
+          wrap.replaceWith(iframe);
+        };
+        a.insertAdjacentElement('afterend', wrap);
+        return;
+      }
+    }
+    // Direct video file
+    if (_isVideoUrl(url)) {
+      const el = document.createElement('video');
+      el.className = 'nas-video-embed';
+      el.src = url;
+      el.controls = true;
+      el.preload = 'metadata';
+      el.style.maxWidth = '480px';
+      a.insertAdjacentElement('afterend', el);
+      return;
+    }
+    // Direct audio file
+    if (_isAudioUrl(url)) {
+      const el = document.createElement('audio');
+      el.src = url;
+      el.controls = true;
+      el.preload = 'metadata';
+      el.style.display = 'block';
+      el.style.marginTop = '6px';
+      a.insertAdjacentElement('afterend', el);
+      return;
+    }
+    // Generic link preview card (async)
+    const card = document.createElement('a');
+    card.href = url;
+    card.target = '_blank';
+    card.rel = 'noopener';
+    card.className = 'link-preview-card loading';
+    card.textContent = 'Loading preview…';
+    a.insertAdjacentElement('afterend', card);
+    _fetchLinkPreview(url).then(data => {
+      if (!data || data.error || !data.title) {
+        card.remove();
+        return;
+      }
+      card.className = 'link-preview-card';
+      let imgHtml = data.image ? `<img class="link-preview-img" src="${data.image}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
+      card.innerHTML = `${imgHtml}<div class="link-preview-body">
+        ${data.site_name ? `<div class="link-preview-site">${data.site_name}</div>` : ''}
+        <div class="link-preview-title">${data.title}</div>
+        ${data.description ? `<div class="link-preview-desc">${data.description}</div>` : ''}
+      </div>`;
+    }).catch(() => card.remove());
+  });
+}
+
+// ── Composer typing animation (shrinks to text+send when typing) ──
+(function() {
+  let _typingTimer = null;
+  let _composerTyping = false;
+
+  function _setComposerTyping(on) {
+    if (_composerTyping === on) return;
+    _composerTyping = on;
+    const box = document.getElementById('composerBox');
+    const wrap = document.getElementById('composerWrap');
+    if (box) box.classList.toggle('composer-is-typing', on);
+    if (wrap) wrap.classList.toggle('composer-is-typing', on);
+  }
+
+  function _onComposerInput() {
+    const ta = document.getElementById('msg');
+    const hasContent = ta && ta.value.trim().length > 0;
+    if (hasContent) {
+      _setComposerTyping(true);
+      clearTimeout(_typingTimer);
+    } else {
+      clearTimeout(_typingTimer);
+      _typingTimer = setTimeout(() => _setComposerTyping(false), 400);
+    }
+  }
+
+  function _attachComposerEvents() {
+    const ta = document.getElementById('msg');
+    if (!ta || ta.__nasTypingBound) return;
+    ta.__nasTypingBound = true;
+    ta.addEventListener('input', _onComposerInput, { passive: true });
+    ta.addEventListener('keydown', _onComposerInput, { passive: true });
+    ta.addEventListener('blur', () => {
+      clearTimeout(_typingTimer);
+      _typingTimer = setTimeout(() => _setComposerTyping(false), 800);
+    }, { passive: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _attachComposerEvents);
+  } else {
+    _attachComposerEvents();
+  }
+  // Also try after a short delay in case textarea isn't mounted yet
+  setTimeout(_attachComposerEvents, 500);
+})();
+
+// ── Auto-run link previews after message render ──
+(function() {
+  const _origRenderOrUpdate = window._renderOrUpdate;
+  if (typeof MutationObserver !== 'undefined') {
+    const obs = new MutationObserver(function(muts) {
+      muts.forEach(function(m) {
+        m.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1) {
+            if (node.classList && (node.classList.contains('msg-row') || node.classList.contains('msg-body'))) {
+              setTimeout(() => renderLinkPreviews(node), 100);
+            }
+            const bodies = node.querySelectorAll && node.querySelectorAll('.msg-body');
+            if (bodies && bodies.length) bodies.forEach(b => setTimeout(() => renderLinkPreviews(b), 100));
+          }
+        });
+      });
+    });
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        const msgs = document.getElementById('messages');
+        if (msgs) obs.observe(msgs, { childList: true, subtree: true });
+      });
+    } else {
+      const msgs = document.getElementById('messages');
+      if (msgs) obs.observe(msgs, { childList: true, subtree: true });
+    }
+  }
+})();

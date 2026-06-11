@@ -6706,14 +6706,134 @@ async function loadSettingsPanel(){
     }
     // TTS engine selector
     const ttsEngineSel=$('settingsTtsEngine');
+    const elKeyField=$('settingsElevenLabsKeyField');
+    const elKeyInput=$('settingsElevenLabsKey');
+    function _syncElevenLabsKeyVisibility(){
+      const eng=localStorage.getItem('nastech-tts-engine')||'browser';
+      if(elKeyField) elKeyField.style.display=eng==='elevenlabs'?'':'none';
+    }
     if(ttsEngineSel){
       const saved=localStorage.getItem('nastech-tts-engine')||'browser';
       ttsEngineSel.value=saved;
+      _syncElevenLabsKeyVisibility();
       ttsEngineSel.onchange=function(){
         localStorage.setItem('nastech-tts-engine',this.value);
+        _syncElevenLabsKeyVisibility();
         window._populateTtsVoices();
       };
     }
+    if(elKeyInput){
+      const savedKey=localStorage.getItem('nastech-elevenlabs-key')||'';
+      elKeyInput.value=savedKey;
+      elKeyInput.oninput=function(){localStorage.setItem('nastech-elevenlabs-key',this.value.trim());};
+    }
+    // Full Edge TTS voice catalogue (grouped)
+    const _EDGE_VOICES=[
+      // ── Mandarin Chinese (zh-CN) ──
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaoxiaoNeural',label:'Xiaoxiao — 晓晓 (Female, warm)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaoyiNeural',label:'Xiaoyi — 晓伊 (Female, lively)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaohanNeural',label:'Xiaohan — 晓涵 (Female, calm)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaomengNeural',label:'Xiaomeng — 晓梦 (Female, sweet)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaomoNeural',label:'Xiaomo — 晓墨 (Female, gentle)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaoqiuNeural',label:'Xiaoqiu — 晓秋 (Female, news)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaorouNeural',label:'Xiaorou — 晓柔 (Female, soft)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaoshuangNeural',label:'Xiaoshuang — 晓双 (Female, child)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaoxuanNeural',label:'Xiaoxuan — 晓萱 (Female, elegant)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaoyanNeural',label:'Xiaoyan — 晓颜 (Female, friendly)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-XiaozhenNeural',label:'Xiaozhen — 晓甄 (Female, serious)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunxiNeural',label:'Yunxi — 云希 (Male, lively)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunjianNeural',label:'Yunjian — 云健 (Male, sports)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunyangNeural',label:'Yunyang — 云扬 (Male, news)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunfengNeural',label:'Yunfeng — 云枫 (Male, serious)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunhaoNeural',label:'Yunhao — 云皓 (Male, novel)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunjieNeural',label:'Yunjie — 云杰 (Male, vigorous)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunxiaNeural',label:'Yunxia — 云夏 (Male, calm)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunyeNeural',label:'Yunye — 云野 (Male, novel)'},
+      {g:'Chinese (Mainland)',value:'zh-CN-YunzeNeural',label:'Yunze — 云泽 (Male, old-master)'},
+      // ── Cantonese / Hong Kong ──
+      {g:'Chinese (Hong Kong)',value:'zh-HK-HiuGaaiNeural',label:'HiuGaai (Female, expressive)'},
+      {g:'Chinese (Hong Kong)',value:'zh-HK-HiuMaanNeural',label:'HiuMaan (Female, calm)'},
+      {g:'Chinese (Hong Kong)',value:'zh-HK-WanLungNeural',label:'WanLung (Male)'},
+      // ── Taiwanese Mandarin ──
+      {g:'Chinese (Taiwan)',value:'zh-TW-HsiaoChenNeural',label:'HsiaoChen (Female)'},
+      {g:'Chinese (Taiwan)',value:'zh-TW-HsiaoYuNeural',label:'HsiaoYu (Female, friendly)'},
+      {g:'Chinese (Taiwan)',value:'zh-TW-YunJheNeural',label:'YunJhe (Male)'},
+      // ── British English ──
+      {g:'English (UK)',value:'en-GB-SoniaNeural',label:'Sonia (Female)'},
+      {g:'English (UK)',value:'en-GB-RyanNeural',label:'Ryan (Male)'},
+      {g:'English (UK)',value:'en-GB-LibbyNeural',label:'Libby (Female, friendly)'},
+      {g:'English (UK)',value:'en-GB-AbbiNeural',label:'Abbi (Female)'},
+      {g:'English (UK)',value:'en-GB-AlfieNeural',label:'Alfie (Male)'},
+      {g:'English (UK)',value:'en-GB-BellaNeural',label:'Bella (Female)'},
+      {g:'English (UK)',value:'en-GB-ElliotNeural',label:'Elliot (Male)'},
+      {g:'English (UK)',value:'en-GB-EthanNeural',label:'Ethan (Male)'},
+      {g:'English (UK)',value:'en-GB-HollieNeural',label:'Hollie (Female)'},
+      {g:'English (UK)',value:'en-GB-MaisieNeural',label:'Maisie (Female, child)'},
+      {g:'English (UK)',value:'en-GB-NoahNeural',label:'Noah (Male)'},
+      {g:'English (UK)',value:'en-GB-OliverNeural',label:'Oliver (Male)'},
+      {g:'English (UK)',value:'en-GB-OliviaNeural',label:'Olivia (Female)'},
+      {g:'English (UK)',value:'en-GB-ThomasNeural',label:'Thomas (Male)'},
+      // ── Australian English ──
+      {g:'English (Australia)',value:'en-AU-NatashaNeural',label:'Natasha (Female)'},
+      {g:'English (Australia)',value:'en-AU-WilliamNeural',label:'William (Male)'},
+      {g:'English (Australia)',value:'en-AU-AnnetteNeural',label:'Annette (Female)'},
+      {g:'English (Australia)',value:'en-AU-CarlyNeural',label:'Carly (Female)'},
+      {g:'English (Australia)',value:'en-AU-DarrenNeural',label:'Darren (Male)'},
+      {g:'English (Australia)',value:'en-AU-DuncanNeural',label:'Duncan (Male)'},
+      {g:'English (Australia)',value:'en-AU-ElsieNeural',label:'Elsie (Female)'},
+      {g:'English (Australia)',value:'en-AU-FreyaNeural',label:'Freya (Female)'},
+      {g:'English (Australia)',value:'en-AU-JoanneNeural',label:'Joanne (Female)'},
+      {g:'English (Australia)',value:'en-AU-KimNeural',label:'Kim (Female)'},
+      {g:'English (Australia)',value:'en-AU-NeilNeural',label:'Neil (Male)'},
+      {g:'English (Australia)',value:'en-AU-TimNeural',label:'Tim (Male)'},
+      {g:'English (Australia)',value:'en-AU-TinaNeural',label:'Tina (Female)'},
+      // ── African English ──
+      {g:'English (Africa)',value:'en-ZA-LeahNeural',label:'Leah (Female, South Africa)'},
+      {g:'English (Africa)',value:'en-ZA-LukeNeural',label:'Luke (Male, South Africa)'},
+      {g:'English (Africa)',value:'en-NG-AbeoNeural',label:'Abeo (Male, Nigeria)'},
+      {g:'English (Africa)',value:'en-NG-EzinneNeural',label:'Ezinne (Female, Nigeria)'},
+      {g:'English (Africa)',value:'en-KE-AsiliaNeural',label:'Asilia (Female, Kenya)'},
+      {g:'English (Africa)',value:'en-KE-ChilembaNeural',label:'Chilemba (Male, Kenya)'},
+      {g:'English (Africa)',value:'en-TZ-ElimuNeural',label:'Elimu (Male, Tanzania)'},
+      {g:'English (Africa)',value:'en-TZ-ImaniNeural',label:'Imani (Female, Tanzania)'},
+      {g:'English (Africa)',value:'en-GH-AbaNeural',label:'Aba (Female, Ghana)'},
+      {g:'English (Africa)',value:'en-GH-KwameNeural',label:'Kwame (Male, Ghana)'},
+      // ── US English ──
+      {g:'English (US)',value:'en-US-AriaNeural',label:'Aria (Female)'},
+      {g:'English (US)',value:'en-US-JennyNeural',label:'Jenny (Female, assistant)'},
+      {g:'English (US)',value:'en-US-GuyNeural',label:'Guy (Male)'},
+      {g:'English (US)',value:'en-US-AmberNeural',label:'Amber (Female)'},
+      {g:'English (US)',value:'en-US-AnaNeural',label:'Ana (Female, child)'},
+      {g:'English (US)',value:'en-US-AshleyNeural',label:'Ashley (Female)'},
+      {g:'English (US)',value:'en-US-BrandonNeural',label:'Brandon (Male)'},
+      {g:'English (US)',value:'en-US-ChristopherNeural',label:'Christopher (Male)'},
+      {g:'English (US)',value:'en-US-CoraNeural',label:'Cora (Female)'},
+      {g:'English (US)',value:'en-US-DavisNeural',label:'Davis (Male)'},
+      {g:'English (US)',value:'en-US-ElizabethNeural',label:'Elizabeth (Female)'},
+      {g:'English (US)',value:'en-US-EricNeural',label:'Eric (Male)'},
+      {g:'English (US)',value:'en-US-JacobNeural',label:'Jacob (Male)'},
+      {g:'English (US)',value:'en-US-JaneNeural',label:'Jane (Female)'},
+      {g:'English (US)',value:'en-US-JasonNeural',label:'Jason (Male)'},
+      {g:'English (US)',value:'en-US-MichelleNeural',label:'Michelle (Female)'},
+      {g:'English (US)',value:'en-US-MonicaNeural',label:'Monica (Female)'},
+      {g:'English (US)',value:'en-US-NancyNeural',label:'Nancy (Female)'},
+      {g:'English (US)',value:'en-US-RogerNeural',label:'Roger (Male)'},
+      {g:'English (US)',value:'en-US-SaraNeural',label:'Sara (Female)'},
+      {g:'English (US)',value:'en-US-SteffanNeural',label:'Steffan (Male)'},
+      {g:'English (US)',value:'en-US-TonyNeural',label:'Tony (Male)'},
+    ];
+    // ElevenLabs built-in voices
+    const _ELEVEN_VOICES=[
+      {value:'21m00Tcm4TlvDq8ikWAM',label:'Rachel — calm, female'},
+      {value:'AZnzlk1XvdvUeBnXmlld',label:'Domi — strong, female'},
+      {value:'EXAVITQu4vr4xnSDxMaL',label:'Bella — soft, female'},
+      {value:'ErXwobaYiN019PkySvjV',label:'Antoni — well-rounded, male'},
+      {value:'MF3mGyEYCl7XYWbV9V6O',label:'Elli — emotional, female'},
+      {value:'TxGEqnHWrfWFTfGW9XjX',label:'Josh — deep, male'},
+      {value:'VR6AewLTigWG4xSOukaG',label:'Arnold — crisp, male'},
+      {value:'pNInz6obpgDQGcFmaJgB',label:'Adam — deep narrator, male'},
+      {value:'yoZ06aMxZJJ28mfd3POQ',label:'Sam — raspy, male'},
+    ];
     // Populate voice selector based on engine
     const ttsVoiceSel=$('settingsTtsVoice');
     window._populateTtsVoices=function(){
@@ -6721,17 +6841,23 @@ async function loadSettingsPanel(){
       const engine=localStorage.getItem('nastech-tts-engine')||'browser';
       const current=localStorage.getItem('nastech-tts-voice')||'';
       if(engine==='edge'){
-        const edgeVoices=[
-          {value:'zh-CN-XiaoxiaoNeural',label:'Xiaoxiao (Chinese, Female)'},
-          {value:'zh-CN-XiaoyiNeural',label:'Xiaoyi (Chinese, Female)'},
-          {value:'zh-CN-YunxiNeural',label:'Yunxi (Chinese, Male)'},
-          {value:'zh-CN-YunjianNeural',label:'Yunjian (Chinese, Male)'},
-          {value:'zh-CN-YunyangNeural',label:'Yunyang (Chinese, Male)'},
-          {value:'en-US-AriaNeural',label:'Aria (English, Female)'},
-          {value:'en-US-GuyNeural',label:'Guy (English, Male)'},
-        ];
         ttsVoiceSel.innerHTML='<option value="">Default (Xiaoxiao)</option>';
-        edgeVoices.forEach(v=>{
+        const groups={};
+        _EDGE_VOICES.forEach(v=>{if(!groups[v.g]) groups[v.g]=[];groups[v.g].push(v);});
+        Object.keys(groups).forEach(gName=>{
+          const og=document.createElement('optgroup');
+          og.label=gName;
+          groups[gName].forEach(v=>{
+            const opt=document.createElement('option');
+            opt.value=v.value;opt.textContent=v.label;
+            if(v.value===current) opt.selected=true;
+            og.appendChild(opt);
+          });
+          ttsVoiceSel.appendChild(og);
+        });
+      } else if(engine==='elevenlabs'){
+        ttsVoiceSel.innerHTML='<option value="">Default (Rachel)</option>';
+        _ELEVEN_VOICES.forEach(v=>{
           const opt=document.createElement('option');
           opt.value=v.value;opt.textContent=v.label;
           if(v.value===current) opt.selected=true;
@@ -6744,7 +6870,7 @@ async function loadSettingsPanel(){
         }
         const voices=speechSynthesis.getVoices();
         ttsVoiceSel.innerHTML='<option value="">Default system voice</option>';
-        voices.forEach(v=>{
+        voices.sort((a,b)=>a.name.localeCompare(b.name)).forEach(v=>{
           const opt=document.createElement('option');
           opt.value=v.name;opt.textContent=v.name+(v.lang?' ('+v.lang+')':'');
           if(v.name===current) opt.selected=true;
@@ -6752,12 +6878,14 @@ async function loadSettingsPanel(){
         });
       }
     };
-    if(ttsVoiceSel&&'speechSynthesis' in window){
+    if(ttsVoiceSel){
       window._populateTtsVoices();
-      speechSynthesis.addEventListener('voiceschanged',function(){
-        const engine=localStorage.getItem('nastech-tts-engine')||'browser';
-        if(engine==='browser') window._populateTtsVoices();
-      },{once:false});
+      if('speechSynthesis' in window){
+        speechSynthesis.addEventListener('voiceschanged',function(){
+          const engine=localStorage.getItem('nastech-tts-engine')||'browser';
+          if(engine==='browser') window._populateTtsVoices();
+        },{once:false});
+      }
       ttsVoiceSel.onchange=function(){localStorage.setItem('nastech-tts-voice',this.value);};
     }
     // TTS rate/pitch sliders

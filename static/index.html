@@ -122,7 +122,7 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <div class="app-titlebar-inner">
-    <span class="app-titlebar-icon" aria-hidden="true"><img src="static/NasBanner.png" alt="NasMusicUI" style="height:24px;width:auto;object-fit:contain;vertical-align:middle"></span>
+    <span class="app-titlebar-icon" aria-hidden="true"><img src="static/NasBanner.png" alt="NasMusicUI" style="height:34px;width:auto;object-fit:contain;vertical-align:middle;animation:nasLogoFadeIn .6s ease both"></span>
     <span class="app-titlebar-sub" id="appTitlebarSub" hidden></span>
   </div>
   <div class="app-titlebar-spacer" aria-hidden="true"></div>
@@ -153,6 +153,9 @@
     <button class="rail-btn nav-tab dashboard-link has-tooltip" id="dashboardRailBtn" data-dashboard-link style="display:none" onclick="openNasMusicUIDashboard(event)" data-tooltip="NasMusicUI Dashboard" data-i18n-title="tab_dashboard" aria-label="NasMusicUI Dashboard"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg><span class="dashboard-external-badge" aria-hidden="true"></span></button>
     <button class="rail-btn nav-tab has-tooltip" data-panel="logs" onclick="switchPanel('logs',{fromRailClick:true})" data-tooltip="Logs" data-i18n-title="tab_logs" aria-label="Logs"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h2"/></svg></button>
     <div class="rail-spacer"></div>
+    <button class="rail-btn has-tooltip" id="btnMakePublic" onclick="openCfTunnel()" data-tooltip="Make Public (Cloudflare Tunnel)" aria-label="Make Public" title="Make Public">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    </button>
     <button class="rail-btn nav-tab has-tooltip" data-panel="settings" onclick="switchPanel('settings',{fromRailClick:true})" data-tooltip="Settings" data-i18n-title="tab_settings" aria-label="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </nav>
   <aside class="sidebar">
@@ -391,7 +394,7 @@
       <button id="scrollToBottomBtn" class="scroll-to-bottom-btn" style="display:none" onclick="scrollToBottom()" aria-label="Scroll to bottom" data-i18n-aria-label="session_jump_end_label" data-i18n-title="session_jump_end_label"><span aria-hidden="true">↓</span><span class="session-jump-btn__text" data-i18n="session_jump_end">End</span></button>
     <div class="messages" id="messages">
       <div class="empty-state" id="emptyState">
-        <div class="empty-logo"><img src="static/NasBanner.png" alt="NasMusicUI" style="width:220px;height:auto;object-fit:contain;filter:drop-shadow(0 0 18px rgba(0,0,0,0.5))"></div>
+        <div class="empty-logo"><img src="static/NasBanner.png" alt="NasMusicUI" class="nas-hero-logo" style="width:320px;height:auto;object-fit:contain;filter:drop-shadow(0 0 18px rgba(0,0,0,0.5));animation:nasLogoFadeIn .7s ease both,nasLogoPulse 4s ease-in-out 0.7s infinite"></div>
         <h2 data-i18n="empty_title">What can I help with?</h2>
         <p data-i18n="empty_subtitle">Ask anything, run commands, explore files, or manage your scheduled tasks.</p>
         <div class="suggestion-grid">
@@ -1072,11 +1075,25 @@
               <div style="font-size:11px;color:var(--muted);margin-top:4px" data-i18n="settings_desc_raw_audio">Record and send the original audio file to the agent instead of converting it to text first. The agent can then transcribe it or process the raw audio (emotion, background noise, custom STT). Like Telegram's voice message behavior.</div>
             </div>
             <div class="settings-field">
-              <label for="settingsTtsEngine" data-i18n="settings_label_tts_engine">TTS Engine</label><select id="settingsTtsEngine" style="width:100%;padding:8px;background:var(--code-bg);color:var(--text);border:1px solid var(--border2);border-radius:6px"><option value="browser">Browser speech synthesis</option><option value="edge">Edge TTS (server)</option></select><div style="font-size:11px;color:var(--muted);margin-top:4px" data-i18n="settings_desc_tts_engine">Choose speech engine. Edge TTS uses Microsoft neural voices via the server.</div></div><div class="settings-field"><label for="settingsTtsVoice" data-i18n="settings_label_tts_voice">Voice</label>
+              <label for="settingsTtsEngine" data-i18n="settings_label_tts_engine">TTS Engine</label>
+              <select id="settingsTtsEngine" style="width:100%;padding:8px;background:var(--code-bg);color:var(--text);border:1px solid var(--border2);border-radius:6px">
+                <option value="browser">Browser speech synthesis</option>
+                <option value="edge">Edge TTS — Microsoft Neural (server)</option>
+                <option value="elevenlabs">ElevenLabs (API key required)</option>
+              </select>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Choose speech engine. Edge TTS uses Microsoft neural voices via the server. ElevenLabs requires your API key below.</div>
+            </div>
+            <div class="settings-field" id="settingsElevenLabsKeyField" style="display:none">
+              <label for="settingsElevenLabsKey">ElevenLabs API Key</label>
+              <input type="password" id="settingsElevenLabsKey" placeholder="sk_..." autocomplete="off" style="width:100%;padding:8px;background:var(--code-bg);color:var(--text);border:1px solid var(--border2);border-radius:6px;font-size:13px">
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Your key is stored only in this browser (localStorage). It is never sent to the NasMusicUI server — requests go directly to ElevenLabs.</div>
+            </div>
+            <div class="settings-field">
+              <label for="settingsTtsVoice" data-i18n="settings_label_tts_voice">Voice</label>
               <select id="settingsTtsVoice" style="width:100%;padding:8px;background:var(--code-bg);color:var(--text);border:1px solid var(--border2);border-radius:6px">
                 <option value="">Default system voice</option>
               </select>
-              <div style="font-size:11px;color:var(--muted);margin-top:4px" data-i18n="settings_desc_tts_voice">Preferred voice. Populated from your browser's available voices.</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Preferred voice. For Edge TTS: grouped by language. For Browser: all system voices.</div>
             </div>
             <div class="settings-field">
               <label for="settingsTtsRate" data-i18n="settings_label_tts_rate">Speech rate</label>
@@ -1563,6 +1580,29 @@
     </div>
   </div>
 </div>
+<!-- Cloudflare Tunnel Modal -->
+<div class="cf-modal-overlay" id="cfTunnelOverlay" onclick="if(event.target===this)closeCfTunnel()">
+  <div class="cf-modal">
+    <div class="cf-modal-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Make Public
+    </div>
+    <div class="cf-modal-sub">Creates a free Cloudflare Tunnel so anyone can reach this NasMusicUI from anywhere — no port-forwarding needed. The URL changes each session.</div>
+    <div class="cf-status-row">
+      <div class="cf-status-dot" id="cfStatusDot"></div>
+      <span id="cfStatusText">Not running</span>
+    </div>
+    <div class="cf-url-box" id="cfUrlBox">—</div>
+    <div class="cf-modal-actions">
+      <button class="cf-btn primary" id="cfStartBtn" onclick="cfTunnelStart()">Start Tunnel</button>
+      <button class="cf-btn danger" id="cfStopBtn" onclick="cfTunnelStop()" style="display:none">Stop Tunnel</button>
+      <button class="cf-btn" id="cfCopyBtn" onclick="cfCopyUrl()" style="display:none">Copy URL</button>
+      <button class="cf-btn" onclick="closeCfTunnel()">Close</button>
+    </div>
+    <div class="cf-log" id="cfLog"></div>
+  </div>
+</div>
+
 <!-- Conversation Outline Panel (#2124): floating jump-to-question panel -->
 <button id="outlineToggleBtn" type="button" hidden
   onclick="toggleOutlinePanel()"
@@ -1580,9 +1620,5 @@
   <div id="outlinePanel"></div>
 </div>
 
-    <!-- NasMusicUI branding footer -->
-    <div id="nasmusicui-brand-footer" style="position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:11px;color:var(--muted,#888);padding:4px 0;background:var(--sidebar,#141425);border-top:1px solid var(--border,#2a2a3a);z-index:9000;pointer-events:none;letter-spacing:0.03em;">
-      Powered by <strong style="color:var(--accent,#c0a060)">NasTech AI Agent</strong>
-    </div>
   </body>
 </html>

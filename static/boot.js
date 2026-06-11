@@ -1579,6 +1579,7 @@ const _SKINS=[
   {name:'Zeus',     colors:['#FFD700','#FFBF00','#1A1A00']},
   {name:'Verdigris', value:'verdigris', colors:['#C89A5A','#0F1714','#22342C']},
   {name:'AMOLED', value:'amoled', colors:['#000000','#0A0A0A','#00DCFF']},
+  {name:'Glass iOS', value:'glass-ios', colors:['#6E85FF','#8B9FFF','#A0AEFF']},
 ];
 const _VALID_THEMES=new Set((_THEMES||[]).map(t=>t.value));
 const _VALID_SKINS=new Set((_SKINS||[]).map(s=>(s.value||s.name).toLowerCase()));

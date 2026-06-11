@@ -5526,3 +5526,193 @@ html[data-conversation-outline="enabled"] #outlineToggleBtn:not([hidden]){displa
 @media(max-width:900px){
   #outlineToggleBtn,#outlinePanelWrapper{display:none!important;}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   NasMusicUI Extra: Logo animations, iOS Glass theme, mobile fixes
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Logo animations ── */
+@keyframes nasLogoFadeIn{
+  from{opacity:0;transform:scale(.94) translateY(4px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+@keyframes nasLogoPulse{
+  0%,100%{filter:drop-shadow(0 0 18px rgba(0,0,0,.5));}
+  50%{filter:drop-shadow(0 0 32px rgba(100,160,255,.35)) drop-shadow(0 0 12px rgba(180,120,255,.2));}
+}
+.nas-hero-logo{max-width:min(320px,80vw)!important;width:min(320px,80vw)!important;}
+@media(prefers-reduced-motion:reduce){
+  .nas-hero-logo{animation:none!important;}
+  .app-titlebar-icon img{animation:none!important;}
+}
+
+/* ── iOS Glassmorphism (skin="glass-ios") ── */
+:root[data-skin="glass-ios"]{
+  --bg:rgba(12,12,18,1);
+  --sidebar:rgba(18,18,28,0.88);
+  --surface:rgba(255,255,255,0.055);
+  --code-bg:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.11);
+  --border2:rgba(255,255,255,0.18);
+  --text:#f0f0f5;--strong:#ffffff;--muted:#a0a0b8;--em:#c4c4d8;
+  --accent:#6E85FF;--accent-hover:#8B9FFF;
+  --accent-bg:rgba(110,133,255,0.12);--accent-bg-strong:rgba(110,133,255,0.22);--accent-text:#A0AEFF;
+  --blue:#6E85FF;--gold:#FFD700;
+  --input-bg:rgba(255,255,255,0.06);--hover-bg:rgba(255,255,255,0.07);
+  --focus-ring:rgba(110,133,255,0.4);
+  --error:#FF6B6B;--success:#5EE8A0;--warning:#FFBB55;
+  --surface-subtle:rgba(255,255,255,0.035);
+  --radius-sm:8px;--radius-md:12px;--radius-card:16px;--radius-lg:20px;--radius-pill:999px;
+}
+:root[data-skin="glass-ios"] .sidebar,
+:root[data-skin="glass-ios"] .app-titlebar,
+:root[data-skin="glass-ios"] .composer-wrap,
+:root[data-skin="glass-ios"] .topbar{
+  background:rgba(16,16,26,0.78)!important;
+  backdrop-filter:blur(22px) saturate(1.6);
+  -webkit-backdrop-filter:blur(22px) saturate(1.6);
+  border-color:rgba(255,255,255,0.10)!important;
+}
+:root[data-skin="glass-ios"] .composer-box{
+  background:rgba(255,255,255,0.06)!important;
+  border-color:rgba(255,255,255,0.16)!important;
+  border-radius:20px!important;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 2px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);
+}
+:root[data-skin="glass-ios"] .composer-box:focus-within{
+  border-color:rgba(110,133,255,0.4)!important;
+  box-shadow:0 0 0 1px rgba(110,133,255,.22),0 4px 32px rgba(110,133,255,.14),0 2px 24px rgba(0,0,0,.5)!important;
+}
+:root[data-skin="glass-ios"] .session-item.active{
+  background:rgba(110,133,255,0.12)!important;
+  border-left:2px solid #6E85FF!important;
+  color:#A0AEFF!important;
+  border-radius:10px;
+}
+:root[data-skin="glass-ios"] .msg-row[data-role="assistant"] .msg-body{
+  background:rgba(255,255,255,0.05)!important;
+  border-color:rgba(255,255,255,0.10)!important;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-radius:16px!important;
+}
+:root[data-skin="glass-ios"] .msg-row[data-role="user"] .msg-body{
+  background:rgba(110,133,255,0.15)!important;
+  border-color:rgba(110,133,255,0.3)!important;
+  border-radius:16px!important;
+}
+:root[data-skin="glass-ios"] .app-dialog{
+  background:rgba(20,20,35,0.92)!important;
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border-color:rgba(255,255,255,0.12)!important;
+  border-radius:20px!important;
+}
+:root[data-skin="glass-ios"] .new-chat-btn{
+  background:linear-gradient(135deg,rgba(110,133,255,0.85),rgba(150,110,255,0.85))!important;
+  border-color:rgba(110,133,255,0.5)!important;
+  border-radius:12px!important;
+  backdrop-filter:blur(8px);
+}
+:root[data-skin="glass-ios"] button.send-btn{
+  background:linear-gradient(135deg,rgba(110,133,255,0.9),rgba(150,110,255,0.9))!important;
+  border-color:rgba(110,133,255,0.5)!important;
+  border-radius:12px!important;
+}
+:root[data-skin="glass-ios"] .empty-logo img{filter:drop-shadow(0 0 24px rgba(110,133,255,.45));}
+:root[data-skin="glass-ios"]{scrollbar-color:rgba(110,133,255,.2) transparent;}
+:root[data-skin="glass-ios"]::-webkit-scrollbar-thumb{background:rgba(110,133,255,.18);}
+
+/* ── AMOLED enhancements ── */
+:root.dark[data-skin="amoled"] .app-titlebar{
+  background:#000000!important;
+  border-bottom:1px solid rgba(0,220,255,0.10)!important;
+}
+:root.dark[data-skin="amoled"] .empty-logo img{
+  filter:drop-shadow(0 0 28px rgba(0,220,255,0.5)) drop-shadow(0 0 8px rgba(0,220,255,.2))!important;
+}
+
+/* ── Sidebar: mobile improvements — max-height constraint ── */
+@media(max-width:640px){
+  .sidebar{
+    max-height:100dvh!important;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .sidebar.mobile-open{
+    box-shadow:4px 0 32px rgba(0,0,0,.6)!important;
+    border-right:1px solid var(--border)!important;
+  }
+  .sidebar-mobile-logo img{
+    max-height:28px!important;
+    width:auto!important;
+    object-fit:contain;
+    animation:nasLogoFadeIn .5s ease both;
+  }
+  .empty-state{padding:24px 16px 40px!important;}
+  .nas-hero-logo{max-width:min(240px,72vw)!important;width:min(240px,72vw)!important;}
+  .suggestion-grid{max-width:100%!important;padding:0 4px;}
+  .suggestion{font-size:12px;padding:10px 12px;}
+}
+
+/* ── Link preview card ── */
+.link-preview-card{
+  display:flex;gap:12px;align-items:flex-start;
+  border:1px solid var(--border2);border-radius:12px;
+  overflow:hidden;background:var(--surface);
+  margin:8px 0;max-width:480px;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s;
+  text-decoration:none;color:inherit;
+}
+.link-preview-card:hover{border-color:var(--accent-bg-strong);box-shadow:0 2px 12px rgba(0,0,0,.15);}
+.link-preview-img{flex:0 0 80px;width:80px;height:80px;object-fit:cover;border-radius:0;}
+.link-preview-body{flex:1;min-width:0;padding:10px 12px 10px 0;}
+.link-preview-site{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px;}
+.link-preview-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.link-preview-desc{font-size:11px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.link-preview-card.loading{min-height:60px;align-items:center;justify-content:center;color:var(--muted);font-size:12px;}
+/* YouTube / Video embed */
+.nas-video-embed{position:relative;width:100%;max-width:540px;border-radius:12px;overflow:hidden;background:#000;margin:8px 0;aspect-ratio:16/9;}
+.nas-video-embed iframe,.nas-video-embed video{width:100%;height:100%;border:none;display:block;}
+.nas-video-embed-thumb{position:relative;cursor:pointer;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#000;}
+.nas-video-embed-thumb img{width:100%;height:100%;object-fit:cover;}
+.nas-video-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);transition:background .15s;}
+.nas-video-play-btn:hover{background:rgba(0,0,0,.45);}
+.nas-video-play-btn svg{width:56px;height:56px;color:#fff;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5));}
+
+/* ── Cloudflare tunnel modal ── */
+.cf-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:1200;display:none;align-items:center;justify-content:center;padding:20px;}
+.cf-modal-overlay.open{display:flex;}
+.cf-modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px;max-width:480px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.5);}
+.cf-modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.cf-modal-sub{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+.cf-url-box{background:var(--code-bg);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:13px;font-family:'SF Mono',ui-monospace,monospace;word-break:break-all;color:var(--accent-text);margin-bottom:12px;min-height:32px;}
+.cf-status-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:16px;}
+.cf-status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+.cf-status-dot.active{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.5);}
+.cf-status-dot.loading{background:#f59e0b;animation:pulse 1.2s ease-in-out infinite;}
+.cf-modal-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.cf-btn{padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid var(--border2);background:var(--hover-bg);color:var(--text);cursor:pointer;transition:background .15s;}
+.cf-btn:hover{background:var(--accent-bg);}
+.cf-btn.primary{background:var(--accent-bg-strong);border-color:var(--accent);color:var(--accent-text);}
+.cf-btn.danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#f87171;}
+.cf-log{font-size:10px;font-family:'SF Mono',ui-monospace,monospace;color:var(--muted);background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:6px 8px;max-height:100px;overflow-y:auto;margin-top:10px;white-space:pre-wrap;display:none;}
+.cf-log.visible{display:block;}
+
+/* ── Rail nav rounded ── */
+.rail{border-radius:0 12px 12px 0;}
+.rail-btn{border-radius:10px!important;transition:background .15s,color .15s,transform .1s;}
+.rail-btn:hover{transform:scale(1.08);}
+.rail-btn.active{border-radius:12px!important;}
+
+/* ── Composer typing animation: footer chips collapse when typing ── */
+.composer-box.composer-is-typing .composer-footer{
+  max-height:0;overflow:hidden;opacity:0;padding:0!important;
+  transition:max-height .22s cubic-bezier(.4,0,.2,1),opacity .18s ease,padding .22s ease;
+}
+.composer-box:not(.composer-is-typing) .composer-footer{
+  max-height:120px;opacity:1;
+  transition:max-height .28s cubic-bezier(.4,0,.2,1),opacity .2s ease;
+}
+/* Glass iOS skin: make public button on rail glow when tunnel active */
+#btnMakePublic{transition:color .2s,background .15s;}
+#btnMakePublic:hover{color:var(--accent-text)!important;background:var(--accent-bg);}

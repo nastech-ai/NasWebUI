@@ -7005,6 +7005,9 @@ def handle_get(handler, parsed) -> bool:
                     handler.wfile.write(html_content)
                     return True
 
+    if parsed.path == "/api/tunnel/status":
+        return _handle_tunnel_status(handler, parsed)
+
     return False  # 404
 
 
@@ -7080,6 +7083,18 @@ def handle_post(handler, parsed) -> bool:
 
     if parsed.path == "/api/tts":
         return _handle_tts(handler, parsed)
+
+    if parsed.path == "/api/link-preview":
+        return _handle_link_preview(handler, parsed)
+
+    if parsed.path == "/api/tunnel/start":
+        return _handle_tunnel_start(handler, parsed)
+
+    if parsed.path == "/api/tunnel/stop":
+        return _handle_tunnel_stop(handler, parsed)
+
+    if parsed.path == "/api/tunnel/status":
+        return _handle_tunnel_status(handler, parsed)
 
     if parsed.path == "/api/client-events/log":
         if diag:
@@ -10177,9 +10192,48 @@ def _handle_tts(handler, parsed):
         return _bad(handler, "rate limit exceeded — please wait", 429)
 
     allowed = {
+        # Mandarin Chinese
         "zh-CN-XiaoxiaoNeural", "zh-CN-XiaoyiNeural", "zh-CN-YunxiNeural",
-        "zh-CN-YunjianNeural", "zh-CN-YunyangNeural",
-        "en-US-AriaNeural", "en-US-GuyNeural"
+        "zh-CN-YunjianNeural", "zh-CN-YunyangNeural", "zh-CN-XiaohanNeural",
+        "zh-CN-XiaomengNeural", "zh-CN-XiaomoNeural", "zh-CN-XiaoqiuNeural",
+        "zh-CN-XiaorouNeural", "zh-CN-XiaoshuangNeural", "zh-CN-XiaoxuanNeural",
+        "zh-CN-XiaoyanNeural", "zh-CN-XiaozhenNeural", "zh-CN-YunfengNeural",
+        "zh-CN-YunhaoNeural", "zh-CN-YunjieNeural", "zh-CN-YunxiaNeural",
+        "zh-CN-YunyeNeural", "zh-CN-YunzeNeural",
+        # Cantonese / HK / TW
+        "zh-HK-HiuGaaiNeural", "zh-HK-HiuMaanNeural", "zh-HK-WanLungNeural",
+        "zh-TW-HsiaoChenNeural", "zh-TW-HsiaoYuNeural", "zh-TW-YunJheNeural",
+        # British English
+        "en-GB-SoniaNeural", "en-GB-RyanNeural", "en-GB-LibbyNeural",
+        "en-GB-AbbiNeural", "en-GB-AlfieNeural", "en-GB-BellaNeural",
+        "en-GB-ElliotNeural", "en-GB-EthanNeural", "en-GB-HollieNeural",
+        "en-GB-MaisieNeural", "en-GB-NoahNeural", "en-GB-OliverNeural",
+        "en-GB-OliviaNeural", "en-GB-ThomasNeural",
+        # Australian English
+        "en-AU-NatashaNeural", "en-AU-WilliamNeural", "en-AU-AnnetteNeural",
+        "en-AU-CarlyNeural", "en-AU-DarrenNeural", "en-AU-DuncanNeural",
+        "en-AU-ElsieNeural", "en-AU-FreyaNeural", "en-AU-JoanneNeural",
+        "en-AU-KimNeural", "en-AU-NeilNeural", "en-AU-TimNeural",
+        "en-AU-TinaNeural",
+        # South African English
+        "en-ZA-LeahNeural", "en-ZA-LukeNeural",
+        # Nigerian English
+        "en-NG-AbeoNeural", "en-NG-EzinneNeural",
+        # Kenyan English
+        "en-KE-AsiliaNeural", "en-KE-ChilembaNeural",
+        # Tanzanian English
+        "en-TZ-ElimuNeural", "en-TZ-ImaniNeural",
+        # Ghanaian English
+        "en-GH-AbaNeural", "en-GH-KwameNeural",
+        # US English
+        "en-US-AriaNeural", "en-US-GuyNeural", "en-US-JennyNeural",
+        "en-US-AmberNeural", "en-US-AnaNeural", "en-US-AshleyNeural",
+        "en-US-BrandonNeural", "en-US-ChristopherNeural", "en-US-CoraNeural",
+        "en-US-DavisNeural", "en-US-ElizabethNeural", "en-US-EricNeural",
+        "en-US-JacobNeural", "en-US-JaneNeural", "en-US-JasonNeural",
+        "en-US-MichelleNeural", "en-US-MonicaNeural", "en-US-NancyNeural",
+        "en-US-RogerNeural", "en-US-SaraNeural", "en-US-SteffanNeural",
+        "en-US-TonyNeural",
     }
     if voice not in allowed:
         from api.helpers import bad as _bad
@@ -10229,6 +10283,169 @@ def _handle_tts(handler, parsed):
         logger.exception("Edge TTS generation failed")
         from api.helpers import bad as _bad
         return _bad(handler, "TTS generation failed", 500)
+
+
+def _handle_link_preview(handler, parsed):
+    """Fetch OG/meta data for a URL to render a link preview card."""
+    import json as _json
+    import urllib.request as _req
+    import html as _html_mod
+    from api.helpers import j as _j, bad as _bad
+
+    if handler.command != "POST":
+        return _bad(handler, "POST required", 405)
+    try:
+        body = read_body(handler)
+        url = (body.get("url") or "").strip()
+    except Exception:
+        return _bad(handler, "invalid body", 400)
+    if not url or not url.startswith(("http://", "https://")):
+        return _bad(handler, "invalid url", 400)
+    # Limit to safe domains — prevent SSRF to internal services
+    from urllib.parse import urlparse as _urlparse
+    _ph = _urlparse(url).hostname or ""
+    _private = {"localhost", "127.0.0.1", "0.0.0.0", "::1"}
+    if _ph in _private or _ph.endswith(".local") or _ph.startswith("192.168.") or _ph.startswith("10.") or _ph.startswith("172."):
+        return _bad(handler, "private URLs not allowed", 403)
+    try:
+        import re as _re
+        req = _req.Request(url, headers={"User-Agent": "Mozilla/5.0 NasMusicUI link-preview/1.0", "Accept": "text/html"})
+        with _req.urlopen(req, timeout=6) as resp:
+            ct = resp.headers.get("Content-Type", "")
+            if "text/html" not in ct.split(";")[0]:
+                return _j(handler, {"url": url, "title": url, "description": "", "image": "", "site_name": ""})
+            raw = resp.read(65536).decode("utf-8", errors="replace")
+        def _meta(prop, attr="property"):
+            m = _re.search(r'<meta[^>]+'+attr+r'=["\']'+_re.escape(prop)+r'["\'][^>]+content=["\']([^"\']*)["\']', raw, _re.IGNORECASE)
+            if m: return _html_mod.unescape(m.group(1).strip())
+            m = _re.search(r'<meta[^>]+content=["\']([^"\']*)["\'][^>]+'+attr+r'=["\']'+_re.escape(prop)+r'["\']', raw, _re.IGNORECASE)
+            return _html_mod.unescape(m.group(1).strip()) if m else ""
+        def _title():
+            m = _re.search(r'<title[^>]*>([^<]*)</title>', raw, _re.IGNORECASE)
+            return _html_mod.unescape(m.group(1).strip()) if m else ""
+        result = {
+            "url": url,
+            "title": _meta("og:title") or _meta("twitter:title") or _title() or url,
+            "description": _meta("og:description") or _meta("twitter:description") or _meta("description", "name") or "",
+            "image": _meta("og:image") or _meta("twitter:image") or "",
+            "site_name": _meta("og:site_name") or _urlparse(url).hostname or "",
+            "video": _meta("og:video") or "",
+        }
+        return _j(handler, result)
+    except Exception as e:
+        logger.debug("link preview fetch failed for %s: %s", url, e)
+        return _j(handler, {"url": url, "title": url, "description": "", "image": "", "site_name": "", "error": str(e)})
+
+
+# ── Cloudflare Tunnel (trycloudflare.com quick-tunnel) ──
+import threading as _threading_mod
+_tunnel_proc = None
+_tunnel_url = None
+_tunnel_lock = _threading_mod.Lock()
+_tunnel_log = []
+
+def _get_cloudflared_bin():
+    """Return path to cloudflared binary, downloading it if needed."""
+    import sys, stat, urllib.request as _req2, tempfile
+    plat = sys.platform
+    arch = __import__("platform").machine().lower()
+    base = os.path.join(tempfile.gettempdir(), "naswebui_cloudflared")
+    os.makedirs(base, exist_ok=True)
+    bin_path = os.path.join(base, "cloudflared" + (".exe" if plat == "win32" else ""))
+    if os.path.isfile(bin_path) and os.path.getsize(bin_path) > 1_000_000:
+        return bin_path
+    # Download from Cloudflare release
+    if plat == "linux":
+        suffix = "linux-arm64" if "arm" in arch or "aarch" in arch else "linux-amd64"
+    elif plat == "darwin":
+        suffix = "darwin-arm64" if "arm" in arch else "darwin-amd64"
+    else:
+        suffix = "windows-amd64.exe"
+    url = f"https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-{suffix}"
+    logger.info("Downloading cloudflared from %s", url)
+    _req2.urlretrieve(url, bin_path)
+    if plat != "win32":
+        os.chmod(bin_path, os.stat(bin_path).st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+    return bin_path
+
+def _handle_tunnel_start(handler, parsed):
+    """Start a trycloudflare.com quick tunnel pointing at our local server port."""
+    global _tunnel_proc, _tunnel_url, _tunnel_log
+    from api.helpers import j as _j, bad as _bad
+    import subprocess, re as _re2
+    if handler.command != "POST":
+        return _bad(handler, "POST required", 405)
+    with _tunnel_lock:
+        if _tunnel_proc and _tunnel_proc.poll() is None:
+            return _j(handler, {"ok": True, "url": _tunnel_url or "", "status": "already_running"})
+        _tunnel_url = None
+        _tunnel_log = []
+    port = int(os.getenv("NASMUSICUI_PORT", "5000"))
+    try:
+        bin_path = _get_cloudflared_bin()
+    except Exception as e:
+        return _bad(handler, f"cloudflared download failed: {e}", 500)
+    def _run():
+        global _tunnel_proc, _tunnel_url, _tunnel_log
+        try:
+            proc = subprocess.Popen(
+                [bin_path, "tunnel", "--url", f"http://localhost:{port}"],
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                text=True, bufsize=1
+            )
+            with _tunnel_lock:
+                _tunnel_proc = proc
+            for line in proc.stdout:
+                _tunnel_log.append(line.rstrip())
+                if len(_tunnel_log) > 200:
+                    _tunnel_log = _tunnel_log[-100:]
+                m = _re2.search(r'https://[a-zA-Z0-9\-]+\.trycloudflare\.com', line)
+                if m and not _tunnel_url:
+                    with _tunnel_lock:
+                        _tunnel_url = m.group(0)
+        except Exception as ex:
+            _tunnel_log.append(f"tunnel error: {ex}")
+    t = _threading_mod.Thread(target=_run, daemon=True)
+    t.start()
+    # Wait up to 12s for URL
+    import time as _time2
+    for _ in range(120):
+        _time2.sleep(0.1)
+        with _tunnel_lock:
+            if _tunnel_url:
+                break
+    with _tunnel_lock:
+        url = _tunnel_url or ""
+    return _j(handler, {"ok": bool(url), "url": url, "status": "started" if url else "starting"})
+
+def _handle_tunnel_stop(handler, parsed):
+    global _tunnel_proc, _tunnel_url, _tunnel_log
+    from api.helpers import j as _j, bad as _bad
+    if handler.command != "POST":
+        return _bad(handler, "POST required", 405)
+    with _tunnel_lock:
+        proc = _tunnel_proc
+        _tunnel_proc = None
+        _tunnel_url = None
+        _tunnel_log = []
+    if proc and proc.poll() is None:
+        try:
+            proc.terminate()
+            proc.wait(timeout=5)
+        except Exception:
+            try: proc.kill()
+            except Exception: pass
+    return _j(handler, {"ok": True, "status": "stopped"})
+
+def _handle_tunnel_status(handler, parsed):
+    from api.helpers import j as _j
+    with _tunnel_lock:
+        running = bool(_tunnel_proc and _tunnel_proc.poll() is None)
+        url = _tunnel_url or ""
+        log_tail = list(_tunnel_log[-20:])
+    return _j(handler, {"running": running, "url": url, "log": log_tail})
+
+
 def _html_preview_with_blank_base(raw: bytes) -> bytes:
     base = '<base target="_blank">'
     text = raw.decode("utf-8", errors="replace")
