@@ -417,7 +417,7 @@ else
   if [ -n "$_agent_src" ]; then
     if [ -w "$_agent_src" ]; then
       echo ""
-      echo "!! WARNING: NasTech-Agent source mount is writable from the WebUI container."
+      echo "!! WARNING: NasTech-Agent: agent source mount is writable from the WebUI container."
       echo "!!   Path: $_agent_src"
       echo "!! The multi-container compose defaults use a read-only mount for defence-in-depth."
       echo "!! If this is not an intentional local development checkout, switch the WebUI"

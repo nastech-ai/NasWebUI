@@ -34,9 +34,9 @@
 #   AND run as the same UID/GID (set via the UID/GID env vars below).
 
 services:
-  NasTech-Agent:
-    image: nousresearch/NasTech-Agent:latest
-    container_name: NasTech-Agent
+  nastech-agent:
+    image: nastech-ai/nastech-agent:latest
+    container_name: nastech-agent
     command: gateway run
     ports:
       - "127.0.0.1:8642:8642"
@@ -44,7 +44,7 @@ services:
       # Persist config, state, sessions, skills, memory across restarts
       - nastech-home:/home/nastech/.nastech
       # Expose agent source so the WebUI can install dependencies from it
-      - NasTech-Agent-src:/opt/nastech
+      - nastech-agent-src:/opt/nastech
     environment:
       - NASTECH_HOME=/home/nastech/.nastech
       # Align UID/GID across containers sharing the nastech-home volume.
@@ -70,7 +70,7 @@ services:
       - nastech-net
 
   nastech-dashboard:
-    image: nousresearch/NasTech-Agent:latest
+    image: nastech-ai/nastech-agent:latest
     container_name: nastech-dashboard
     command: dashboard --host 0.0.0.0 --insecure
     ports:
@@ -84,9 +84,9 @@ services:
       - NASTECH_UID=${UID:-1000}
       - NASTECH_GID=${GID:-1000}
       # Dashboard connects to the gateway for health/session data
-      - GATEWAY_HEALTH_URL=http://NasTech-Agent:8642
+      - GATEWAY_HEALTH_URL=http://nastech-agent:8642
     depends_on:
-      - NasTech-Agent
+      - nastech-agent
     restart: unless-stopped
     deploy:
       resources:
@@ -100,7 +100,7 @@ services:
     image: ghcr.io/nastech-ai/nasmusicui:latest
     container_name: nasmusicui
     depends_on:
-      - NasTech-Agent
+      - nastech-agent
     ports:
       # Expose on localhost only. Remove 127.0.0.1: to expose on all interfaces
       # (set NASMUSICUI_PASSWORD if doing so).
@@ -112,7 +112,7 @@ services:
       # Mounted read-only — the WebUI only reads this volume to install
       # the agent's Python dependencies at startup (`uv pip install`).
       # Read-only enforces that defence-in-depth at the kernel layer.
-      - NasTech-Agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro
+      - nastech-agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro
       # Workspace directory — browse and edit files from the WebUI.
       # Adapt the host path to your project directory.
       # ${HOME} is used rather than `~` so the default resolves the same way
@@ -159,10 +159,10 @@ volumes:
   #   upgrading the agent image, run:
   #
   #     docker compose -f docker-compose.three-container.yml down
-  #     docker volume rm <project>_NasTech-Agent-src
+  #     docker volume rm <project>_nastech-agent-src
   #     docker compose -f docker-compose.three-container.yml pull
   #     docker compose -f docker-compose.three-container.yml up -d
   #
   #   The full procedure (and why) is documented in docs/docker.md.
   nastech-home:
-  NasTech-Agent-src:
+  nastech-agent-src:

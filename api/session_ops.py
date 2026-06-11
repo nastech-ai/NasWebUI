@@ -191,6 +191,7 @@ def session_status(session_id: str) -> dict[str, Any]:
         'model': s.model,
         'profile': profile,
         'nastech_home': nastech_home,
+        'nasmusicui_home': nastech_home,
         'workspace': s.workspace,
         'personality': s.personality,
         'message_count': len(s.messages or []),

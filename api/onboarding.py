@@ -1044,3 +1044,6 @@ def apply_onboarding_setup(body: dict) -> dict:
 def complete_onboarding() -> dict:
     save_settings({"onboarding_completed": True})
     return get_onboarding_status()
+
+# Branding alias
+_get_active_nasmusicui_home = _get_active_nastech_home

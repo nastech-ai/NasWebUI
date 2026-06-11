@@ -46,20 +46,20 @@
 #     echo "GID=$(id -g)" >> .env
 
 services:
-  NasTech-Agent:
-    image: nousresearch/NasTech-Agent:latest
-    container_name: NasTech-Agent
+  nastech-agent:
+    image: nastech-ai/nastech-agent:latest
+    container_name: nastech-agent
     command: gateway run
     ports:
       # Gateway API — exposed on localhost only.
-      # Other containers on nastech-net reach it via http://NasTech-Agent:8642.
+      # Other containers on nastech-net reach it via http://nastech-agent:8642.
       # Remove 127.0.0.1: to expose on the host network (e.g. for remote clients).
       - "127.0.0.1:8642:8642"
     volumes:
       # Persist config, state, sessions, skills, memory across restarts
       - nastech-home:/home/nastech/.nastech
       # Expose agent source so the WebUI can install dependencies from it
-      - NasTech-Agent-src:/opt/nastech
+      - nastech-agent-src:/opt/nastech
     environment:
       - NASTECH_HOME=/home/nastech/.nastech
       # Align UID/GID across containers sharing the nastech-home volume.
@@ -84,7 +84,7 @@ services:
     image: ghcr.io/nastech-ai/nasmusicui:latest
     container_name: nasmusicui
     depends_on:
-      - NasTech-Agent
+      - nastech-agent
     ports:
       - "127.0.0.1:8787:8787"
     volumes:
@@ -94,7 +94,7 @@ services:
       # Mounted read-only — the WebUI only reads this volume to install
       # the agent's Python dependencies at startup (`uv pip install`).
       # Read-only enforces that defence-in-depth at the kernel layer.
-      - NasTech-Agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro
+      - nastech-agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro
       # Workspace directory — browse and edit files from the WebUI.
       # Adapt the host path to your project directory.
       # Override with: NASTECH_WORKSPACE=/your/path docker compose up
@@ -138,10 +138,10 @@ volumes:
   #   upgrading the agent image, run:
   #
   #     docker compose down
-  #     docker volume rm <project>_NasTech-Agent-src
+  #     docker volume rm <project>_nastech-agent-src
   #     docker compose pull
   #     docker compose up -d
   #
   #   The full procedure (and why) is documented in docs/docker.md.
   nastech-home:
-  NasTech-Agent-src:
+  nastech-agent-src:

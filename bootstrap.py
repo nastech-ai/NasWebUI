@@ -508,3 +508,6 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"[bootstrap] ERROR: {exc}", file=sys.stderr)
         raise SystemExit(1)
+
+# Branding alias
+nasmusicui_command_exists = nastech_command_exists
