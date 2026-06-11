@@ -65,3 +65,6 @@ graphify-out/
 # Dev-only lint tooling (ESLint runtime-error guard) — see TESTING.md
 node_modules/
 package-lock.json
+
+# GitHub Actions self-hosted runner (local binary)
+actions-runner/

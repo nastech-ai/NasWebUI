@@ -5716,3 +5716,289 @@ html[data-conversation-outline="enabled"] #outlineToggleBtn:not([hidden]){displa
 /* Glass iOS skin: make public button on rail glow when tunnel active */
 #btnMakePublic{transition:color .2s,background .15s;}
 #btnMakePublic:hover{color:var(--accent-text)!important;background:var(--accent-bg);}
+
+/* ══════════════════════════════════════════════════════════════════════
+   NasMusicUI Global Polish — rounded corners, glass surfaces, depth
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Global radius bump ── */
+:root {
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-card: 14px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+}
+
+/* ── Rail: rounder buttons + subtle active pill ── */
+.rail { border-radius: 0 16px 16px 0; }
+.rail-btn {
+  border-radius: 10px !important;
+  transition: color .15s, background .2s, transform .1s, box-shadow .15s !important;
+}
+.rail-btn:hover { transform: scale(1.07); background: var(--accent-bg) !important; color: var(--accent-text) !important; }
+.rail-btn.active {
+  border-radius: 12px !important;
+  background: var(--accent-bg) !important;
+  color: var(--accent-text) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.rail-btn.active::before { border-radius: 0 3px 3px 0; }
+
+/* ── Sidebar glass ── */
+.sidebar {
+  border-radius: 0 16px 16px 0;
+  backdrop-filter: blur(8px) saturate(1.2);
+  -webkit-backdrop-filter: blur(8px) saturate(1.2);
+}
+.session-item { border-radius: 10px !important; }
+.session-item.active { border-radius: 10px !important; }
+.sidebar-search input { border-radius: 10px !important; }
+.new-chat-btn { border-radius: 12px !important; }
+
+/* ── Composer: polished pill shape ── */
+.composer-box {
+  border-radius: 20px !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,.18), 0 1px 4px rgba(0,0,0,.10) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.composer-box:focus-within {
+  box-shadow: 0 0 0 1.5px var(--accent), 0 4px 24px rgba(0,0,0,.22), 0 1px 4px rgba(0,0,0,.12) !important;
+}
+.composer-wrap { padding: 10px 20px 18px !important; }
+
+/* ── Send button: pill ── */
+button.send-btn, .send-btn {
+  border-radius: 12px !important;
+  transition: background .15s, transform .1s, box-shadow .15s !important;
+}
+button.send-btn:not(:disabled):hover, .send-btn:not(:disabled):hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0,0,0,.22);
+}
+
+/* ── Message bubbles: softer corners ── */
+.msg-row[data-role="user"] .msg-body { border-radius: 16px 16px 4px 16px !important; }
+.msg-row[data-role="assistant"] .msg-body { border-radius: 4px 16px 16px 16px !important; }
+.msg-body pre { border-radius: 12px !important; }
+.msg-body code { border-radius: 5px !important; }
+
+/* ── Dialogs: glass sheet ── */
+.app-dialog {
+  border-radius: 20px !important;
+  backdrop-filter: blur(20px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,.48), 0 2px 0 rgba(255,255,255,.04) !important;
+}
+.app-dialog-overlay { backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; }
+.app-dialog-btn { border-radius: 12px !important; }
+.app-dialog-close { border-radius: 10px !important; }
+.app-dialog-input { border-radius: 12px !important; }
+
+/* ── Topbar ── */
+.topbar {
+  backdrop-filter: blur(10px) saturate(1.3);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  border-radius: 0;
+}
+
+/* ── App titlebar rounded on mobile ── */
+@media (max-width: 640px) {
+  .app-titlebar { border-radius: 0 0 14px 14px; }
+}
+
+/* ── Buttons global ── */
+.btn, button.btn { border-radius: 10px !important; }
+.btn-sm { border-radius: 8px !important; }
+.btn-tiny { border-radius: 7px !important; }
+.btn-pill { border-radius: 999px !important; }
+
+/* ── Settings panel cards ── */
+.settings-section {
+  border-radius: 14px !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.settings-row { border-radius: 10px; }
+
+/* ── Suggestion chips ── */
+.suggestion { border-radius: 12px !important; }
+.suggestion:hover { transform: translateY(-1px) translateX(0) !important; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+
+/* ── Tool cards / activity cards ── */
+.tool-card { border-radius: 12px !important; }
+.activity-card { border-radius: 12px !important; }
+
+/* ── Tooltip ── */
+[data-tooltip-el] { border-radius: 8px !important; }
+
+/* ── Notifications / toasts ── */
+.toast { border-radius: 12px !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+/* ── Kanban cards ── */
+.kanban-card { border-radius: 12px !important; }
+.kanban-column { border-radius: 14px !important; }
+
+/* ── Input / Select / Textarea ── */
+input[type="text"], input[type="password"], input[type="search"],
+input[type="email"], select, textarea {
+  border-radius: 10px !important;
+}
+
+/* ── Scrollbars: rounded thumb ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; border-radius: 999px; }
+::-webkit-scrollbar-thumb { border-radius: 999px; background: rgba(128,128,128,.2); }
+::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,.35); }
+* { scrollbar-width: thin; scrollbar-color: rgba(128,128,128,.2) transparent; }
+
+/* ── Skin: Glass iOS — enhanced ── */
+:root[data-skin="glass-ios"] {
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-card: 16px;
+  --radius-lg: 22px;
+}
+:root[data-skin="glass-ios"] .rail {
+  background: rgba(16,16,28,0.70) !important;
+  backdrop-filter: blur(24px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.6) !important;
+  border-right: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 0 18px 18px 0;
+}
+:root[data-skin="glass-ios"] .app-titlebar {
+  background: rgba(12,12,22,0.72) !important;
+  backdrop-filter: blur(28px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.8) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+:root[data-skin="glass-ios"] .sidebar {
+  background: rgba(14,14,24,0.80) !important;
+  backdrop-filter: blur(22px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.6) !important;
+  border-radius: 0 20px 20px 0 !important;
+}
+:root[data-skin="glass-ios"] .composer-wrap {
+  background: transparent !important;
+}
+:root[data-skin="glass-ios"] .composer-box {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 24px !important;
+  backdrop-filter: blur(20px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+:root[data-skin="glass-ios"] .composer-box:focus-within {
+  border-color: rgba(110,133,255,0.45) !important;
+  box-shadow: 0 0 0 1px rgba(110,133,255,.2), 0 4px 32px rgba(110,133,255,.16), 0 2px 24px rgba(0,0,0,.4) !important;
+}
+:root[data-skin="glass-ios"] .msg-row[data-role="assistant"] .msg-body {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-radius: 4px 18px 18px 18px !important;
+}
+:root[data-skin="glass-ios"] .msg-row[data-role="user"] .msg-body {
+  background: rgba(110,133,255,0.18) !important;
+  border: 1px solid rgba(110,133,255,0.30) !important;
+  border-radius: 18px 18px 4px 18px !important;
+}
+:root[data-skin="glass-ios"] .app-dialog {
+  background: rgba(16,16,28,0.90) !important;
+  backdrop-filter: blur(36px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(1.8) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 32px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+:root[data-skin="glass-ios"] .topbar {
+  background: rgba(12,12,22,0.72) !important;
+  backdrop-filter: blur(22px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.6) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+:root[data-skin="glass-ios"] .session-item {
+  border-radius: 12px !important;
+  transition: background .15s, transform .12s !important;
+}
+:root[data-skin="glass-ios"] .session-item:hover {
+  background: rgba(255,255,255,0.06) !important;
+  transform: translateX(2px);
+}
+:root[data-skin="glass-ios"] .session-item.active {
+  background: rgba(110,133,255,0.14) !important;
+  border-left: 2px solid rgba(110,133,255,0.6) !important;
+  box-shadow: inset 0 0 0 1px rgba(110,133,255,0.12) !important;
+}
+:root[data-skin="glass-ios"] .new-chat-btn {
+  background: linear-gradient(135deg, rgba(110,133,255,0.82), rgba(150,110,255,0.82)) !important;
+  border: 1px solid rgba(110,133,255,0.4) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 16px rgba(110,133,255,.22) !important;
+}
+:root[data-skin="glass-ios"] button.send-btn {
+  background: linear-gradient(135deg, rgba(110,133,255,0.9), rgba(150,110,255,0.9)) !important;
+  border: 1px solid rgba(110,133,255,0.45) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 2px 12px rgba(110,133,255,.28) !important;
+}
+:root[data-skin="glass-ios"] .suggestion {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(8px) !important;
+}
+:root[data-skin="glass-ios"] .suggestion:hover {
+  background: rgba(110,133,255,0.12) !important;
+  border-color: rgba(110,133,255,0.25) !important;
+}
+:root[data-skin="glass-ios"] .tool-card {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(8px) !important;
+}
+:root[data-skin="glass-ios"] ::-webkit-scrollbar-thumb { background: rgba(110,133,255,.18); }
+
+/* ── AMOLED polish ── */
+:root[data-skin="amoled"] .rail { border-right: 1px solid rgba(0,220,255,0.08) !important; }
+:root[data-skin="amoled"] .composer-box {
+  background: rgba(5,5,10,0.98) !important;
+  border-color: rgba(0,220,255,0.15) !important;
+  box-shadow: 0 2px 20px rgba(0,220,255,.06) !important;
+}
+:root[data-skin="amoled"] .composer-box:focus-within {
+  border-color: rgba(0,220,255,0.4) !important;
+  box-shadow: 0 0 0 1px rgba(0,220,255,.12), 0 4px 28px rgba(0,220,255,.10) !important;
+}
+:root[data-skin="amoled"] .msg-row[data-role="assistant"] .msg-body {
+  background: rgba(5,5,10,0.98) !important;
+  border-color: rgba(0,220,255,0.10) !important;
+}
+:root[data-skin="amoled"] .msg-row[data-role="user"] .msg-body {
+  background: rgba(0,220,255,0.08) !important;
+  border-color: rgba(0,220,255,0.18) !important;
+}
+
+/* ── General dark theme enhancements ── */
+.dark .sidebar-search input:focus { box-shadow: 0 0 0 2px var(--accent-bg), 0 1px 4px rgba(0,0,0,.2) !important; }
+.dark .session-item:hover { box-shadow: 0 1px 6px rgba(0,0,0,.15); }
+.dark .app-dialog-btn:hover { box-shadow: 0 2px 10px rgba(0,0,0,.2); }
+
+/* ── Kanban panel rounded ── */
+.kanban-board { border-radius: 0; }
+.kanban-column-header { border-radius: 10px 10px 0 0 !important; }
+
+/* ── CF tunnel modal glass ── */
+.cf-modal {
+  backdrop-filter: blur(24px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.5) !important;
+  border-radius: 20px !important;
+}
+.cf-url-box { border-radius: 10px !important; }
+.cf-btn { border-radius: 10px !important; }
+.cf-log { border-radius: 8px !important; }
