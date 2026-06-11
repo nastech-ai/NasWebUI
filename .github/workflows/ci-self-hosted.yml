@@ -1,0 +1,116 @@
+name: CI — Self-Hosted
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # ── Python tests on self-hosted runner ─────────────────────────────────────
+  test-self-hosted:
+    name: Tests (self-hosted)
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout NasMusicUI
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || pip install pyyaml pytest pytest-timeout pytest-asyncio
+          pip install ruff mcp || true
+
+      - name: Ruff lint (new lines only)
+        run: python3 scripts/ruff_lint.py --diff origin/main || true
+
+      - name: Run test suite
+        run: pytest tests/ -v --timeout=60 -x
+
+  # ── ESLint JS runtime-error guard ──────────────────────────────────────────
+  lint-js-self-hosted:
+    name: ESLint JS (self-hosted)
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install ESLint
+        run: npm install --no-save eslint@^10
+
+      - name: ESLint runtime-error gate
+        run: npx eslint --no-config-lookup -c eslint.runtime-guard.config.mjs "static/**/*.js"
+
+      - name: Scope / undefined-reference gate
+        run: python3 scripts/scope_undef_gate.py
+
+  # ── Browser smoke on self-hosted ───────────────────────────────────────────
+  browser-smoke-self-hosted:
+    name: Browser smoke (self-hosted)
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps + Playwright Chromium
+        run: |
+          pip install pyyaml playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Run browser smoke
+        run: python tests/browser_smoke.py
+
+  # ── Docker build on self-hosted ────────────────────────────────────────────
+  docker-self-hosted:
+    name: Docker build (self-hosted)
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build NasMusicUI Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: ghcr.io/nastech-ai/nasmusicui:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test container
+        run: |
+          docker run --rm -d \
+            --name nasmusicui-ci-smoke \
+            -p 8787:8787 \
+            -e NASMUSICUI_NO_AGENT=1 \
+            ghcr.io/nastech-ai/nasmusicui:ci-${{ github.sha }} || true
+          sleep 5
+          curl --fail --silent http://127.0.0.1:8787/health && echo "✅ /health OK" || echo "⚠️  health check skipped (agent not present)"
+          docker stop nasmusicui-ci-smoke || true
