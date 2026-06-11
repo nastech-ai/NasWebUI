@@ -52,8 +52,8 @@
   ### 2. Clone NasMusicUI
 
   ```bash
-  git clone https://github.com/nastech-ai/NasMusicUI.git
-  cd NasMusicUI
+  git clone https://github.com/nastech-ai/NasWebUI.git
+  cd NasWebUI
   ```
 
   ### 3. Install Python dependencies
