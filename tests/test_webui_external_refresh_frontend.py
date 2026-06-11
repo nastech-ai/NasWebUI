@@ -45,9 +45,9 @@ def test_session_list_external_refresh_uses_sse_invalidation_not_polling():
     assert "_sessionListRefreshPendingReason = reason || 'session-list'" in SESSIONS_JS
     assert "if(pendingReason) _scheduleSessionEventsRefresh(pendingReason)" in SESSIONS_JS
     assert "ensureSessionEventsSSE();" in SESSIONS_JS
-    assert "document._nasmusicuiSessionEventsVisibilityHook" in SESSIONS_JS
+    assert "document._naswebuiSessionEventsVisibilityHook" in SESSIONS_JS
     ensure_fn = SESSIONS_JS[SESSIONS_JS.find("function ensureSessionEventsSSE()") :]
-    assert ensure_fn.find("document._nasmusicuiSessionEventsVisibilityHook") < ensure_fn.find("document.hidden) return")
+    assert ensure_fn.find("document._naswebuiSessionEventsVisibilityHook") < ensure_fn.find("document.hidden) return")
     assert "_sessionListExternalRefreshMs" not in SESSIONS_JS
     assert "addEventListener('sessions_changed', (ev) => {" in ensure_fn
     assert "const activeProfile = S.activeProfile || 'default';" in ensure_fn

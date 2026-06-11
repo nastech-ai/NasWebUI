@@ -1,4 +1,4 @@
-"""Read-only sidebar discoverability audit for NasMusicUI sessions.
+"""Read-only sidebar discoverability audit for NasWebUI sessions.
 
 This module does not repair or mutate session state. It cross-checks the four
 places that decide whether a session can be found from the WebUI sidebar:
@@ -607,7 +607,7 @@ def render_discoverability_markdown(report: dict) -> str:
 
 
 def _main() -> int:
-    parser = argparse.ArgumentParser(description="Read-only NasMusicUI session discoverability audit")
+    parser = argparse.ArgumentParser(description="Read-only NasWebUI session discoverability audit")
     parser.add_argument("--session-dir", type=Path, required=True)
     parser.add_argument("--state-db", type=Path, default=None)
     parser.add_argument("--format", choices=("json", "markdown"), default="json")

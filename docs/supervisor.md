@@ -1,4 +1,4 @@
-# Running NasMusicUI under a process supervisor
+# Running NasWebUI under a process supervisor
 
 Use a process supervisor (launchd, systemd, supervisord, runit, s6) when you
 want the Web UI to start at boot, restart on crash, or be managed alongside
@@ -16,7 +16,7 @@ Or set ``NASMUSICUI_FOREGROUND=1`` in the environment. The Web UI will
 auto-detect launchd / systemd / supervisord even without the flag, but being
 explicit is safer.
 
-**Important (launchd on macOS):** if the ``com.parantoux.nasmusicui`` LaunchAgent is enabled, treat launchd as the single source of truth for WebUI lifecycle. Do **not** also run ``./ctl.sh start``, ``bash start.sh``, ``python bootstrap.py``, or ``python server.py`` against the same state dir/port, or you can create a second WebUI instance and trigger port-8787 restart churn.
+**Important (launchd on macOS):** if the ``com.parantoux.naswebui`` LaunchAgent is enabled, treat launchd as the single source of truth for WebUI lifecycle. Do **not** also run ``./ctl.sh start``, ``bash start.sh``, ``python bootstrap.py``, or ``python server.py`` against the same state dir/port, or you can create a second WebUI instance and trigger port-8787 restart churn.
 
 ## Why ``--foreground`` matters
 
@@ -40,7 +40,7 @@ sees the long-lived server as the original child. ``KeepAlive=true`` /
 
 ## launchd (macOS)
 
-``~/Library/LaunchAgents/com.example.nasmusicui.plist``:
+``~/Library/LaunchAgents/com.example.naswebui.plist``:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -48,17 +48,17 @@ sees the long-lived server as the original child. ``KeepAlive=true`` /
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.example.nasmusicui</string>
+    <string>com.example.naswebui</string>
 
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/yourname/nasmusicui/start.sh</string>
+        <string>/Users/yourname/naswebui/start.sh</string>
         <string>--foreground</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/yourname/nasmusicui</string>
+    <string>/Users/yourname/naswebui</string>
 
     <key>RunAtLoad</key>
     <true/>
@@ -86,15 +86,15 @@ sees the long-lived server as the original child. ``KeepAlive=true`` /
 Load:
 
 ```bash
-launchctl load ~/Library/LaunchAgents/com.example.nasmusicui.plist
-launchctl print gui/$(id -u)/com.example.nasmusicui   # check state
+launchctl load ~/Library/LaunchAgents/com.example.naswebui.plist
+launchctl print gui/$(id -u)/com.example.naswebui   # check state
 ```
 
 Reload after editing the plist:
 
 ```bash
-launchctl unload ~/Library/LaunchAgents/com.example.nasmusicui.plist
-launchctl load   ~/Library/LaunchAgents/com.example.nasmusicui.plist
+launchctl unload ~/Library/LaunchAgents/com.example.naswebui.plist
+launchctl load   ~/Library/LaunchAgents/com.example.naswebui.plist
 ```
 
 launchd sets ``XPC_SERVICE_NAME`` automatically, so even without the
@@ -103,17 +103,17 @@ The flag is still recommended as documentation of intent.
 
 ## systemd (Linux)
 
-``~/.config/systemd/user/nasmusicui.service``:
+``~/.config/systemd/user/naswebui.service``:
 
 ```ini
 [Unit]
-Description=NasMusicUI
+Description=NasWebUI
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=%h/nasmusicui
-ExecStart=/bin/bash %h/nasmusicui/start.sh --foreground
+WorkingDirectory=%h/naswebui
+ExecStart=/bin/bash %h/naswebui/start.sh --foreground
 Restart=on-failure
 RestartSec=5
 
@@ -129,8 +129,8 @@ Enable + start:
 
 ```bash
 systemctl --user daemon-reload
-systemctl --user enable --now nasmusicui.service
-journalctl --user -u nasmusicui.service -f
+systemctl --user enable --now naswebui.service
+journalctl --user -u naswebui.service -f
 ```
 
 systemd sets ``INVOCATION_ID`` and ``JOURNAL_STREAM`` (when stdio is wired to
@@ -138,19 +138,19 @@ the journal), both of which auto-promote to foreground mode.
 
 ## supervisord (cross-platform)
 
-``/etc/supervisor/conf.d/nasmusicui.conf``:
+``/etc/supervisor/conf.d/naswebui.conf``:
 
 ```ini
-[program:nasmusicui]
-command=/bin/bash /home/youruser/nasmusicui/start.sh --foreground
-directory=/home/youruser/nasmusicui
+[program:naswebui]
+command=/bin/bash /home/youruser/naswebui/start.sh --foreground
+directory=/home/youruser/naswebui
 user=youruser
 autostart=true
 autorestart=true
 stopsignal=TERM
 stopwaitsecs=10
-stdout_logfile=/var/log/nasmusicui.out.log
-stderr_logfile=/var/log/nasmusicui.err.log
+stdout_logfile=/var/log/naswebui.out.log
+stderr_logfile=/var/log/naswebui.err.log
 environment=HOME="/home/youruser",PATH="/usr/local/bin:/usr/bin:/bin"
 ```
 
@@ -159,7 +159,7 @@ Reload + start:
 ```bash
 sudo supervisorctl reread
 sudo supervisorctl update
-sudo supervisorctl status nasmusicui
+sudo supervisorctl status naswebui
 ```
 
 supervisord sets ``SUPERVISOR_ENABLED``, which auto-promotes to foreground
@@ -244,7 +244,7 @@ is reaching the process.
 process is still listening on the port but request handling is wedged, pair your
 supervisor with an HTTP probe and force a restart when the probe fails.
 
-NasMusicUI exposes two health levels:
+NasWebUI exposes two health levels:
 
 - ``/health`` — cheap liveness probe with ``active_streams``, uptime, and an
   ``accept_loop`` heartbeat counter.
@@ -262,7 +262,7 @@ Minimal macOS launchd watchdog script:
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-LABEL="com.example.nasmusicui"
+LABEL="com.example.naswebui"
 BASE="http://127.0.0.1:8787"
 
 if ! curl -fsS --max-time 10 "$BASE/health?deep=1" >/dev/null; then
@@ -272,7 +272,7 @@ fi
 
 Run it every few minutes from a separate ``StartInterval`` LaunchAgent. For
 systemd, prefer a timer/service pair that runs the same curl probe and
-``systemctl --user restart nasmusicui.service`` on failure.
+``systemctl --user restart naswebui.service`` on failure.
 
 The ``accept_loop.requests_total`` value should increase when probes arrive. If
 it stays flat while the process is still alive, the server accept loop is not

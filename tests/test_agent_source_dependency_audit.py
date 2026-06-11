@@ -98,7 +98,7 @@ def test_audit_reports_compose_source_volume_anchors():
     assert ("docker-compose.three-container.yml", "NasTech-Agent-src") in anchors
     assert any("NasTech-Agent-src:/opt/nastech" in text for text in texts)
     assert any(
-        "NasTech-Agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro" in text
+        "NasTech-Agent-src:/home/naswebuiwebui/.nastech/NasTech-Agent:ro" in text
         for text in texts
     )
 

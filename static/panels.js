@@ -151,9 +151,9 @@ function syncAppTitlebar() {
 
 function _beginSettingsPanelSession() {
   _settingsDirty = false;
-  _settingsThemeOnOpen = localStorage.getItem('nasmusicui-theme') || 'dark';
-  _settingsSkinOnOpen = localStorage.getItem('nasmusicui-skin') || 'default';
-  _settingsFontSizeOnOpen = localStorage.getItem('nasmusicui-font-size') || 'default';
+  _settingsThemeOnOpen = localStorage.getItem('naswebui-theme') || 'dark';
+  _settingsSkinOnOpen = localStorage.getItem('naswebui-skin') || 'default';
+  _settingsFontSizeOnOpen = localStorage.getItem('naswebui-font-size') || 'default';
   _pendingSettingsTargetPanel = null;
   if (_settingsAppearanceAutosaveTimer) {
     clearTimeout(_settingsAppearanceAutosaveTimer);
@@ -450,12 +450,12 @@ function _cronGatewayNoticeHtml(status) {
         ? 'Gateway endpoint not reachable'
         : 'Gateway not running';
   const body = notConfigured
-    ? 'In NasMusicUI, scheduled jobs require the NasTech gateway daemon. If this is a single-container Docker install, jobs can be created and run manually here, but scheduled ticks need a gateway container or `nastech gateway` running outside the WebUI.'
+    ? 'In NasWebUI, scheduled jobs require the NasTech gateway daemon. If this is a single-container Docker install, jobs can be created and run manually here, but scheduled ticks need a gateway container or `nastech gateway` running outside the WebUI.'
     : isStaleMetadata
       ? 'The gateway is marked as configured, but its health metadata has gone stale. In Docker, scheduled jobs require a live gateway daemon that refreshes runtime metadata while ticking cron.'
       : isRemoteUnreachable
         ? 'The gateway health endpoint is not reachable from WebUI. Verify the configured gateway URL env var (`GATEWAY_HEALTH_URL`, `NASTECH_GATEWAY_HEALTH_URL`, `NASTECH_API_URL`, or `NASMUSICUI_GATEWAY_BASE_URL`) points to a reachable gateway service and network path before relying on cron ticking.'
-        : 'In NasMusicUI, scheduled jobs require the NasTech gateway daemon to be running. Start the gateway container or `nastech gateway` before relying on offline scheduled runs.';
+        : 'In NasWebUI, scheduled jobs require the NasTech gateway daemon to be running. Start the gateway container or `nastech gateway` before relying on offline scheduled runs.';
   const docsHref = 'https://github.com/nastech-ai/NasWebUI/blob/main/docs/docker.md#scheduled-jobs-and-the-gateway-daemon';
   const helpLink = notConfigured || isRemoteUnreachable || isStaleMetadata
     ? `<p><a href="${docsHref}" target="_blank" rel="noopener">How to enable scheduled jobs in Docker ↗</a></p>`
@@ -541,7 +541,7 @@ async function loadCrons(animate) {
 }
 
 function _cronPanelExpandKey(jobId, suffix){
-  return `nasmusicui-cron-${suffix}-expanded-${encodeURIComponent(String(jobId||''))}`;
+  return `naswebui-cron-${suffix}-expanded-${encodeURIComponent(String(jobId||''))}`;
 }
 
 function _cronRunExpandKey(jobId, filename){
@@ -5540,7 +5540,7 @@ async function switchToProfile(name) {
     // Refreshing the full model/workspace catalogs is useful, but it should not
     // hold the visible switch animation open.
     if(typeof _clearPersistedModelState==='function') _clearPersistedModelState();
-    else localStorage.removeItem('nasmusicui-model');
+    else localStorage.removeItem('naswebui-model');
     _skillsData = null;
     _workspaceList = null;
     if (data.default_model) window._defaultModel = data.default_model;
@@ -5874,7 +5874,7 @@ let _settingsDirty = false;
 let _settingsThemeOnOpen = null; // track theme at open time for discard revert
 let _settingsSkinOnOpen = null; // track skin at open time for discard revert
 let _settingsFontSizeOnOpen = null; // track font size at open time for discard revert
-let _settingsNasTechDefaultModelOnOpen = '';
+let _settingsNasWebUIDefaultModelOnOpen = '';
 let _settingsSection = 'conversation';
 let _currentSettingsSection = 'conversation';
 let _settingsAppearanceAutosaveTimer = null;
@@ -5884,8 +5884,8 @@ let _settingsPreferencesAutosaveRetryPayload = null;
 
 // ── Sidebar tab visibility/order ────────────────────────────────────────────
 const _ALWAYS_VISIBLE_TABS = new Set(['chat','settings']);
-const _HIDDEN_TABS_LS_KEY = 'nasmusicui-hidden-tabs';
-const _TAB_ORDER_LS_KEY = 'nasmusicui-tab-order';
+const _HIDDEN_TABS_LS_KEY = 'naswebui-hidden-tabs';
+const _TAB_ORDER_LS_KEY = 'naswebui-tab-order';
 let _tabVisibilityDragSuppressUntil = 0;
 
 function _sanitizeTabPanelList(panels){
@@ -6108,7 +6108,7 @@ function _syncNasTechPanelSessionActions(){
   const hasSession=!!S.session;
   const visibleMessages=hasSession?(S.messages||[]).filter(m=>m&&m.role&&m.role!=='tool').length:0;
   const title=hasSession?(S.session.title||t('untitled')):t('active_conversation_none');
-  const meta=$('nasmusicuiSessionMeta');
+  const meta=$('naswebuiSessionMeta');
   if(meta){
     meta.textContent=hasSession
       ? t('active_conversation_meta', title, visibleMessages)
@@ -6205,9 +6205,9 @@ function _applyTtsEnabled(enabled){
 function _appearancePayloadFromUi(){
   const worklogDetailsExpanded=!!($('settingsWorklogDetailsExpandedDefault')||{}).checked;
   return {
-    theme: ($('settingsTheme')||{}).value || localStorage.getItem('nasmusicui-theme') || 'dark',
-    skin: ($('settingsSkin')||{}).value || localStorage.getItem('nasmusicui-skin') || 'default',
-    font_size: ($('settingsFontSize')||{}).value || localStorage.getItem('nasmusicui-font-size') || 'default',
+    theme: ($('settingsTheme')||{}).value || localStorage.getItem('naswebui-theme') || 'dark',
+    skin: ($('settingsSkin')||{}).value || localStorage.getItem('naswebui-skin') || 'default',
+    font_size: ($('settingsFontSize')||{}).value || localStorage.getItem('naswebui-font-size') || 'default',
     session_jump_buttons: !!($('settingsSessionJumpButtons')||{}).checked,
     session_endless_scroll: !!($('settingsSessionEndlessScroll')||{}).checked,
     worklog_details_expanded_default: worklogDetailsExpanded,
@@ -6237,9 +6237,9 @@ function _setAppearanceAutosaveStatus(state){
 
 function _rememberAppearanceSaved(payload){
   if(!payload) return;
-  _settingsThemeOnOpen=payload.theme||localStorage.getItem('nasmusicui-theme')||'dark';
-  _settingsSkinOnOpen=payload.skin||localStorage.getItem('nasmusicui-skin')||'default';
-  _settingsFontSizeOnOpen=payload.font_size||localStorage.getItem('nasmusicui-font-size')||'default';
+  _settingsThemeOnOpen=payload.theme||localStorage.getItem('naswebui-theme')||'dark';
+  _settingsSkinOnOpen=payload.skin||localStorage.getItem('naswebui-skin')||'default';
+  _settingsFontSizeOnOpen=payload.font_size||localStorage.getItem('naswebui-font-size')||'default';
 }
 
 function _scheduleAppearanceAutosave(){
@@ -6259,7 +6259,7 @@ async function _autosaveAppearanceSettings(payload){
     _settingsAppearanceAutosaveRetryPayload=null;
     _rememberAppearanceSaved(payload);
     if(saved&&saved.font_size){
-      localStorage.setItem('nasmusicui-font-size',saved.font_size);
+      localStorage.setItem('naswebui-font-size',saved.font_size);
     }
     if(saved){
       window._sessionJumpButtonsEnabled=!!saved.session_jump_buttons;
@@ -6416,7 +6416,7 @@ async function _autosavePreferencesSettings(payload){
     const pwField=$('settingsPassword');
     const pwDirty=!!(pwField&&pwField.value);
     const modelSel=$('settingsModel');
-    const modelDirty=!!(modelSel&&((modelSel.value||'')!==(_settingsNasTechDefaultModelOnOpen||'')));
+    const modelDirty=!!(modelSel&&((modelSel.value||'')!==(_settingsNasWebUIDefaultModelOnOpen||'')));
     if(!pwDirty&&!modelDirty){
       _settingsDirty=false;
       const bar=$('settingsUnsavedBar');
@@ -6454,12 +6454,12 @@ async function loadSettingsPanel(){
     const themeVal=settings.theme||'dark';
     if(themeSel) themeSel.value=themeVal;
     if(typeof _syncThemePicker==='function') _syncThemePicker(themeVal);
-    const skinVal=(localStorage.getItem('nasmusicui-skin')||settings.skin||'default').toLowerCase();
+    const skinVal=(localStorage.getItem('naswebui-skin')||settings.skin||'default').toLowerCase();
     const skinSel=$('settingsSkin');
     if(skinSel) skinSel.value=skinVal;
     if(typeof _buildSkinPicker==='function') _buildSkinPicker(skinVal);
-    const fontSizeVal=settings.font_size||localStorage.getItem('nasmusicui-font-size')||'default';
-    localStorage.setItem('nasmusicui-font-size',fontSizeVal);
+    const fontSizeVal=settings.font_size||localStorage.getItem('naswebui-font-size')||'default';
+    localStorage.setItem('naswebui-font-size',fontSizeVal);
     if(typeof _applyFontSize==='function') _applyFontSize(fontSizeVal);
     const fontSizeSel=$('settingsFontSize');
     if(fontSizeSel) fontSizeSel.value=fontSizeVal;
@@ -6476,16 +6476,16 @@ async function loadSettingsPanel(){
     }
     if(typeof _applySessionNavigationPrefs==='function') _applySessionNavigationPrefs();
     // Workspace panel default-open toggle (localStorage-backed)
-    // Uses a separate key (nasmusicui-workspace-panel-pref) so that
+    // Uses a separate key (naswebui-workspace-panel-pref) so that
     // closing the panel via toolbar X does not clear the user's preference.
     const wsPanelCb=$('settingsWorkspacePanelOpen');
     if(wsPanelCb){
-      wsPanelCb.checked=localStorage.getItem('nasmusicui-workspace-panel-pref')==='open';
+      wsPanelCb.checked=localStorage.getItem('naswebui-workspace-panel-pref')==='open';
       wsPanelCb.onchange=function(){
         const open=this.checked;
-        localStorage.setItem('nasmusicui-workspace-panel-pref',open?'open':'closed');
+        localStorage.setItem('naswebui-workspace-panel-pref',open?'open':'closed');
         // Also sync the runtime key so the current session reflects the change
-        localStorage.setItem('nasmusicui-workspace-panel',open?'open':'closed');
+        localStorage.setItem('naswebui-workspace-panel',open?'open':'closed');
         document.documentElement.dataset.workspacePanel=open?'open':'closed';
         if(open&&_workspacePanelMode==='closed') openWorkspacePanel('browse');
         else if(!open&&_workspacePanelMode!=='closed') toggleWorkspacePanel(false);
@@ -6565,16 +6565,16 @@ async function loadSettingsPanel(){
           _fetchLiveModels(models.active_provider, modelSel);
         }
       }catch(e){}
-      _settingsNasTechDefaultModelOnOpen=(models&&models.default_model)||'';
+      _settingsNasWebUIDefaultModelOnOpen=(models&&models.default_model)||'';
       // Use the smart matcher so a saved bare form like "anthropic/claude-opus-4.6"
       // (what the CLI's `nastech model` command writes) still selects the matching
       // `@nous:anthropic/claude-opus-4.6` option on a Nous setup. Without this, the
       // picker renders blank for any user whose default was persisted without the
       // @-prefix — CLI-first users, legacy installs, etc.
       if(typeof _applyModelToDropdown==='function'){
-        _applyModelToDropdown(_settingsNasTechDefaultModelOnOpen, modelSel, (models&&models.active_provider)||window._activeProvider||null);
+        _applyModelToDropdown(_settingsNasWebUIDefaultModelOnOpen, modelSel, (models&&models.active_provider)||window._activeProvider||null);
       }else{
-        modelSel.value=_settingsNasTechDefaultModelOnOpen;
+        modelSel.value=_settingsNasWebUIDefaultModelOnOpen;
       }
       modelSel.addEventListener('change',_markSettingsDirty,{once:false});
     }
@@ -6677,13 +6677,13 @@ async function loadSettingsPanel(){
     // Right-to-left chat layout (#1721 salvage) — Settings-only, no composer button.
     const rtlCb=$('settingsRtl');
     if(rtlCb){
-      const saved=!!settings.rtl || localStorage.getItem('nasmusicui-rtl')==='true';
+      const saved=!!settings.rtl || localStorage.getItem('naswebui-rtl')==='true';
       rtlCb.checked=saved;
-      try{localStorage.setItem('nasmusicui-rtl',saved?'true':'false');}catch(_){}
+      try{localStorage.setItem('naswebui-rtl',saved?'true':'false');}catch(_){}
       document.documentElement.classList.toggle('chat-content-rtl',saved);
       rtlCb.addEventListener('change',()=>{
         const on=rtlCb.checked;
-        try{localStorage.setItem('nasmusicui-rtl',on?'true':'false');}catch(_){}
+        try{localStorage.setItem('naswebui-rtl',on?'true':'false');}catch(_){}
         document.documentElement.classList.toggle('chat-content-rtl',on);
         _schedulePreferencesAutosave();
       },{once:false});
@@ -7909,10 +7909,10 @@ function _applySavedSettingsUi(saved, body, opts){
   _settingsDirty=false;
   _settingsThemeOnOpen=theme;
   _settingsSkinOnOpen=skin||'default';
-  _settingsFontSizeOnOpen=fontSize||localStorage.getItem('nasmusicui-font-size')||'default';
+  _settingsFontSizeOnOpen=fontSize||localStorage.getItem('naswebui-font-size')||'default';
   const bar=$('settingsUnsavedBar');
   if(bar) bar.style.display='none';
-  _settingsNasTechDefaultModelOnOpen=body.default_model||_settingsNasTechDefaultModelOnOpen||'';
+  _settingsNasWebUIDefaultModelOnOpen=body.default_model||_settingsNasWebUIDefaultModelOnOpen||'';
   // Sync window._defaultModel so newSession() uses the just-saved default without a reload (#908).
   if(body.default_model) window._defaultModel=body.default_model;
   if(typeof clearMessageRenderCache==='function') clearMessageRenderCache();
@@ -8202,7 +8202,7 @@ async function _applyAuxModels(){
 
 async function saveSettings(andClose){
   const model=($('settingsModel')||{}).value;
-  const modelChanged=(model||'')!==(_settingsNasTechDefaultModelOnOpen||'');
+  const modelChanged=(model||'')!==(_settingsNasWebUIDefaultModelOnOpen||'');
   const sendKey=($('settingsSendKey')||{}).value;
   const showTokenUsage=!!($('settingsShowTokenUsage')||{}).checked;
   const showQuotaChip=!!($('settingsShowQuotaChip')||{}).checked;
@@ -8216,7 +8216,7 @@ async function saveSettings(andClose){
   const pw=($('settingsPassword')||{}).value;
   const theme=($('settingsTheme')||{}).value||'dark';
   const skin=($('settingsSkin')||{}).value||'default';
-  const fontSize=($('settingsFontSize')||{}).value||localStorage.getItem('nasmusicui-font-size')||'default';
+  const fontSize=($('settingsFontSize')||{}).value||localStorage.getItem('naswebui-font-size')||'default';
   const language=($('settingsLanguage')||{}).value||'en';
   const sidebarDensity=($('settingsSidebarDensity')||{}).value==='detailed'?'detailed':'compact';
   const busyInputMode=($('settingsBusyInputMode')||{}).value||'queue';

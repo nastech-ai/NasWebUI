@@ -306,7 +306,7 @@ class TestIssue1499OnboardingProbe:
 
         # Redirect any potential write to tmp_path so we'd notice if the probe
         # wrote anything by accident.
-        monkeypatch.setattr(ob, "_get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(ob, "_get_active_naswebui_home", lambda: tmp_path)
         cfg_path = tmp_path / "config.yaml"
         monkeypatch.setattr(ob, "_get_config_path", lambda: cfg_path)
 

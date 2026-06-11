@@ -21,7 +21,7 @@ The multi-container setup still shares the agent source tree with the WebUI:
 
 - `docker-compose.two-container.yml` mounts `NasTech-Agent-src` at `/opt/nastech`
   in the agent service and read-only at
-  `/home/nasmusicuiwebui/.nastech/NasTech-Agent` in the WebUI service.
+  `/home/naswebuiwebui/.nastech/NasTech-Agent` in the WebUI service.
 - `docker-compose.three-container.yml` uses the same source volume pattern.
 - `docker_init.bash` documents that the WebUI-side mount is read-only and uses
   a staged copy when installing from the source checkout.

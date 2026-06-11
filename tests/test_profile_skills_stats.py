@@ -45,7 +45,7 @@ def test_list_profiles_api_contains_formatted_skills(monkeypatch, tmp_path):
 
     Drives the fast path (``_build_profile_rows_fast``), which discovers
     profiles via the cheap upstream helpers and skips the alias scan, so this
-    patches ``_get_default_nasmusicui_home`` / ``_get_profiles_root`` to point at a
+    patches ``_get_default_naswebui_home`` / ``_get_profiles_root`` to point at a
     tmp profile layout rather than monkeypatching the (now-bypassed)
     ``list_profiles`` aggregate.
     """
@@ -67,7 +67,7 @@ def test_list_profiles_api_contains_formatted_skills(monkeypatch, tmp_path):
     # Point the fast-path discovery helpers at our tmp layout. The base home is
     # surfaced as "default" by _build_profile_rows_fast regardless of dir name.
     import nastech_cli.profiles as cli_p
-    monkeypatch.setattr(cli_p, "_get_default_nasmusicui_home", lambda: p_default)
+    monkeypatch.setattr(cli_p, "_get_default_naswebui_home", lambda: p_default)
     monkeypatch.setattr(cli_p, "_get_profiles_root", lambda: profiles_root)
     monkeypatch.setattr(cli_p, "_check_gateway_running", lambda home: False)
 
@@ -158,7 +158,7 @@ def test_list_profiles_api_skips_alias_scan(monkeypatch, tmp_path):
     _write_config(p_default, [])
 
     import nastech_cli.profiles as cli_p
-    monkeypatch.setattr(cli_p, "_get_default_nasmusicui_home", lambda: p_default)
+    monkeypatch.setattr(cli_p, "_get_default_naswebui_home", lambda: p_default)
     monkeypatch.setattr(cli_p, "_get_profiles_root", lambda: tmp_path / "profiles")
     monkeypatch.setattr(cli_p, "_check_gateway_running", lambda home: False)
     monkeypatch.setattr(profiles, "get_active_profile_name", lambda: "default")
@@ -188,7 +188,7 @@ def test_list_profiles_api_caches_and_invalidates(monkeypatch, tmp_path):
     _write_config(p_default, [])
 
     import nastech_cli.profiles as cli_p
-    monkeypatch.setattr(cli_p, "_get_default_nasmusicui_home", lambda: p_default)
+    monkeypatch.setattr(cli_p, "_get_default_naswebui_home", lambda: p_default)
     monkeypatch.setattr(cli_p, "_get_profiles_root", lambda: tmp_path / "profiles")
     monkeypatch.setattr(cli_p, "_check_gateway_running", lambda home: False)
     monkeypatch.setattr(profiles, "get_active_profile_name", lambda: "default")

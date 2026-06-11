@@ -243,7 +243,7 @@ def test_cli_session_reader_preserves_apply_patch_metadata(tmp_path, monkeypatch
     import api.profiles
     from api.models import get_cli_session_messages
 
-    monkeypatch.setattr(api.profiles, "get_active_nasmusicui_home", lambda: str(tmp_path))
+    monkeypatch.setattr(api.profiles, "get_active_naswebui_home", lambda: str(tmp_path))
 
     messages = get_cli_session_messages("issue1824")
     assert [m["role"] for m in messages] == ["assistant", "tool"]

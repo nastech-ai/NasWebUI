@@ -38,7 +38,7 @@ def test_settings_get_returns_defaults():
     assert 'default_model' in d
     assert 'default_workspace' in d
 
-def test_default_model_updates_nasmusicui_config():
+def test_default_model_updates_naswebui_config():
     """POST /api/default-model updates the effective NasTech default model.
 
     As of #895 the endpoint returns a lightweight ack {ok, model} rather than

@@ -143,7 +143,7 @@ class TestApplyOnboardingKeySync(unittest.TestCase):
              patch("api.onboarding._get_config_path", return_value=pathlib.Path("/tmp/fake.yaml")), \
              patch("api.onboarding._load_env_file", return_value={}), \
              patch("api.onboarding._provider_api_key_present", return_value=False), \
-             patch("api.onboarding._get_active_nasmusicui_home", return_value=pathlib.Path("/tmp")):
+             patch("api.onboarding._get_active_naswebui_home", return_value=pathlib.Path("/tmp")):
 
             mod.apply_onboarding_setup({
                 "provider": "openai",
@@ -171,7 +171,7 @@ class TestApplyOnboardingKeySync(unittest.TestCase):
              patch("api.onboarding._get_config_path", return_value=pathlib.Path("/tmp/fake.yaml")), \
              patch("api.onboarding._load_env_file", return_value={"OPENAI_API_KEY": "sk-existing-key"}), \
              patch("api.onboarding._provider_api_key_present", return_value=True), \
-             patch("api.onboarding._get_active_nasmusicui_home", return_value=pathlib.Path("/tmp")):
+             patch("api.onboarding._get_active_naswebui_home", return_value=pathlib.Path("/tmp")):
 
             mod.apply_onboarding_setup({
                 "provider": "openai",
@@ -222,7 +222,7 @@ class TestApplyOnboardingSkipGuard(unittest.TestCase):
              patch("api.onboarding._get_config_path", return_value=pathlib.Path("/tmp/fake.yaml")), \
              patch("api.onboarding._load_env_file", return_value={"OPENAI_API_KEY": "existing"}), \
              patch("api.onboarding._provider_api_key_present", return_value=True), \
-             patch("api.onboarding._get_active_nasmusicui_home", return_value=pathlib.Path("/tmp")):
+             patch("api.onboarding._get_active_naswebui_home", return_value=pathlib.Path("/tmp")):
             mod.apply_onboarding_setup({
                 "provider": "openai",
                 "model": "gpt-4o",

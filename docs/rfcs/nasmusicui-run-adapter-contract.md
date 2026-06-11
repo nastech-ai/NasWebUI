@@ -732,7 +732,7 @@ Before runner code lands, define a narrow contract that covers:
    WebUI restart must not be required for the runner to finish writing ordered
    events and terminal state.
 4. **Restart/reattach success criterion.** Start a long-running run, restart only
-   `nasmusicui.service`, reload the session, rediscover the active or terminal
+   `naswebui.service`, reload the session, rediscover the active or terminal
    runner-owned run, replay/catch up from cursor without duplicate transcript /
    tool / reasoning state, and preserve cancel if the run is still active.
 5. **Control parity.** Cancel, approval, clarify, goal status/control, and any
@@ -1059,10 +1059,10 @@ Scope:
 
 Acceptance tests for Slice 4g:
 
-1. **Process ownership moved.** A local runner process, not `nasmusicui`, owns
+1. **Process ownership moved.** A local runner process, not `naswebui`, owns
    `AIAgent` construction/reuse and active run execution for `runner-local` runs.
 2. **Restart/reattach with a real runner.** Start a non-trivial `runner-local`
-   run, restart only `nasmusicui`, reload the session, rediscover the active or
+   run, restart only `naswebui`, reload the session, rediscover the active or
    terminal runner-owned run, replay/catch up from cursor without duplicate
    transcript/tool/reasoning state, and preserve cancel if still active.
 3. **No runtime-surrogate globals in WebUI.** The main WebUI server still does not
@@ -1113,7 +1113,7 @@ Slice 1. It proves execution ownership has actually moved out of the main WebUI
 request process:
 
 1. Start a long-running run from WebUI.
-2. Restart only `nasmusicui`.
+2. Restart only `naswebui`.
 3. Keep the active run executing outside the restarted WebUI process.
 4. Reload the browser/session.
 5. Rediscover the active run and replay/catch up from cursor.

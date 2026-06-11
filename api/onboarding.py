@@ -1,4 +1,4 @@
-"""NasMusicUI -- first-run onboarding helpers."""
+"""NasWebUI -- first-run onboarding helpers."""
 
 from __future__ import annotations
 
@@ -413,7 +413,7 @@ def probe_provider_endpoint(
 
     headers = {
         "Accept": "application/json",
-        "User-Agent": "nasmusicui-onboarding-probe",
+        "User-Agent": "naswebui-onboarding-probe",
     }
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
@@ -916,7 +916,7 @@ def get_onboarding_status() -> dict:
             "bot_name": settings.get("bot_name") or "NasTech",
         },
         "system": {
-            "nasmusicui_found": bool(_NASTECH_FOUND),
+            "naswebui_found": bool(_NASTECH_FOUND),
             "imports_ok": bool(imports_ok),
             "missing_modules": missing,
             "import_errors": errors,
@@ -1046,4 +1046,4 @@ def complete_onboarding() -> dict:
     return get_onboarding_status()
 
 # Branding alias
-_get_active_nasmusicui_home = _get_active_nastech_home
+_get_active_naswebui_home = _get_active_nastech_home

@@ -1,4 +1,4 @@
-"""Shared path helpers for NasMusicUI.
+"""Shared path helpers for NasWebUI.
 
 Keep low-level filesystem defaults here instead of in ``api.config`` so modules
 that need the default NasTech home can import them without triggering config's

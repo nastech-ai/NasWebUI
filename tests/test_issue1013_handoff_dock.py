@@ -549,12 +549,12 @@ def test_handoff_summary_persistence_targets_both_backends_for_messaging_session
     import api.profiles as profiles
 
     sid = "messaging_1013_both_backends_01"
-    mock_home = tmp_path / "nasmusicui_home"
+    mock_home = tmp_path / "naswebui_home"
     mock_home.mkdir()
     mock_sessions = tmp_path / "sessions"
     mock_sessions.mkdir()
 
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: mock_home)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: mock_home)
     monkeypatch.setattr(models, "SESSION_DIR", mock_sessions)
 
     conn = _new_state_db(mock_home / "state.db")
@@ -614,11 +614,11 @@ def test_persisted_handoff_summary_deduplicates_identical_tail_markers(tmp_path,
     import api.profiles as profiles
 
     sid = "messaging_1013_dedupe_tail"
-    mock_home = tmp_path / "nasmusicui_home"
+    mock_home = tmp_path / "naswebui_home"
     mock_home.mkdir()
     mock_sessions = tmp_path / "sessions"
     mock_sessions.mkdir()
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: mock_home)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: mock_home)
     monkeypatch.setattr(models, "SESSION_DIR", mock_sessions)
 
     conn = _new_state_db(mock_home / "state.db")
@@ -675,10 +675,10 @@ def test_persist_handoff_summary_falls_back_when_local_session_file_missing(tmp_
     import api.profiles as profiles
 
     sid = "messaging_1013_no_local_file"
-    mock_home = tmp_path / "nasmusicui_home"
+    mock_home = tmp_path / "naswebui_home"
     mock_home.mkdir()
 
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: mock_home)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: mock_home)
     conn = _new_state_db(mock_home / "state.db")
 
     # Force messaging classification while keeping the local shell absent.

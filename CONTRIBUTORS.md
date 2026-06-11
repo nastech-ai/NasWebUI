@@ -1,6 +1,6 @@
 # Contributors
 
-NasMusicUI is a community project. **194 people** have shipped code that landed in a release tag — including the long tail of folks whose work was salvaged into batch releases or absorbed via Co-authored-by trailers. This file is the canonical credit roll.
+NasWebUI is a community project. **194 people** have shipped code that landed in a release tag — including the long tail of folks whose work was salvaged into batch releases or absorbed via Co-authored-by trailers. This file is the canonical credit roll.
 
 A contributor's PR count is the number of distinct PRs they get credit for: PRs they authored that merged directly, PRs they authored that were closed-but-absorbed into a release commit (batch merges, salvage rewrites, cherry-picked-and-attributed work), and PRs where they were explicitly attributed in `CHANGELOG.md`. All count the same.
 

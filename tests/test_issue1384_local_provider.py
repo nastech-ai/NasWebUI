@@ -140,7 +140,7 @@ class TestResolveModelProviderHealsLegacyLocal:
 # ── 3. set_nasmusicui_default_model never persists 'local' ───────────────────
 
 
-class TestSetNasMusicUIDefaultModelNeverPersistsLocal:
+class TestSetNasWebUIDefaultModelNeverPersistsLocal:
     """Even if a caller (or a stale resolver) hands us ``provider='local'``,
     we must not write that value back to ``config.yaml``."""
 

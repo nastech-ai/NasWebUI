@@ -19,7 +19,7 @@ streaming or rendering yet.
 | Live DOM | `#liveAssistantTurn`, Worklog rows, tool cards, Thinking cards | Renderer output only; DOM survival is not semantic truth. |
 
 The same inventory is encoded in `static/assistant_turn_anchors.js` as
-`NasMusicUIAssistantTurnAnchors.stateLayers` so tests can pin the current authority
+`NasWebUIAssistantTurnAnchors.stateLayers` so tests can pin the current authority
 order.
 
 ## Source Event Classification

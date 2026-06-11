@@ -1,5 +1,5 @@
 """
-NasMusicUI -- Shared configuration, constants, and global state.
+NasWebUI -- Shared configuration, constants, and global state.
 Imported by all other api/* modules and by server.py.
 
 Discovery order for all paths:
@@ -641,7 +641,7 @@ def print_startup_config() -> None:
 
     lines = [
         "",
-        "  NasMusicUI -- startup config",
+        "  NasWebUI -- startup config",
         "  --------------------------------",
         f"  repo root   : {REPO_ROOT}",
         f"  agent dir   : {_AGENT_DIR if _AGENT_DIR else 'NOT FOUND'}  {ok if _AGENT_DIR else err}",

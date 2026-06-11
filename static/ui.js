@@ -631,7 +631,7 @@ async function saveDashboardSettings(){
     else if(typeof showToast==='function') showToast('Dashboard link settings failed to save.');
   }
 }
-function openNasMusicUIDashboard(event){
+function openNasWebUIDashboard(event){
   if(event){event.preventDefault();event.stopPropagation();}
   const btn=event&&event.currentTarget?event.currentTarget:document.querySelector('[data-dashboard-link]');
   const url=(btn&&btn.dataset&&btn.dataset.dashboardUrl)||_dashboardBrowserUrl(_dashboardStatusCache);
@@ -973,8 +973,8 @@ window.addEventListener('visibilitychange',()=>{
 // Dynamic model labels -- populated by populateModelDropdown(), fallback to static map
 let _dynamicModelLabels={};
 window._configuredModelBadges=window._configuredModelBadges||{};
-const MODEL_STATE_KEY='nasmusicui-model-state';
-const PENDING_SESSION_MODEL_PREFIX='nasmusicui-pending-session-model:';
+const MODEL_STATE_KEY='naswebui-model-state';
+const PENDING_SESSION_MODEL_PREFIX='naswebui-pending-session-model:';
 const PENDING_SESSION_MODEL_MAX_AGE_MS=10*60*1000;
 
 // ── Smart model resolver ────────────────────────────────────────────────────
@@ -1091,7 +1091,7 @@ function _readPersistedModelState(){
       }
     }
   }catch(_){}
-  const legacy=localStorage.getItem('nasmusicui-model');
+  const legacy=localStorage.getItem('naswebui-model');
   if(!legacy) return null;
   return {model:legacy,model_provider:_providerFromModelValue(legacy)||null};
 }
@@ -1099,17 +1099,17 @@ function _writePersistedModelState(model, modelProvider){
   const value=String(model||'').trim();
   const provider=modelProvider?String(modelProvider).trim():(_providerFromModelValue(value)||null);
   if(!value){
-    localStorage.removeItem('nasmusicui-model');
+    localStorage.removeItem('naswebui-model');
     localStorage.removeItem(MODEL_STATE_KEY);
     return;
   }
-  localStorage.setItem('nasmusicui-model', value);
+  localStorage.setItem('naswebui-model', value);
   try{
     localStorage.setItem(MODEL_STATE_KEY, JSON.stringify({model:value,model_provider:provider||null}));
   }catch(_){}
 }
 function _clearPersistedModelState(){
-  localStorage.removeItem('nasmusicui-model');
+  localStorage.removeItem('naswebui-model');
   localStorage.removeItem(MODEL_STATE_KEY);
 }
 function _pendingSessionModelKey(sessionId){
@@ -5037,8 +5037,8 @@ function autoReadLastAssistant(){
 }
 
 // ── Reconnect banner (B4/B5: reload resilience) ──
-const INFLIGHT_KEY = 'nasmusicui-inflight'; // localStorage key for in-flight session tracking
-const INFLIGHT_STATE_KEY = 'nasmusicui-inflight-state'; // localStorage snapshots for mid-stream reload recovery
+const INFLIGHT_KEY = 'naswebui-inflight'; // localStorage key for in-flight session tracking
+const INFLIGHT_STATE_KEY = 'naswebui-inflight-state'; // localStorage snapshots for mid-stream reload recovery
 const INFLIGHT_STATE_DEFAULT_LIMITS = {
   maxSessions:8,
   messages:24,
@@ -11658,13 +11658,13 @@ async function uploadPendingFiles(){
 }
 
 
-  /* ═══ NasMusicUI Click Sound System ═══
+  /* ═══ NasWebUI Click Sound System ═══
      Plays subtle UI tones on specific interactive elements only.
      Uses Web Audio API — no audio files needed.
-     Respects prefers-reduced-motion and the nasmusicui-sounds setting. */
+     Respects prefers-reduced-motion and the naswebui-sounds setting. */
   (function(){
     var _ctx = null;
-    var _enabled = localStorage.getItem('nasmusicui-sounds') !== 'false';
+    var _enabled = localStorage.getItem('naswebui-sounds') !== 'false';
 
     function _getCtx(){
       if(!_ctx){
@@ -11762,16 +11762,16 @@ async function uploadPendingFiles(){
     }, {passive: true});
 
     // Expose toggle for settings
-    window.nasmusicuiSoundsEnabled = function(v){
+    window.naswebuiSoundsEnabled = function(v){
       if(typeof v === 'boolean'){
         _enabled = v;
-        localStorage.setItem('nasmusicui-sounds', v ? 'true' : 'false');
+        localStorage.setItem('naswebui-sounds', v ? 'true' : 'false');
       }
       return _enabled;
     };
 
     // Expose for sounds settings toggle
-    window._nasmusicuiPlayTestSound = function(){
+    window._naswebuiPlayTestSound = function(){
       _tone(520, 60, 'triangle', 0.07);
       setTimeout(function(){ _tone(660, 80, 'sine', 0.06); }, 55);
     };
@@ -11822,7 +11822,7 @@ async function uploadPendingFiles(){
   })();
   
 // ═══════════════════════════════════════════════════════════════════
-// NasMusicUI Extras: Cloudflare Tunnel UI + Link Preview + Composer
+// NasWebUI Extras: Cloudflare Tunnel UI + Link Preview + Composer
 // ═══════════════════════════════════════════════════════════════════
 
 // ── Cloudflare Tunnel ──

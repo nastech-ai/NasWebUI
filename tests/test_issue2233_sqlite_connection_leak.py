@@ -72,12 +72,12 @@ def _make_state_db(path: Path) -> None:
 @pytest.mark.skipif(not _IS_LINUX, reason="fd counting via /proc only available on Linux")
 def test_handoff_summary_path_does_not_leak_fds(tmp_path, monkeypatch):
     """Loop both patched functions and assert open-fd count stays bounded."""
-    nasmusicui_home = tmp_path / "nastech"
-    nasmusicui_home.mkdir()
-    state_db = nasmusicui_home / "state.db"
+    naswebui_home = tmp_path / "nastech"
+    naswebui_home.mkdir()
+    state_db = naswebui_home / "state.db"
     _make_state_db(state_db)
 
-    monkeypatch.setenv("NASTECH_HOME", str(nasmusicui_home))
+    monkeypatch.setenv("NASTECH_HOME", str(naswebui_home))
 
     from api.models import count_conversation_rounds
     from api.routes import _persist_handoff_summary_to_state_db

@@ -35,7 +35,7 @@ const src = fs.readFileSync({json.dumps(str(ANCHORS_JS))}, 'utf8');
 const sandbox = {{window:{{}}}};
 vm.createContext(sandbox);
 vm.runInContext(src, sandbox, {{filename:'assistant_turn_anchors.js'}});
-const api = sandbox.window.NasMusicUIAssistantTurnAnchors;
+const api = sandbox.window.NasWebUIAssistantTurnAnchors;
 const anchor = api.createAssistantTurnAnchorSeed({{
   session_id:'sid-1',
   stream_id:'stream-1',
@@ -78,9 +78,9 @@ def test_phase0_scaffold_is_loaded_before_current_rendering_modules():
 
     assert anchor_pos < ui_pos < sessions_pos < messages_pos
     assert "'./static/assistant_turn_anchors.js' + VQ" in _read(SW_JS)
-    assert "NasMusicUIAssistantTurnAnchors" not in _read(UI_JS)
-    assert "NasMusicUIAssistantTurnAnchors" not in _read(SESSIONS_JS)
-    assert "NasMusicUIAssistantTurnAnchors" not in _read(MESSAGES_JS)
+    assert "NasWebUIAssistantTurnAnchors" not in _read(UI_JS)
+    assert "NasWebUIAssistantTurnAnchors" not in _read(SESSIONS_JS)
+    assert "NasWebUIAssistantTurnAnchors" not in _read(MESSAGES_JS)
 
 
 def test_phase0_inventory_names_current_state_layers_in_authority_order():

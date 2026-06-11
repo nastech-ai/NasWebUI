@@ -1,5 +1,5 @@
 """
-NasMusicUI -- Self-update checker.
+NasWebUI -- Self-update checker.
 
 Checks if the webui and NasTech-Agent git repos are behind their latest
 release tags. Results are cached server-side (30-min TTL) so git fetch runs
@@ -285,7 +285,7 @@ def _version_from_gateway_health_payload(payload: object) -> str | None:
     """Extract a version string from a NasTech Agent gateway health payload."""
     if not isinstance(payload, dict):
         return None
-    for key in ('version', 'agent_version', 'nasmusicui_version'):
+    for key in ('version', 'agent_version', 'naswebui_version'):
         value = payload.get(key)
         if isinstance(value, str) and value.strip():
             return value.strip()
@@ -366,7 +366,7 @@ def _normalize_remote_url(remote_url):
 
     Git remotes may be HTTPS or SSH and may include a literal ``.git`` suffix.
     Strip only that literal suffix — never use ``str.rstrip('.git')`` because it
-    treats the argument as a character set and can truncate ``nasmusicui`` to
+    treats the argument as a character set and can truncate ``naswebui`` to
     ``nastech-webu``.
     """
     if not remote_url:
@@ -750,7 +750,7 @@ def _commit_subjects_for_update_with_limit(info: dict, *, limit: int = 24) -> tu
         return [], False
     target = info.get('name')
     if target not in ('webui', 'agent'):
-        target = 'webui' if info.get('repo_url', '').endswith('nasmusicui') else target
+        target = 'webui' if info.get('repo_url', '').endswith('naswebui') else target
     path = _repo_path_for_update_target(target)
     if path is None or not (Path(path) / '.git').exists():
         return [], False
@@ -1105,7 +1105,7 @@ def _schedule_restart(delay: float = 2.0) -> None:
                 #
                 #   * Source checkout (`python server.py` via bootstrap.py /
                 #     ctl.sh / start.sh): sys.argv[0] is the SCRIPT path
-                #     (e.g. "/root/nasmusicui/server.py"), sys.executable is
+                #     (e.g. "/root/naswebui/server.py"), sys.executable is
                 #     the interpreter. CPython treats argv[1] as the script to
                 #     run, so we must pass [sys.executable] + sys.argv.
                 #

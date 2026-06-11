@@ -66,9 +66,9 @@ def test_appearance_pickers_schedule_autosave_and_do_not_mark_dirty():
 
 def test_appearance_revert_preview_no_longer_rolls_back_theme_skin_font():
     block = _function_block(PANELS_JS, "_revertSettingsPreview")
-    assert "nasmusicui-theme" not in block
-    assert "nasmusicui-skin" not in block
-    assert "nasmusicui-font-size" not in block
+    assert "naswebui-theme" not in block
+    assert "naswebui-skin" not in block
+    assert "naswebui-font-size" not in block
     assert "_markSettingsDirty()" not in block
 
 

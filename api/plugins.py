@@ -1,5 +1,5 @@
 """
-Plugin discovery and static serving for NasMusicUI.
+Plugin discovery and static serving for NasWebUI.
 
 Scans ~/.nastech/plugins/<name>/dashboard/ for manifest.json files,
 matching the official NasTech dashboard plugin format.

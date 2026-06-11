@@ -8,7 +8,7 @@ Two problems fixed:
 1. uv was downloaded at container startup; fails in air-gapped / firewalled environments.
    Fix: pre-install uv in the Docker image at build time (system-wide in /usr/local/bin).
 2. workspace directory setup must happen before the server drops privileges;
-   bind-mount dirs created by Docker as root are unwritable by nasmusicuiwebui.
+   bind-mount dirs created by Docker as root are unwritable by naswebuiwebui.
    Fix: root init mkdir/chown, then runtime verifies access without sudo.
 """
 import pathlib
@@ -39,12 +39,12 @@ class TestDockerfileUvPreinstall:
         )
         assert uv_install_line is not None, "Could not find uv install line in Dockerfile"
         # Must either use UV_INSTALL_DIR pointing to /usr/local/bin, or run as root
-        # (so the default install location is accessible to nasmusicuiwebui user)
+        # (so the default install location is accessible to naswebuiwebui user)
         has_system_dir = "/usr/local/bin" in uv_install_line or "UV_INSTALL_DIR=/usr/local/bin" in DOCKERFILE
         assert has_system_dir, (
-            "uv must be installed to /usr/local/bin (system-wide) so nasmusicuiwebui user "
-            "can find it. Installing as nasmusicuiwebuitoo puts it in /home/nasmusicuiwebuitoo/.local/bin "
-            "which is NOT on nasmusicuiwebui's PATH."
+            "uv must be installed to /usr/local/bin (system-wide) so naswebuiwebui user "
+            "can find it. Installing as naswebuiwebuitoo puts it in /home/naswebuiwebuitoo/.local/bin "
+            "which is NOT on naswebuiwebui's PATH."
         )
 
     def test_dockerfile_uv_installed_before_copy(self):
@@ -60,8 +60,8 @@ class TestDockerfileUvPreinstall:
 
     def test_dockerfile_uv_installed_as_root_or_before_user_switch(self):
         """uv must be installed as root (USER root) to reach /usr/local/bin.
-        If installed as nasmusicuiwebuitoo, it lands in ~nasmusicuiwebuitoo/.local/bin,
-        which the nasmusicuiwebui user at runtime can't see.
+        If installed as naswebuiwebuitoo, it lands in ~naswebuiwebuitoo/.local/bin,
+        which the naswebuiwebui user at runtime can't see.
         """
         lines = DOCKERFILE.splitlines()
         uv_line_idx = next(i for i, l in enumerate(lines) if "uv/install.sh" in l)
@@ -73,8 +73,8 @@ class TestDockerfileUvPreinstall:
                 break
         assert user_before == "root", (
             f"uv install must run as USER root (found USER {user_before!r}). "
-            "Installing as nasmusicuiwebuitoo puts uv in /home/nasmusicuiwebuitoo/.local/bin "
-            "which is not accessible to the nasmusicuiwebui runtime user."
+            "Installing as naswebuiwebuitoo puts uv in /home/naswebuiwebuitoo/.local/bin "
+            "which is not accessible to the naswebuiwebui runtime user."
         )
 
 
@@ -121,10 +121,10 @@ class TestInitScriptUvSkip:
             "so the container exits with a clear message instead of failing silently"
         )
 
-    def test_init_script_path_includes_nasmusicuiwebui_local_bin(self):
-        """PATH must include /home/nasmusicuiwebui/.local/bin for fallback runtime install."""
-        assert "/home/nasmusicuiwebui/.local/bin" in INIT_SCRIPT, (
-            "docker_init.bash must include /home/nasmusicuiwebui/.local/bin in PATH "
+    def test_init_script_path_includes_naswebuiwebui_local_bin(self):
+        """PATH must include /home/naswebuiwebui/.local/bin for fallback runtime install."""
+        assert "/home/naswebuiwebui/.local/bin" in INIT_SCRIPT, (
+            "docker_init.bash must include /home/naswebuiwebui/.local/bin in PATH "
             "for the case where uv is installed at runtime via curl"
         )
 
@@ -137,7 +137,7 @@ class TestWorkspacePermissions:
         """docker_init.bash must create missing workspaces during root init.
 
         Docker auto-creates bind-mount directories as root if they don't exist,
-        leaving them unwritable by nasmusicuiwebui. The production image no longer
+        leaving them unwritable by naswebuiwebui. The production image no longer
         ships sudo, so root init handles mkdir before dropping privileges.
         """
         root_section = INIT_SCRIPT[
@@ -159,7 +159,7 @@ class TestWorkspacePermissions:
             INIT_SCRIPT.find('if [ "A${whoami}" == "Aroot" ]; then'):
             INIT_SCRIPT.find('exec su')
         ]
-        assert 'chown nasmusicuiwebui:nasmusicuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE"' in root_section, (
+        assert 'chown naswebuiwebui:naswebuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE"' in root_section, (
             "docker_init.bash must chown the workspace during root init "
             "so the app user can write to it when possible (#357)"
         )
@@ -167,7 +167,7 @@ class TestWorkspacePermissions:
     def test_workspace_mkdir_before_chown(self):
         """Root init mkdir must come before root init chown in docker_init.bash."""
         mkdir_pos = INIT_SCRIPT.find('mkdir -p "$NASMUSICUI_DEFAULT_WORKSPACE"')
-        chown_pos = INIT_SCRIPT.find('chown nasmusicuiwebui:nasmusicuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE"')
+        chown_pos = INIT_SCRIPT.find('chown naswebuiwebui:naswebuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE"')
         assert mkdir_pos != -1, "root init mkdir for workspace not found"
         assert chown_pos != -1, "root init chown for workspace not found"
         assert mkdir_pos < chown_pos, "root init mkdir must come before root init chown"

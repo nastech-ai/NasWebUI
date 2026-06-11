@@ -1,4 +1,4 @@
-"""NasMusicUI -- Session model and in-memory session store."""
+"""NasWebUI -- Session model and in-memory session store."""
 import collections
 import copy
 import datetime
@@ -3064,9 +3064,9 @@ def agent_session_row_exists(session_id: str, *, profile=None) -> bool:
 
 def _sidebar_title_is_generic_webui(title: str | None) -> bool:
     text = ' '.join(str(title or '').split())
-    if text == 'NasMusicUI':
+    if text == 'NasWebUI':
         return True
-    prefix = 'NasMusicUI #'
+    prefix = 'NasWebUI #'
     return text.startswith(prefix) and text[len(prefix):].isdigit()
 
 

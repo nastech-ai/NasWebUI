@@ -208,7 +208,7 @@ class TestSystemTheme:
 
     def test_panels_saves_system_string_not_resolved(self):
         src = read("static/panels.js")
-        assert "localStorage.getItem('nasmusicui-theme')" in src, (
+        assert "localStorage.getItem('naswebui-theme')" in src, (
             "_settingsThemeOnOpen must read from localStorage to preserve "
             "the 'system' string, not the resolved 'dark'/'light'"
         )
@@ -247,7 +247,7 @@ class TestSystemTheme:
         src = read("static/panels.js")
         # PR #2799 (v0.51.119): skin precedence now prefers localStorage over settings.skin
         # so the inline-gate-resolved DOM skin survives the picker hydration.
-        skin_idx = src.index("const skinVal=(localStorage.getItem('nasmusicui-skin')||settings.skin||'default').toLowerCase();")
+        skin_idx = src.index("const skinVal=(localStorage.getItem('naswebui-skin')||settings.skin||'default').toLowerCase();")
         # models is now declared as let models=null before the try block
         models_idx = src.index("models=await api('/api/models');")
         assert skin_idx < models_idx, (

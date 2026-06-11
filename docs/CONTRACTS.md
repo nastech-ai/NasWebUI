@@ -1,6 +1,6 @@
 # Project Contracts
 
-This document is a contributor-facing index for existing NasMusicUI contracts,
+This document is a contributor-facing index for existing NasWebUI contracts,
 RFCs, design constraints, and review expectations. It does not replace the
 source documents and it does not mark proposals as implemented. Follow each
 linked document's status and scope.

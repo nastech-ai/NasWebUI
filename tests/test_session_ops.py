@@ -219,7 +219,7 @@ def test_status_returns_summary(cleanup_test_sessions):
     assert r['message_count'] == 3
     assert 'model' in r
     assert r['profile'] == 'default'
-    assert r['nasmusicui_home'] == str(TEST_STATE_DIR)
+    assert r['naswebui_home'] == str(TEST_STATE_DIR)
     assert 'workspace' in r
     assert 'created_at' in r
     assert 'updated_at' in r
@@ -235,7 +235,7 @@ def test_status_returns_summary(cleanup_test_sessions):
     assert r['total_tokens'] == 0
 
 
-def test_status_returns_profile_specific_nasmusicui_home(cleanup_test_sessions):
+def test_status_returns_profile_specific_naswebui_home(cleanup_test_sessions):
     data = _post(TEST_BASE, '/api/session/new', {'profile': 'research'})
     sid = data['session']['session_id']
     cleanup_test_sessions.append(sid)
@@ -243,7 +243,7 @@ def test_status_returns_profile_specific_nasmusicui_home(cleanup_test_sessions):
     r = _get(f'/api/session/status?session_id={sid}')
 
     assert r['profile'] == 'research'
-    assert r['nasmusicui_home'] == str(TEST_STATE_DIR / 'profiles' / 'research')
+    assert r['naswebui_home'] == str(TEST_STATE_DIR / 'profiles' / 'research')
 
 
 def test_status_unknown_returns_404():

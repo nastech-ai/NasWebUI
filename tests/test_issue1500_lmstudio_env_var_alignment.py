@@ -99,10 +99,10 @@ class TestIssue1500EnvVarAlignment:
         # Redirect every write target to the tmp_path so we don't touch the real
         # ~/.nastech — pattern from webui-onboarding-provider-readiness skill.
         from api import onboarding as ob
-        monkeypatch.setattr(ob, "_get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(ob, "_get_active_naswebui_home", lambda: tmp_path)
         cfg_path = tmp_path / "config.yaml"
         monkeypatch.setattr(ob, "_get_config_path", lambda: cfg_path)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.delenv("NASMUSICUI_SKIP_ONBOARDING", raising=False)
         monkeypatch.delenv("LM_API_KEY", raising=False)
         monkeypatch.delenv("LMSTUDIO_API_KEY", raising=False)
@@ -129,7 +129,7 @@ class TestIssue1500EnvVarAlignment:
     def test_legacy_lmstudio_env_var_still_detected(self, monkeypatch, tmp_path):
         """Pre-#1500 users with LMSTUDIO_API_KEY still see has_key=True after upgrade."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.delenv("LM_API_KEY", raising=False)
         monkeypatch.setenv("LMSTUDIO_API_KEY", "lm-studio-legacy")
 
@@ -155,7 +155,7 @@ class TestIssue1500EnvVarAlignment:
     def test_canonical_takes_precedence_over_legacy(self, monkeypatch, tmp_path):
         """When both env vars are set, canonical wins (rare migration edge)."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.setenv("LM_API_KEY", "canonical-wins")
         monkeypatch.setenv("LMSTUDIO_API_KEY", "legacy-loses")
 

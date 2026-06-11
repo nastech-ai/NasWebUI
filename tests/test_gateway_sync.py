@@ -1925,7 +1925,7 @@ def test_messaging_session_message_count_matches_deduped_display_messages(cleanu
         s = Session(
             session_id=sid,
             title='Legacy Discord Snapshot',
-            workspace='/tmp/nasmusicui-test',
+            workspace='/tmp/naswebui-test',
             model='openai/gpt-5',
             messages=[{"role": "user", "content": "Thread question", "timestamp": base_ts + 1}],
             session_source='messaging',

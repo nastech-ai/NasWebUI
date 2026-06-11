@@ -521,7 +521,7 @@ def test_cancel_copy_uses_profile_name_for_non_default_profile(monkeypatch):
     assert 'before Research finished' in streaming._cancelled_turn_content(agent_name=name)
 
 
-def test_cancel_copy_falls_back_to_nasmusicui_for_blank_bot_name(monkeypatch):
+def test_cancel_copy_falls_back_to_naswebui_for_blank_bot_name(monkeypatch):
     """Blank or missing bot_name should not leak old persona copy."""
     import api.streaming as streaming
 

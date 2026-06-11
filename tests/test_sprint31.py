@@ -93,14 +93,14 @@ class TestProfileCreateAPIWithEndpoint:
 
     def _cleanup(self):
         """Remove the test profile from wherever nastech_cli placed it."""
-        home_nasmusicui = pathlib.Path.home() / ".nastech"
+        home_naswebui = pathlib.Path.home() / ".nastech"
         # Walk all profile roots: real ~/.nastech, and any subdirs that might be NASTECH_HOME
         roots_to_check = set()
-        roots_to_check.add(home_nasmusicui)
-        for root, dirs, _ in os.walk(str(home_nasmusicui)):
+        roots_to_check.add(home_naswebui)
+        for root, dirs, _ in os.walk(str(home_naswebui)):
             if "profiles" in dirs:
                 roots_to_check.add(pathlib.Path(root))
-            if root.count(os.sep) - str(home_nasmusicui).count(os.sep) > 4:
+            if root.count(os.sep) - str(home_naswebui).count(os.sep) > 4:
                 break  # don't recurse too deep
         for search_root in roots_to_check:
             candidate = search_root / "profiles" / self._PROFILE_NAME

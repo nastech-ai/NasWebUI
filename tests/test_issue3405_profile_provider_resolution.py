@@ -316,7 +316,7 @@ class TestReadProfileModelConfig:
         class FakeSession:
             profile = "work"
 
-        with patch("api.profiles.get_nasmusicui_home_for_profile", return_value=tmp_path):
+        with patch("api.profiles.get_naswebui_home_for_profile", return_value=tmp_path):
             result = _read_profile_model_config(FakeSession(), None)
 
         assert result == ("anthropic", "claude-sonnet-4.6")
@@ -330,7 +330,7 @@ class TestReadProfileModelConfig:
             class FakeSession:
                 profile = "work"
 
-            with patch("api.profiles.get_nasmusicui_home_for_profile", return_value=Path(td)):
+            with patch("api.profiles.get_naswebui_home_for_profile", return_value=Path(td)):
                 result = _read_profile_model_config(FakeSession(), None)
 
         assert result == (None, None)
@@ -349,7 +349,7 @@ class TestReadProfileModelConfig:
         class FakeSession:
             profile = "work"
 
-        with patch("api.profiles.get_nasmusicui_home_for_profile", return_value=tmp_path):
+        with patch("api.profiles.get_naswebui_home_for_profile", return_value=tmp_path):
             result = _read_profile_model_config(FakeSession(), None)
 
         assert result == (None, "claude-sonnet-4.6")

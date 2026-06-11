@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Concrete diagnostic flows for the most common failure modes when running NasMusicUI. Each entry has the symptom, the diagnostic commands you should run *before* opening an issue, and the fix that has worked for past reporters.
+Concrete diagnostic flows for the most common failure modes when running NasWebUI. Each entry has the symptom, the diagnostic commands you should run *before* opening an issue, and the fix that has worked for past reporters.
 
 If your symptom isn't listed and the diagnostics don't narrow it down, file a bug at https://github.com/nastech-ai/NasWebUI/issues — include the relevant command output after redacting secrets, private paths, full `.env` files, full `auth.json` files, cookies, tokens, and password hashes.
 
@@ -30,7 +30,7 @@ The third command must succeed (the file must exist). If it fails, your symlink 
 ### Step 2 — confirm the WebUI is using the right Python
 
 ```bash
-cd ~/nasmusicui && ./start.sh 2>&1 | grep -iE 'agent|python|nasmusicui_python' | head -20
+cd ~/naswebui && ./start.sh 2>&1 | grep -iE 'agent|python|naswebui_python' | head -20
 ```
 
 The startup banner prints which Python and agent dir it resolved. If the agent dir is empty or the Python is the wrong one, set the override:
@@ -53,7 +53,7 @@ pip install -e .                  # use the same python that runs the WebUI
 Then restart the WebUI:
 
 ```bash
-cd ~/nasmusicui
+cd ~/naswebui
 ./start.sh
 ```
 

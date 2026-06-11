@@ -3,10 +3,10 @@
 // and cross-tab shutdown broadcasts as early as possible.
 (function(){
   // Clear stale stop-server flag on successful page load (server is reachable)
-  try{localStorage.removeItem('nasmusicui-server-stopped');}catch(_){}
+  try{localStorage.removeItem('naswebui-server-stopped');}catch(_){}
   // Listen for shutdown broadcast from other tabs
   try {
-    var _stopChan = new BroadcastChannel('nasmusicui-shutdown');
+    var _stopChan = new BroadcastChannel('naswebui-shutdown');
     _stopChan.onmessage = function() { _showServerStopped(); };
   } catch(_) {}
 })();
@@ -139,7 +139,7 @@ function _setWorkspacePanelMode(mode){
   // Persist open/closed across refreshes (browse/preview → open; closed → closed)
   // Do NOT overwrite the user's "keep open" preference — only track runtime state
   // so that toggleWorkspacePanel(false) from the toolbar doesn't clear the setting.
-  try{localStorage.setItem('nasmusicui-workspace-panel', open ? 'open' : 'closed');}catch(_){}
+  try{localStorage.setItem('naswebui-workspace-panel', open ? 'open' : 'closed');}catch(_){}
   layout.classList.toggle('workspace-panel-collapsed',!open);
   if(_isCompactWorkspaceViewport()){
     panel.classList.toggle('mobile-open',open);
@@ -338,7 +338,7 @@ _installPwaSidebarSwipeGesture();
 // Mobile is unaffected: the sidebar is an overlay there, and every collapse
 // code path is gated on `_isDesktopWidth()` (min-width:641px).
 // State is persisted via localStorage and survives reloads + bfcache.
-const _SIDEBAR_COLLAPSED_KEY='nasmusicui-sidebar-collapsed';
+const _SIDEBAR_COLLAPSED_KEY='naswebui-sidebar-collapsed';
 
 function _isDesktopWidth(){
   try{return window.matchMedia('(min-width:641px)').matches;}catch(_){return true;}
@@ -1253,7 +1253,7 @@ $('modelSelect').onchange=async()=>{
     : {model:selectedModel,model_provider:null};
   if(typeof closeModelDropdown==='function') closeModelDropdown();
   if(typeof _writePersistedModelState==='function') _writePersistedModelState(modelState.model,modelState.model_provider);
-  else try{localStorage.setItem('nasmusicui-model',modelState.model)}catch{}
+  else try{localStorage.setItem('naswebui-model',modelState.model)}catch{}
   if(!S.session){
     if(typeof syncModelChip==='function') syncModelChip();
     if(typeof syncReasoningChip==='function') syncReasoningChip();
@@ -1376,24 +1376,15 @@ $('msg').addEventListener('keydown',e=>{
       return;
     }
   }
-  // Send key: respect user preference.
-  // On touch-primary devices with the software keyboard open, default to
-  // Enter = newline since there's no physical Shift key. Hardware keyboards on
-  // tablets keep desktop behavior when the viewport is not keyboard-shrunk.
-  // The 'ctrl+enter' setting also uses this behavior (Enter = newline).
-  // Users can override in Settings by explicitly choosing 'enter' mode.
+  // Send key: Enter always inserts a newline (paragraph).
+  // Use the send button to submit, or Ctrl/Cmd+Enter / Numpad Enter as a
+  // keyboard shortcut for power users. Plain Enter never sends — users
+  // need multi-line input without accidentally firing off a message.
   if(e.key==='Enter'){
     if(_isImeEnter(e)){return;}
     const isNumpadEnter=_isNumpadEnter(e);
-    const _mobileDefault=matchMedia('(pointer:coarse)').matches
-      &&!_hasFinePointerCoexisting()
-      &&window._sendKey==='enter'
-      &&_isVirtualKeyboardLikelyOpen();
-    if(window._sendKey==='ctrl+enter'||_mobileDefault){
-      if(isNumpadEnter||e.ctrlKey||e.metaKey){e.preventDefault();send();}
-    } else {
-      if(!e.shiftKey){e.preventDefault();send();}
-    }
+    if(isNumpadEnter||e.ctrlKey||e.metaKey){e.preventDefault();send();}
+    // Plain Enter and Shift+Enter both insert a newline — no action needed.
   }
 });
 // B14: Cmd/Ctrl+K creates a new chat from anywhere
@@ -1617,7 +1608,7 @@ function _syncThemeColorMeta(){
   try{
     const bg=getComputedStyle(document.documentElement).getPropertyValue('--sidebar').trim();
     if(!bg) return;
-    const known=document.getElementById('nasmusicui-theme-color');
+    const known=document.getElementById('naswebui-theme-color');
     if(known){
       known.setAttribute('content',bg);
       known.removeAttribute('media');
@@ -1668,10 +1659,10 @@ function _applySkin(name){
 }
 
 function _pickTheme(name){
-  const currentSkin=localStorage.getItem('nasmusicui-skin');
+  const currentSkin=localStorage.getItem('naswebui-skin');
   const appearance=_normalizeAppearance(name,currentSkin);
-  localStorage.setItem('nasmusicui-theme',appearance.theme);
-  localStorage.setItem('nasmusicui-skin',appearance.skin);
+  localStorage.setItem('naswebui-theme',appearance.theme);
+  localStorage.setItem('naswebui-skin',appearance.skin);
   _applyTheme(appearance.theme);
   _applySkin(appearance.skin);
   _syncThemePicker(appearance.theme);
@@ -1684,9 +1675,9 @@ function _pickTheme(name){
 }
 
 function _pickSkin(name){
-  const appearance=_normalizeAppearance(localStorage.getItem('nasmusicui-theme'),name);
-  localStorage.setItem('nasmusicui-theme',appearance.theme);
-  localStorage.setItem('nasmusicui-skin',appearance.skin);
+  const appearance=_normalizeAppearance(localStorage.getItem('naswebui-theme'),name);
+  localStorage.setItem('naswebui-theme',appearance.theme);
+  localStorage.setItem('naswebui-skin',appearance.skin);
   _applyTheme(appearance.theme);
   _applySkin(appearance.skin);
   _syncThemePicker(appearance.theme);
@@ -1723,7 +1714,7 @@ function _applyFontSize(size){
 }
 
 function _pickFontSize(size){
-  localStorage.setItem('nasmusicui-font-size',size);
+  localStorage.setItem('naswebui-font-size',size);
   _applyFontSize(size);
   _syncFontSizePicker(size);
   const hidden=$('settingsFontSize');
@@ -1817,7 +1808,7 @@ function applyBotName(){
     };
     window._busyInputMode=(s.busy_input_mode||'queue');
     window._sessionEndlessScrollEnabled=!!s.session_endless_scroll;
-    window._botName=s.bot_name||'NasMusicUI';
+    window._botName=s.bot_name||'NasWebUI';
     if(s.default_model_provider) window._activeProvider=s.default_model_provider;
     if(s.default_model){
       window._defaultModel=s.default_model;
@@ -1858,16 +1849,16 @@ function applyBotName(){
     // server in charge for empty first-visit state while preserving explicit
     // light/dark/system choices after a failed autosave.
     const srvAppearance=_normalizeAppearance(s.theme,s.skin);
-    const lsTheme=(localStorage.getItem('nasmusicui-theme')||'').trim().toLowerCase();
-    const lsSkin=(localStorage.getItem('nasmusicui-skin')||'').trim().toLowerCase();
+    const lsTheme=(localStorage.getItem('naswebui-theme')||'').trim().toLowerCase();
+    const lsSkin=(localStorage.getItem('naswebui-skin')||'').trim().toLowerCase();
     const lsAppearance=_normalizeAppearance(lsTheme||null,lsSkin||null);
     const lsHasExplicitSkin=lsSkin&&lsSkin!=='default';
     const lsHasExplicitTheme=lsTheme&&['system','light','dark'].includes(lsTheme);
     const theme=lsHasExplicitTheme?lsAppearance.theme:srvAppearance.theme;
     const skin=lsHasExplicitSkin?lsAppearance.skin:srvAppearance.skin;
-    localStorage.setItem('nasmusicui-theme',theme);
+    localStorage.setItem('naswebui-theme',theme);
     _applyTheme(theme);
-    localStorage.setItem('nasmusicui-skin',skin);
+    localStorage.setItem('naswebui-skin',skin);
     _applySkin(skin);
     // Reconcile: if localStorage and server disagree, push localStorage
     // values to the server so the next refresh won't revert.
@@ -1876,8 +1867,8 @@ function applyBotName(){
         api('/api/settings',{method:'POST',body:JSON.stringify({theme,skin})});
       }catch(_){}
     }
-    const fontSize=(s.font_size||localStorage.getItem('nasmusicui-font-size')||'default');
-    localStorage.setItem('nasmusicui-font-size',fontSize);
+    const fontSize=(s.font_size||localStorage.getItem('naswebui-font-size')||'default');
+    localStorage.setItem('naswebui-font-size',fontSize);
     _applyFontSize(fontSize);
     if(typeof setLocale==='function'){
       const _lang=typeof resolvePreferredLocale==='function'
@@ -1911,7 +1902,7 @@ function applyBotName(){
     window._pinnedSessionsLimit=3;
     window._busyInputMode='queue';
     window._sessionEndlessScrollEnabled=false;
-    window._botName='NasMusicUI';
+    window._botName='NasWebUI';
     _bootSettings={check_for_updates:false};
     if(typeof setLocale==='function'){
       const _lang=typeof resolvePreferredLocale==='function'
@@ -1944,7 +1935,7 @@ function applyBotName(){
       : null;
     const savedState=(typeof _readPersistedModelState==='function')
       ? _readPersistedModelState()
-      : (localStorage.getItem('nasmusicui-model')?{model:localStorage.getItem('nasmusicui-model'),model_provider:null}:null);
+      : (localStorage.getItem('naswebui-model')?{model:localStorage.getItem('naswebui-model'),model_provider:null}:null);
     // Active sessions are authoritative. On fresh boot without a restored
     // session, keep the profile/server default ahead of stale browser model
     // state when a default exists.
@@ -1965,8 +1956,8 @@ function applyBotName(){
       else if(!applied&&!sessionModelState&&$('modelSelect').value!==stateToApply.model){
         if(typeof _clearPersistedModelState==='function') _clearPersistedModelState();
         else {
-          localStorage.removeItem('nasmusicui-model');
-          localStorage.removeItem('nasmusicui-model-state');
+          localStorage.removeItem('naswebui-model');
+          localStorage.removeItem('naswebui-model-state');
         }
       }
       else if(typeof syncModelChip==='function') syncModelChip();
@@ -2022,7 +2013,7 @@ function applyBotName(){
       syncTopbar();syncWorkspacePanelState();await renderSessionList();if(typeof startGatewaySSE==='function')startGatewaySSE();return;
     }catch(e){console.warn('[pwa] new-chat launch action failed', e);}
   }
-  const savedLocal=localStorage.getItem('nasmusicui-session');
+  const savedLocal=localStorage.getItem('naswebui-session');
   const saved=urlSession||savedLocal;
   if(saved){
     try{
@@ -2063,8 +2054,8 @@ function applyBotName(){
         S._bootReady=true;
         // Restore panel pref before syncing so the workspace panel stays visible
         // even though there is no active session (#workspace-persist).
-        const _ephPanelPref=localStorage.getItem('nasmusicui-workspace-panel-pref')==='open'
-          || localStorage.getItem('nasmusicui-workspace-panel')==='open';
+        const _ephPanelPref=localStorage.getItem('naswebui-workspace-panel-pref')==='open'
+          || localStorage.getItem('naswebui-workspace-panel')==='open';
         if(_ephPanelPref&&!_isCompactWorkspaceViewport()) _workspacePanelMode='browse';
         syncTopbar();syncWorkspacePanelState();
         $('emptyState').style.display='';
@@ -2074,22 +2065,22 @@ function applyBotName(){
       // Restore the panel from localStorage when the session has a workspace.
       // Preference key takes priority over runtime state so that closing
       // the panel via toolbar X doesn't suppress the "keep open" setting.
-      const panelPref=localStorage.getItem('nasmusicui-workspace-panel-pref')==='open'
-        || localStorage.getItem('nasmusicui-workspace-panel')==='open';
+      const panelPref=localStorage.getItem('naswebui-workspace-panel-pref')==='open'
+        || localStorage.getItem('naswebui-workspace-panel')==='open';
       if(S.session&&S.session.workspace&&panelPref&&!_isCompactWorkspaceViewport()){
         _workspacePanelMode='browse';
       }
       S._bootReady=true;
       syncTopbar();syncWorkspacePanelState();await renderSessionList();if(typeof startGatewaySSE==='function')startGatewaySSE();await checkInflightOnBoot(saved);return;}
-    catch(e){localStorage.removeItem('nasmusicui-session');}
+    catch(e){localStorage.removeItem('naswebui-session');}
   }
   // no saved session - show empty state, wait for user to hit +
   S._bootReady=true;
   syncTopbar();
   // Restore panel pref so the workspace panel stays visible on a fresh load if the
   // user had it open during their last session (#workspace-persist).
-  const _freshPanelPref=localStorage.getItem('nasmusicui-workspace-panel-pref')==='open'
-    || localStorage.getItem('nasmusicui-workspace-panel')==='open';
+  const _freshPanelPref=localStorage.getItem('naswebui-workspace-panel-pref')==='open'
+    || localStorage.getItem('naswebui-workspace-panel')==='open';
   if(_freshPanelPref&&!_isCompactWorkspaceViewport()) _workspacePanelMode='browse';
   syncWorkspacePanelState();
   $('emptyState').style.display='';
@@ -2148,7 +2139,7 @@ window.addEventListener('pageshow', async (event) => {
   // frozen DOM but another tab may have toggled the sidebar in the meantime.
   if (typeof _isSidebarCollapsed === 'function' && typeof toggleSidebar === 'function') {
     try {
-      const _want = localStorage.getItem('nasmusicui-sidebar-collapsed') === '1';
+      const _want = localStorage.getItem('naswebui-sidebar-collapsed') === '1';
       const _have = _isSidebarCollapsed();
       if (_want !== _have) toggleSidebar(_want);
       if (typeof _syncSidebarAria === 'function') _syncSidebarAria();
@@ -2158,14 +2149,14 @@ window.addEventListener('pageshow', async (event) => {
 
 async function shutdownServer() {
   const ok = await showConfirmDialog({
-    title: (typeof t === 'function' ? t('settings_shutdown_confirm_title') : 'Stop NasMusicUI'),
-    message: (typeof t === 'function' ? t('settings_shutdown_confirm_message') : 'Stop the NasMusicUI server?'),
+    title: (typeof t === 'function' ? t('settings_shutdown_confirm_title') : 'Stop NasWebUI'),
+    message: (typeof t === 'function' ? t('settings_shutdown_confirm_message') : 'Stop the NasWebUI server?'),
     confirmLabel: (typeof t === 'function' ? t('settings_shutdown_confirm_btn') : 'Stop'),
     danger: true,
   });
   if (!ok) return;
-  localStorage.setItem('nasmusicui-server-stopped', '1');
-  try { var bc = new BroadcastChannel('nasmusicui-shutdown'); bc.postMessage('stop'); bc.close(); } catch(_) {}
+  localStorage.setItem('naswebui-server-stopped', '1');
+  try { var bc = new BroadcastChannel('naswebui-shutdown'); bc.postMessage('stop'); bc.close(); } catch(_) {}
   _showServerStopped();
   try { await api('/api/shutdown', { method: 'POST' }); } catch (_) {}
 }

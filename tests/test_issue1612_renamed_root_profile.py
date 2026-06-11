@@ -103,10 +103,10 @@ def test_is_root_profile_handles_list_profiles_failure(monkeypatch):
     assert p._is_root_profile('kinni') is False
 
 
-# ── get_active_nasmusicui_home: returns _DEFAULT_NASTECH_HOME for renamed root ──
+# ── get_active_naswebui_home: returns _DEFAULT_NASTECH_HOME for renamed root ──
 
 
-def test_get_active_nasmusicui_home_returns_default_for_renamed_root(tmp_path, monkeypatch):
+def test_get_active_naswebui_home_returns_default_for_renamed_root(tmp_path, monkeypatch):
     """The core bug: a renamed root profile must resolve to _DEFAULT_NASTECH_HOME,
     not _DEFAULT_NASTECH_HOME / 'profiles' / <name>."""
     import api.profiles as p
@@ -118,11 +118,11 @@ def test_get_active_nasmusicui_home_returns_default_for_renamed_root(tmp_path, m
     p._invalidate_root_profile_cache()
     monkeypatch.setattr(p, '_active_profile', 'kinni')
 
-    result = p.get_active_nasmusicui_home()
+    result = p.get_active_naswebui_home()
     assert result == tmp_path, f"Expected {tmp_path}, got {result}"
 
 
-def test_get_active_nasmusicui_home_returns_named_for_real_named_profile(tmp_path, monkeypatch):
+def test_get_active_naswebui_home_returns_named_for_real_named_profile(tmp_path, monkeypatch):
     """Backward compat: a real named (non-default) profile still resolves to profiles/<name>."""
     import api.profiles as p
 
@@ -136,7 +136,7 @@ def test_get_active_nasmusicui_home_returns_named_for_real_named_profile(tmp_pat
     p._invalidate_root_profile_cache()
     monkeypatch.setattr(p, '_active_profile', 'haku')
 
-    result = p.get_active_nasmusicui_home()
+    result = p.get_active_naswebui_home()
     assert result == profile_dir
 
 

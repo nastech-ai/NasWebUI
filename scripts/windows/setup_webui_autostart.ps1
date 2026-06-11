@@ -7,7 +7,7 @@ param(
     [string]$Distro,
 
     [ValidateNotNullOrEmpty()]
-    [string]$TaskName = "NasMusicUIAutoStart",
+    [string]$TaskName = "NasWebUIAutoStart",
 
     [switch]$RunNow,
 
@@ -61,7 +61,7 @@ if (-not $SkipValidation) {
     }
 }
 
-$description = "Auto-start NasMusicUI inside WSL at Windows logon. Runs $WslScriptPath."
+$description = "Auto-start NasWebUI inside WSL at Windows logon. Runs $WslScriptPath."
 $action = New-ScheduledTaskAction -Execute $wslExe -Argument $actionArguments
 $trigger = New-ScheduledTaskTrigger -AtLogOn
 $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
@@ -75,7 +75,7 @@ if ($existingTask) {
     Write-Host "Creating scheduled task '$TaskName'."
 }
 
-if ($PSCmdlet.ShouldProcess($TaskName, "Register Windows Scheduled Task for NasMusicUI WSL autostart")) {
+if ($PSCmdlet.ShouldProcess($TaskName, "Register Windows Scheduled Task for NasWebUI WSL autostart")) {
     Register-ScheduledTask `
         -TaskName $TaskName `
         -Action $action `

@@ -78,7 +78,7 @@ def _call_get_available_models(monkeypatch, tmp_path, auth_payload, *, with_load
     )
 
     (tmp_path / "auth.json").write_text(json.dumps(auth_payload), encoding="utf-8")
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
     old_cfg = dict(config.cfg)
     old_mtime = config._cfg_mtime
@@ -477,7 +477,7 @@ def test_ollama_cloud_empty_catalog_skips_group(monkeypatch, tmp_path):
     }
 
     (tmp_path / "auth.json").write_text(json.dumps(auth_payload), encoding="utf-8")
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
     old_cfg = dict(config.cfg)
     old_mtime = config._cfg_mtime
@@ -568,7 +568,7 @@ def test_fallback_path_resolves_alias_when_load_pool_unavailable(monkeypatch, tm
     }
 
     (tmp_path / "auth.json").write_text(json.dumps(auth_payload), encoding="utf-8")
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
     old_cfg = dict(config.cfg)
     old_mtime = config._cfg_mtime

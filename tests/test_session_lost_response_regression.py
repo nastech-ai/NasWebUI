@@ -72,8 +72,8 @@ def _isolate_agent_locks():
 
 
 @pytest.fixture()
-def nasmusicui_home(tmp_path, monkeypatch):
-    home = tmp_path / "nasmusicui_home"
+def naswebui_home(tmp_path, monkeypatch):
+    home = tmp_path / "naswebui_home"
     home.mkdir()
     (home / "sessions").mkdir()
     monkeypatch.setenv("NASTECH_HOME", str(home))
@@ -331,7 +331,7 @@ def test_server_treats_broken_pipe_as_client_disconnect_not_500():
     assert "do not convert it into a misleading server 500" in server_py
 
 
-def test_lost_response_recovered_on_second_read(nasmusicui_home):
+def test_lost_response_recovered_on_second_read(naswebui_home):
     sid = "9f14583f0e4e4444aaaa111122223333"
     stream_id = "7c8b4108d52b4aba9af362d3a54f47ac"
 
@@ -339,7 +339,7 @@ def test_lost_response_recovered_on_second_read(nasmusicui_home):
     # run-journal for this stream is empty/absent on disk.
     s = _make_dead_stream_session(sid, stream_id=stream_id)
     s.save()
-    core_path = nasmusicui_home / "sessions" / f"session_{sid}.json"
+    core_path = naswebui_home / "sessions" / f"session_{sid}.json"
 
     result = _apply_core_sync_or_error_marker(
         s, core_path, stream_id_for_recheck=stream_id,
@@ -429,7 +429,7 @@ def test_lost_response_recovered_on_second_read(nasmusicui_home):
     assert "_journal_retry_first_seen_ts" not in promoted
 
 
-def test_concurrent_get_session_serializes_lazy_journal_retry(nasmusicui_home, monkeypatch):
+def test_concurrent_get_session_serializes_lazy_journal_retry(naswebui_home, monkeypatch):
     sid = "retry_lock_sid"
     stream_id = "retry_lock_stream"
     s = _make_pending_retry_session(sid, stream_id=stream_id)
@@ -461,7 +461,7 @@ def test_concurrent_get_session_serializes_lazy_journal_retry(nasmusicui_home, m
     assert calls == 1
 
 
-def test_still_arriving_journal_does_not_consume_retry_budget(nasmusicui_home, monkeypatch):
+def test_still_arriving_journal_does_not_consume_retry_budget(naswebui_home, monkeypatch):
     sid = "retry_arriving_sid"
     stream_id = "retry_arriving_stream"
     s = _make_pending_retry_session(sid, stream_id=stream_id)
@@ -479,7 +479,7 @@ def test_still_arriving_journal_does_not_consume_retry_budget(nasmusicui_home, m
     assert marker["content"] == models._INTERRUPTED_PENDING_RETRY_WORDING
 
 
-def test_sealed_empty_journal_consumes_retry_budget_and_demotes_at_max(nasmusicui_home, monkeypatch):
+def test_sealed_empty_journal_consumes_retry_budget_and_demotes_at_max(naswebui_home, monkeypatch):
     sid = "retry_sealed_sid"
     stream_id = "retry_sealed_stream"
     s = _make_pending_retry_session(sid, stream_id=stream_id)
@@ -495,7 +495,7 @@ def test_sealed_empty_journal_consumes_retry_budget_and_demotes_at_max(nasmusicu
     assert not any(m.get("_recovered_from_run_journal") for m in s.messages)
 
 
-def test_marker_demotes_after_max_attempts_with_sealed_empty_journal(nasmusicui_home, monkeypatch):
+def test_marker_demotes_after_max_attempts_with_sealed_empty_journal(naswebui_home, monkeypatch):
     sid = "retry_max_sid"
     stream_id = "retry_max_stream"
     s = _make_pending_retry_session(sid, stream_id=stream_id)
@@ -511,7 +511,7 @@ def test_marker_demotes_after_max_attempts_with_sealed_empty_journal(nasmusicui_
     assert not any(m.get("_recovered_from_run_journal") for m in s.messages)
 
 
-def test_marker_demotes_after_giveup_seconds(nasmusicui_home, monkeypatch):
+def test_marker_demotes_after_giveup_seconds(naswebui_home, monkeypatch):
     base = 1_779_000_000
     monkeypatch.setattr(models.time, "time", lambda: base)
     sid = "retry_age_sid"
@@ -539,7 +539,7 @@ def test_marker_demotes_after_giveup_seconds(nasmusicui_home, monkeypatch):
     assert append_calls == 0
 
 
-def test_repair_stale_pending_skips_pre_compression_snapshot_parent(nasmusicui_home):
+def test_repair_stale_pending_skips_pre_compression_snapshot_parent(naswebui_home):
     """Archived compression parents must not get synthetic interrupt markers."""
     s = _make_dead_stream_session("compressed_parent", stream_id="dead-stream")
     s.pre_compression_snapshot = True
@@ -552,7 +552,7 @@ def test_repair_stale_pending_skips_pre_compression_snapshot_parent(nasmusicui_h
     assert s.pending_user_message
 
 
-def test_repair_stale_pending_skips_parent_when_continuation_exists(nasmusicui_home):
+def test_repair_stale_pending_skips_parent_when_continuation_exists(naswebui_home):
     """Compression old→new rotation owns the turn in the child, not the old parent."""
     parent = _make_dead_stream_session("compression_parent", stream_id="rotated-stream")
     child = Session(

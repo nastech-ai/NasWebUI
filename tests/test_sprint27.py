@@ -68,7 +68,7 @@ def test_settings_bot_name_special_chars():
 
 # ── Server-side sanitization ──────────────────────────────────────────────
 
-def test_settings_empty_bot_name_defaults_to_nasmusicui():
+def test_settings_empty_bot_name_defaults_to_naswebui():
     """Posting an empty bot_name should default to 'NasTech' server-side."""
     try:
         d, status = post("/api/settings", {"bot_name": ""})
@@ -80,7 +80,7 @@ def test_settings_empty_bot_name_defaults_to_nasmusicui():
         post("/api/settings", {"bot_name": "NasTech"})
 
 
-def test_settings_whitespace_bot_name_defaults_to_nasmusicui():
+def test_settings_whitespace_bot_name_defaults_to_naswebui():
     """Posting a whitespace-only bot_name should default to 'NasTech'."""
     try:
         d, status = post("/api/settings", {"bot_name": "   "})

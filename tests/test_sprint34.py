@@ -182,7 +182,7 @@ class TestStatusFromRuntimeOAuth:
         assert result["provider_ready"] is False
         assert result["setup_state"] == "provider_incomplete"
 
-    def test_oauth_incomplete_note_mentions_nasmusicui_auth(self, tmp_path):
+    def test_oauth_incomplete_note_mentions_naswebui_auth(self, tmp_path):
         """When OAuth provider is incomplete, note should mention nastech auth/model."""
         result = self._call("openai-codex", "codex-mini-latest", tmp_path)
         note = result["provider_note"]

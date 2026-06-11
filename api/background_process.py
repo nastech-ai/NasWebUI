@@ -327,7 +327,7 @@ def start_session_channel_reaper() -> bool:
     _REAPER_STOP.clear()
     _REAPER_THREAD = threading.Thread(
         target=_reaper_loop,
-        name="nasmusicui-session-channel-reaper",
+        name="naswebui-session-channel-reaper",
         daemon=True,
     )
     _REAPER_THREAD.start()
@@ -1174,7 +1174,7 @@ def _start_server_side_wakeup_turn(
 
     threading.Thread(
         target=_runner,
-        name=f"nasmusicui-process-wakeup-{str(session_id)[:8]}",
+        name=f"naswebui-process-wakeup-{str(session_id)[:8]}",
         daemon=True,
     ).start()
 
@@ -1234,7 +1234,7 @@ def start_drain_thread() -> bool:
     _DRAIN_STOP.clear()
     _DRAIN_THREAD = threading.Thread(
         target=_drain_loop,
-        name="nasmusicui-bg-task-complete-drain",
+        name="naswebui-bg-task-complete-drain",
         daemon=True,
     )
     _DRAIN_THREAD.start()

@@ -1,6 +1,6 @@
 # Remote access
 
-How to reach a self-hosted NasMusicUI from another machine or your phone.
+How to reach a self-hosted NasWebUI from another machine or your phone.
 
 ## Accessing from a remote machine
 
@@ -30,7 +30,7 @@ are running over SSH.
 WireGuard. Install it on your server and your phone, and they join the same
 private network -- no port forwarding, no SSH tunnels, no public exposure.
 
-The NasMusicUI is fully responsive with a mobile-optimized layout
+The NasWebUI is fully responsive with a mobile-optimized layout
 (hamburger sidebar, sidebar top tabs in the drawer, touch-friendly controls),
 so it works well as a daily-driver agent interface from your phone.
 

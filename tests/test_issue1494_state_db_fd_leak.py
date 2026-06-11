@@ -186,9 +186,9 @@ def test_get_cli_session_messages_closes_connection(tmp_path, tracking_sqlite, m
     _make_state_db(db)
 
     monkeypatch.setenv("NASTECH_HOME", str(tmp_path))
-    # Stub get_active_nasmusicui_home so the tmp_path is used regardless of profile state.
+    # Stub get_active_naswebui_home so the tmp_path is used regardless of profile state.
     import api.profiles
-    monkeypatch.setattr(api.profiles, "get_active_nasmusicui_home", lambda: str(tmp_path))
+    monkeypatch.setattr(api.profiles, "get_active_naswebui_home", lambda: str(tmp_path))
 
     from api.models import get_cli_session_messages
 
@@ -208,7 +208,7 @@ def test_delete_cli_session_closes_connection(tmp_path, tracking_sqlite, monkeyp
 
     monkeypatch.setenv("NASTECH_HOME", str(tmp_path))
     import api.profiles
-    monkeypatch.setattr(api.profiles, "get_active_nasmusicui_home", lambda: str(tmp_path))
+    monkeypatch.setattr(api.profiles, "get_active_naswebui_home", lambda: str(tmp_path))
 
     from api.models import delete_cli_session
 

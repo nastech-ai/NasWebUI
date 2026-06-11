@@ -1,5 +1,5 @@
 """Tests for /api/folder/download — matches the static-inspection style used
-elsewhere in the nasmusicui test suite (see tests/test_issue1867_upload_size_preflight.py).
+elsewhere in the naswebui test suite (see tests/test_issue1867_upload_size_preflight.py).
 """
 
 from pathlib import Path

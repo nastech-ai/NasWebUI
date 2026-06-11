@@ -34,7 +34,7 @@ supporting activity, terminal outcome, and final answer.
 
 ## Product Problem
 
-NasMusicUI currently uses one chat surface to represent several different
+NasWebUI currently uses one chat surface to represent several different
 meanings:
 
 - the assistant's live process text while work is still running,

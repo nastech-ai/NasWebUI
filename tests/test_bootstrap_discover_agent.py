@@ -63,7 +63,7 @@ def _isolate_discover_agent_dir(monkeypatch, tmp_path, nastech_path):
     monkeypatch.setattr(bootstrap.Path, "home", classmethod(lambda cls: tmp_path / "isolated-home"))
 
 
-def test_discovers_agent_dir_from_nasmusicui_shebang(monkeypatch, tmp_path):
+def test_discovers_agent_dir_from_naswebui_shebang(monkeypatch, tmp_path):
     """Happy path: nastech shebang → walk up parents → find run_agent.py → return install."""
     install, venv_python = _make_agent_install(tmp_path)
     nastech = _make_nastech_cli(tmp_path, str(venv_python))
@@ -73,7 +73,7 @@ def test_discovers_agent_dir_from_nasmusicui_shebang(monkeypatch, tmp_path):
     assert bootstrap.discover_agent_dir() == install.resolve()
 
 
-def test_returns_none_when_nasmusicui_not_on_path(monkeypatch, tmp_path):
+def test_returns_none_when_naswebui_not_on_path(monkeypatch, tmp_path):
     _make_agent_install(tmp_path)  # install exists, but no `nastech` CLI to point at it
     _isolate_discover_agent_dir(monkeypatch, tmp_path, nastech_path=tmp_path / "missing")
     monkeypatch.setattr(bootstrap.shutil, "which", lambda name: None)
@@ -81,7 +81,7 @@ def test_returns_none_when_nasmusicui_not_on_path(monkeypatch, tmp_path):
     assert bootstrap.discover_agent_dir() is None
 
 
-def test_returns_none_when_nasmusicui_has_no_shebang(monkeypatch, tmp_path):
+def test_returns_none_when_naswebui_has_no_shebang(monkeypatch, tmp_path):
     """A `nastech` file without a #! line gives us nothing to introspect."""
     _make_agent_install(tmp_path)
     nastech = _make_nastech_cli(tmp_path, shebang_target=None)

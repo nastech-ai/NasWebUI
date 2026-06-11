@@ -1,6 +1,6 @@
 # WebUI Extensions
 
-NasMusicUI supports a small, opt-in extension surface for self-hosted installs.
+NasWebUI supports a small, opt-in extension surface for self-hosted installs.
 It lets an administrator serve local static assets and inject same-origin CSS or
 JavaScript into the app shell without editing the WebUI source tree.
 
@@ -14,7 +14,7 @@ JavaScript into the app shell without editing the WebUI source tree.
 
 This is intentionally not a plugin marketplace or dependency system. It is a
 safe escape hatch for local dashboards, internal tooling, and workflow-specific
-panels that should not live in core NasMusicUI.
+panels that should not live in core NasWebUI.
 
 ## What extensions can do
 

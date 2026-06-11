@@ -5,7 +5,7 @@ name: Native Windows startup
 # Windows-only batch caught manually (#2805 WOW64 ProgramFiles redirect,
 # #2806 venv-portability claim, #2807 port-parse + finally-cleanup).
 #
-# Scope (per nesquena-nasmusicui comment on #2811 — option 1, mock-only):
+# Scope (per nesquena-naswebui comment on #2811 — option 1, mock-only):
 # NasTech-Agent is not published to PyPI, so we cannot pip-install it on
 # the runner. Instead we stub a nastech_cli/ directory next to a sibling
 # NasTech-Agent/ folder — just enough for start.ps1's existence guard to

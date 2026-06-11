@@ -57,7 +57,7 @@ def _isolate_agent_locks():
 
 
 @pytest.fixture(autouse=True)
-def _mock_nasmusicui_modules(monkeypatch):
+def _mock_naswebui_modules(monkeypatch):
     """Inject mock nastech modules to prevent side-effects during tests."""
     fake_runtime_module = types.ModuleType("nastech_cli.runtime_provider")
     fake_runtime_provider_fn = lambda requested=None: {

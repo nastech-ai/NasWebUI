@@ -82,7 +82,7 @@ def _install_test_session(monkeypatch, tmp_path, sid, sidecar_messages):
     monkeypatch.setattr(models, "SESSION_DIR", session_dir, raising=False)
     monkeypatch.setattr(models, "SESSION_INDEX_FILE", session_dir / "_index.json", raising=False)
     monkeypatch.setattr(models, "SESSIONS", OrderedDict(), raising=False)
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path, raising=False)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path, raising=False)
     monkeypatch.setattr(models, "_active_state_db_path", lambda: tmp_path / "state.db", raising=False)
     monkeypatch.setattr(routes, "_active_state_db_path", lambda: tmp_path / "state.db", raising=False)
     session_dir.mkdir(parents=True, exist_ok=True)
@@ -183,7 +183,7 @@ def test_deferred_session_model_resolution_uses_profile_provider(monkeypatch, tm
     )
     monkeypatch.setattr(
         profiles,
-        "get_nasmusicui_home_for_profile",
+        "get_naswebui_home_for_profile",
         lambda name: profile_home,
         raising=False,
     )

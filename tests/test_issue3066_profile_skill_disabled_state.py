@@ -39,7 +39,7 @@ def test_skills_list_reads_disabled_state_from_active_profile(monkeypatch, tmp_p
     _write_config(active_home, ["beta"])
 
     monkeypatch.setenv("NASTECH_HOME", str(default_home))
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: active_home)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: active_home)
 
     listed = routes._skills_list_from_dir(active_home / "skills")["skills"]
     by_name = {skill["name"]: skill for skill in listed}
@@ -60,7 +60,7 @@ def test_skill_toggle_writes_active_profile_config_not_default(monkeypatch, tmp_
     _write_config(active_home, ["gamma"])
 
     monkeypatch.setenv("NASTECH_HOME", str(default_home))
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: active_home)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: active_home)
     monkeypatch.setattr(routes, "reload_config", lambda: None)
     monkeypatch.setattr(routes, "j", lambda _handler, payload: payload)
     monkeypatch.setattr(routes, "bad", lambda _handler, message, status=400: {"error": message, "status": status})

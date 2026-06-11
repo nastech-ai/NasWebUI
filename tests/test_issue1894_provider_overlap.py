@@ -1,4 +1,4 @@
-# Copyright 2025 the NasMusicUI contributors
+# Copyright 2025 the NasWebUI contributors
 # SPDX-License-Identifier: MIT
 
 """Regression tests for GitHub issue #1894.

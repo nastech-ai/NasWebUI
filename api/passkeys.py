@@ -1,4 +1,4 @@
-"""Passkey/WebAuthn helpers for NasMusicUI.
+"""Passkey/WebAuthn helpers for NasWebUI.
 
 Default-off: passkeys are only advertised after an authenticated user registers
 one from Settings. Password auth remains the bootstrap/recovery mechanism.
@@ -34,7 +34,7 @@ _CHALLENGE_TTL = 90
 _MAX_CHALLENGES = 128
 _MAX_CHALLENGES_PER_CONTEXT = 8
 _CHALLENGES_LOCK = threading.Lock()
-_RP_NAME = "NasMusicUI"
+_RP_NAME = "NasWebUI"
 
 
 class PasskeyError(ValueError):
@@ -198,7 +198,7 @@ def registration_options(handler) -> dict[str, Any]:
     return {
         "challenge": challenge,
         "rp": {"name": _RP_NAME, "id": rp_id},
-        "user": {"id": _b64u(hashlib.sha256(rp_id.encode()).digest()[:16]), "name": "NasMusicUI", "displayName": "NasMusicUI"},
+        "user": {"id": _b64u(hashlib.sha256(rp_id.encode()).digest()[:16]), "name": "NasWebUI", "displayName": "NasWebUI"},
         "pubKeyCredParams": [{"type": "public-key", "alg": -7}],
         "authenticatorSelection": {"residentKey": "preferred", "userVerification": "preferred"},
         "timeout": 60000,

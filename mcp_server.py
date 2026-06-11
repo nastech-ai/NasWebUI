@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NasMusicUI MCP Server — exposes project and session management
+NasWebUI MCP Server — exposes project and session management
 as MCP tools for any MCP-compatible agent.
 
 Option A rewrite (2026-05-08): imports api.models and api.profiles
@@ -12,14 +12,14 @@ locking, profile scoping, index consistency, and validation.
 
 MCP config for NasTech Agent (add to config.yaml):
     mcp_servers:
-      nasmusicui:
+      naswebui:
         command: /path/to/venv/bin/python3
-        args: [/path/to/nasmusicui/mcp_server.py]
+        args: [/path/to/naswebui/mcp_server.py]
         env:
           NASMUSICUI_PASSWORD: your_password
 
 Profile override (optional):
-        args: [/path/to/nasmusicui/mcp_server.py, --profile, myprofile]
+        args: [/path/to/naswebui/mcp_server.py, --profile, myprofile]
 
 AI-authoring disclosure: this file was rewritten by MILO (NasTech Agent)
 under human direction, per maintainer guidelines for #1616.
@@ -73,7 +73,7 @@ WEBUI_URL = f"http://{WEBUI_HOST}:{WEBUI_PORT}"
 _auth_cookie: str | None = None
 _auth_expires: float = 0  # unix timestamp after which we re-auth
 
-server = Server("nasmusicui")
+server = Server("naswebui")
 
 
 # ═══════════════════════════════════════════════════════════════════════════

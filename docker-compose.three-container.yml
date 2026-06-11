@@ -10,7 +10,7 @@
 # Services:
 #   NasTech-Agent     — gateway API on port 8642 (CLI, Telegram, cron, tools)
 #   nastech-dashboard — monitoring dashboard on port 9119
-#   nasmusicui     — browser chat interface on port 8787
+#   naswebui     — browser chat interface on port 8787
 #
 # All three share the same nastech-home volume so config, sessions,
 # skills, and memory are consistent across all surfaces.
@@ -96,9 +96,9 @@ services:
     networks:
       - nastech-net
 
-  nasmusicui:
-    image: ghcr.io/nastech-ai/nasmusicui:latest
-    container_name: nasmusicui
+  naswebui:
+    image: ghcr.io/nastech-ai/naswebui:latest
+    container_name: naswebui
     depends_on:
       - nastech-agent
     ports:
@@ -107,12 +107,12 @@ services:
       - "127.0.0.1:8787:8787"
     volumes:
       # Same nastech home as the agent — shares config, sessions, state
-      - nastech-home:/home/nasmusicuiwebui/.nastech
+      - nastech-home:/home/naswebuiwebui/.nastech
       # Agent source mounted where docker_init.bash expects it.
       # Mounted read-only — the WebUI only reads this volume to install
       # the agent's Python dependencies at startup (`uv pip install`).
       # Read-only enforces that defence-in-depth at the kernel layer.
-      - nastech-agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro
+      - nastech-agent-src:/home/naswebuiwebui/.nastech/NasTech-Agent:ro
       # Workspace directory — browse and edit files from the WebUI.
       # Adapt the host path to your project directory.
       # ${HOME} is used rather than `~` so the default resolves the same way
@@ -121,7 +121,7 @@ services:
     environment:
       - NASMUSICUI_HOST=0.0.0.0
       - NASMUSICUI_PORT=8787
-      - NASMUSICUI_STATE_DIR=/home/nasmusicuiwebui/.nastech/webui
+      - NASMUSICUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
       # Match your host user's UID/GID for correct file permissions.
       # Run `id -u` and `id -g` to find your values.
       # On macOS, UIDs start at 501 (not 1000) — set these in a .env file:
@@ -130,7 +130,7 @@ services:
       - WANTED_GID=${GID:-1000}
       # NOTE: When using bind-mount volumes shared across containers, ALL containers
       # that write to the same host directory must run as the same UID/GID.
-      # If NasTech-Agent initialises the state dir as root (UID 0), nasmusicui
+      # If NasTech-Agent initialises the state dir as root (UID 0), naswebui
       # will get a PermissionError accessing those paths — including a crash on every
       # HTTP request if the auth signing-key file is unreadable. Either set WANTED_UID
       # to match the agent container's UID, or use a named Docker volume (preferred).

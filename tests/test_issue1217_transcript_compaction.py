@@ -105,7 +105,7 @@ def test_embedded_workspace_prefixed_current_user_delta_is_deduped():
             "role": "user",
             "content": (
                 "正常来说，chrome\n\n"
-                "[Workspace::v1: /mnt/e/vscode_workspace/nasmusicui_workspace]\n"
+                "[Workspace::v1: /mnt/e/vscode_workspace/naswebui_workspace]\n"
                 f"{current}"
             ),
         },
@@ -134,7 +134,7 @@ def test_embedded_workspace_prefixed_current_user_delta_displays_clean_prompt():
             "role": "user",
             "content": (
                 "正常来说，chrome\n\n"
-                "[Workspace::v1: /mnt/e/vscode_workspace/nasmusicui_workspace]\n"
+                "[Workspace::v1: /mnt/e/vscode_workspace/naswebui_workspace]\n"
                 f"{current}"
             ),
         },

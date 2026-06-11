@@ -1,5 +1,5 @@
 """
-NasMusicUI memory-provider session lifecycle.
+NasWebUI memory-provider session lifecycle.
 
 Batch-extraction memory providers (OpenViking, Holographic) only extract memories
 when AIAgent.commit_memory_session() invokes provider on_session_end(). WebUI

@@ -1,7 +1,7 @@
 """Regression coverage for #3283 profile/config import ordering.
 
 Importing ``api.profiles`` before ``api.config`` used to trigger a circular import
-through ``profiles._resolve_base_nasmusicui_home() -> api.config``. ``api.config``
+through ``profiles._resolve_base_naswebui_home() -> api.config``. ``api.config``
 then caught the partial-module ``ImportError`` from its startup
 ``init_profile_state`` import, so the later config import never initialized the
 sticky active profile.

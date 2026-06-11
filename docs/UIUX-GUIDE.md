@@ -13,7 +13,7 @@ purely backend changes, use the runtime/state contracts instead.
 
 ## Product shape
 
-NasMusicUI is a browser workbench for NasTech Agent with near-CLI parity and a
+NasWebUI is a browser workbench for NasTech Agent with near-CLI parity and a
 simple implementation shape: Python on the server, vanilla JavaScript in the
 browser, no build step, no bundler, and no frontend framework.
 

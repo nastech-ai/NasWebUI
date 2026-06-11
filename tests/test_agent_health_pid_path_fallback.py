@@ -1,9 +1,9 @@
 """Regression coverage for _gateway_root_pid_path() profile-scoped fallback.
 
 Before the fix, _gateway_root_pid_path() unconditionally returned
-<nasmusicui_root>/gateway.pid.  Profile-scoped gateways (running via
+<naswebui_root>/gateway.pid.  Profile-scoped gateways (running via
 ``gateway run --profile <name>`` or with ``active_profile`` set) write
-their PID file under <nasmusicui_root>/profiles/<name>/gateway.pid instead of
+their PID file under <naswebui_root>/profiles/<name>/gateway.pid instead of
 the root, so the root-level file never existed.  The WebUI's
 build_agent_health_payload() therefore always received a non-existent
 pid_path, fell through to the stale root-level gateway_state.json, and
@@ -28,9 +28,9 @@ def _call(monkeypatch, root: Path, profile_dir: Path | None = None) -> Path | No
     import nastech_constants
     import api.profiles as profiles
 
-    monkeypatch.setattr(nastech_constants, "get_default_nasmusicui_root", lambda: root)
+    monkeypatch.setattr(nastech_constants, "get_default_naswebui_root", lambda: root)
     if profile_dir is not None:
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: str(profile_dir))
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: str(profile_dir))
 
     from api.agent_health import _gateway_root_pid_path
     return _gateway_root_pid_path()
@@ -79,19 +79,19 @@ def test_returns_root_path_when_neither_pid_exists(tmp_path, monkeypatch):
 
 
 def test_returns_root_path_when_profile_lookup_raises(tmp_path, monkeypatch):
-    """get_active_nasmusicui_home() raising must be caught; root path returned."""
+    """get_active_naswebui_home() raising must be caught; root path returned."""
     root = tmp_path / "nastech"
     root.mkdir()
 
     import nastech_constants
     import api.profiles as profiles
 
-    monkeypatch.setattr(nastech_constants, "get_default_nasmusicui_root", lambda: root)
+    monkeypatch.setattr(nastech_constants, "get_default_naswebui_root", lambda: root)
 
     def _raise():
         raise RuntimeError("profile resolution failed")
 
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", _raise)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", _raise)
 
     from api.agent_health import _gateway_root_pid_path
     result = _gateway_root_pid_path()

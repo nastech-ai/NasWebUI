@@ -266,7 +266,7 @@ class TestWebUIVersionConstant:
         """WEBUI_VERSION must not be the old stale value from server.py."""
         import api.updates as upd
         # These were the two stale hardcoded strings before this fix
-        assert upd.WEBUI_VERSION not in ('0.50.38', 'NasMusicUI/0.50.38'), (
+        assert upd.WEBUI_VERSION not in ('0.50.38', 'NasWebUI/0.50.38'), (
             'WEBUI_VERSION still holds the old hardcoded server.py value'
         )
 
@@ -419,7 +419,7 @@ class TestServerVersionHeader:
     def test_server_version_not_old_hardcoded(self):
         """server.py Handler.server_version must not be the stale hardcoded value."""
         src = (REPO_ROOT / 'server.py').read_text(encoding='utf-8')
-        assert 'NasMusicUI/0.50.38' not in src, (
+        assert 'NasWebUI/0.50.38' not in src, (
             'server.py still contains the old hardcoded server_version string. '
             'It should use WEBUI_VERSION from api.updates.'
         )
@@ -440,11 +440,11 @@ class TestServerVersionHeader:
         )
 
     def test_server_version_no_slash_when_unknown(self):
-        """When WEBUI_VERSION is 'unknown', server_version must be bare 'NasMusicUI' with no slash."""
+        """When WEBUI_VERSION is 'unknown', server_version must be bare 'NasWebUI' with no slash."""
         src = (REPO_ROOT / 'server.py').read_text(encoding='utf-8')
-        # The guard must be present so log aggregators don't see 'NasMusicUI/unknown'
+        # The guard must be present so log aggregators don't see 'NasWebUI/unknown'
         assert "'unknown'" in src or '"unknown"' in src, (
-            "server.py must guard against emitting 'NasMusicUI/unknown' as the server header"
+            "server.py must guard against emitting 'NasWebUI/unknown' as the server header"
         )
 
     def test_server_version_uses_removeprefix_not_lstrip(self):

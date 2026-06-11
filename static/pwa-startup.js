@@ -47,12 +47,12 @@
 
   window.addEventListener('beforeinstallprompt',function(event){
     event.preventDefault();
-    window.nasmusicuiDeferredInstallPrompt=event;
+    window.naswebuiDeferredInstallPrompt=event;
     root.classList.add('pwa-installable');
     dispatch('nastech:pwa-installable');
   });
   window.addEventListener('appinstalled',function(){
-    window.nasmusicuiDeferredInstallPrompt=null;
+    window.naswebuiDeferredInstallPrompt=null;
     root.classList.remove('pwa-installable');
     root.classList.add('pwa-installed');
     dispatch('nastech:pwa-installed');
@@ -72,9 +72,9 @@
       try{return new URLSearchParams(window.location.search||'').get('action')||null;}catch(_){return null;}
     },
     promptInstall:function(){
-      var prompt=window.nasmusicuiDeferredInstallPrompt;
+      var prompt=window.naswebuiDeferredInstallPrompt;
       if(!prompt||typeof prompt['prompt']!=='function')return Promise.resolve({outcome:'unavailable'});
-      window.nasmusicuiDeferredInstallPrompt=null;
+      window.naswebuiDeferredInstallPrompt=null;
       root.classList.remove('pwa-installable');
       prompt['prompt']();
       return Promise.resolve(prompt.userChoice).catch(function(){return {outcome:'dismissed'};});

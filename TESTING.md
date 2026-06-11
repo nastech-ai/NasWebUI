@@ -1,4 +1,4 @@
-# NasMusicUI: Browser Testing Plan
+# NasWebUI: Browser Testing Plan
 
 > This document is for manual browser testing by you or by a Claude browser agent.
 > It covers user-facing features of the UI across current releases.
@@ -119,7 +119,7 @@ Work through sections in order. Each section builds on the previous.
 ## Section 1: Initial Load and Empty State
 
 ### T1.1: Fresh Load Shows Empty State
-SETUP: Clear localStorage (DevTools > Application > Local Storage > delete nasmusicui-session) or open in incognito.
+SETUP: Clear localStorage (DevTools > Application > Local Storage > delete naswebui-session) or open in incognito.
 STEPS:
   1. Navigate to http://localhost:8787
 EXPECT:
@@ -127,7 +127,7 @@ EXPECT:
   - Sidebar begins directly with the icon tab row; there is no dedicated branding header
   - Center area shows "What can I help with?" heading with suggestion buttons
   - Session list in sidebar is empty or shows existing sessions
-  - Sidebar footer shows a single "NasMusicUI" control-center button
+  - Sidebar footer shows a single "NasWebUI" control-center button
   - No session is highlighted active
   - Send button is present but there is no input focus by default
 FAIL: Page shows error, blank white screen, or auto-creates a new session without user action.
@@ -507,7 +507,7 @@ FAIL: Dialog does not appear, path not saved, error on invalid path.
 ### T7.1: Dangerous Command Shows Approval Card
 SETUP: Active session with a test-workspace (NOT a production directory).
 STEPS:
-  1. Type: "Run the command: rm -rf /tmp/nasmusicui_test_delete_me"
+  1. Type: "Run the command: rm -rf /tmp/naswebui_test_delete_me"
   2. Send the message
 EXPECT:
   - Thinking dots appear
@@ -529,14 +529,14 @@ EXPECT:
 FAIL: Command executes despite deny, card stays up, error.
 
 ### T7.3: Allow Once Executes the Command
-SETUP: Create a safe test: type "Run: touch /tmp/nasmusicui_approval_test.txt"
+SETUP: Create a safe test: type "Run: touch /tmp/naswebui_approval_test.txt"
 STEPS:
   1. Send the message
   2. When approval card appears, click "Allow once"
 EXPECT:
   - Approval card disappears
   - Agent continues and reports the command ran successfully
-  - Verify: open a terminal and run: ls /tmp/nasmusicui_approval_test.txt
+  - Verify: open a terminal and run: ls /tmp/naswebui_approval_test.txt
 FAIL: Command blocked after Allow once, card stays, error.
 
 ---
@@ -709,7 +709,7 @@ If you are a Claude agent with browser access, follow these instructions:
 3. For tests requiring file uploads: use the browser's file picker; you may need to
    create test files in /tmp first via terminal.
 4. For T7.x (approval tests): the agent running inside NasTech needs to detect a
-   dangerous command. Ask NasTech to "run: rm -rf /tmp/test_nasmusicui_approval" and watch
+   dangerous command. Ask NasTech to "run: rm -rf /tmp/test_naswebui_approval" and watch
    for the card. The actual rm will not run in a safe test workspace.
 5. Skip T9.1 (reconnect banner) unless you can precisely time a page reload during an
    active SSE stream.
@@ -1784,7 +1784,7 @@ Each has automated API-level tests in `tests/test_sprint{N}.py`.
 - Switch model. Send a message. Verify response uses selected model.
 
 ### Sprint 12: Settings + Pin + Import
-- Click the "NasMusicUI" button in the sidebar footer. Control Center overlay opens with vertical section tabs on the left.
+- Click the "NasWebUI" button in the sidebar footer. Control Center overlay opens with vertical section tabs on the left.
 - Change default model, save. Restart server. Verify setting persisted.
 - Pin a session (star icon in hover overlay). Verify it floats to top of list.
 - Export session as JSON. Import it back. Verify messages restored.

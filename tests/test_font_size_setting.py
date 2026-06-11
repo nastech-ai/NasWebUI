@@ -48,10 +48,10 @@ class TestFontSizeCssModifiers:
 class TestFontSizeBootScript:
     """The boot script must apply font size from localStorage before page renders."""
 
-    def test_boot_script_reads_nasmusicui_font_size(self):
+    def test_boot_script_reads_naswebui_font_size(self):
         html = _read("static/index.html")
-        assert "nasmusicui-font-size" in html, (
-            "index.html boot script must read 'nasmusicui-font-size' from localStorage"
+        assert "naswebui-font-size" in html, (
+            "index.html boot script must read 'naswebui-font-size' from localStorage"
         )
         assert "data-font-size" in html, (
             "boot script must set document.documentElement.dataset.fontSize"
@@ -144,7 +144,7 @@ class TestFontSizeJsFunctions:
         boot = _read("static/boot.js")
         idx = boot.find("function _pickFontSize(")
         block = boot[idx:idx+400]
-        assert "localStorage.setItem('nasmusicui-font-size'" in block, (
+        assert "localStorage.setItem('naswebui-font-size'" in block, (
             "_pickFontSize must persist choice to localStorage"
         )
 

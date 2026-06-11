@@ -9,7 +9,7 @@ api/profiles.py helpers consult the thread-local before the process global.
 Covers:
   1. build_profile_cookie() / get_profile_cookie() roundtrip + validation
   2. set_request_profile() / get_active_profile_name() / clear_request_profile()
-  3. get_active_nasmusicui_home() routes via thread-local
+  3. get_active_naswebui_home() routes via thread-local
   4. switch_profile(process_wide=False) does NOT mutate process globals
   5. Concurrent requests on different threads see independent profiles
 """
@@ -139,18 +139,18 @@ class TestThreadLocalProfileContext:
         p.clear_request_profile()
 
 
-# ── 3. get_active_nasmusicui_home routes through TLS ─────────────────────────────
+# ── 3. get_active_naswebui_home routes through TLS ─────────────────────────────
 
-def test_get_active_nasmusicui_home_respects_tls(tmp_path, monkeypatch):
+def test_get_active_naswebui_home_respects_tls(tmp_path, monkeypatch):
     import api.profiles as p
     monkeypatch.setattr(p, '_DEFAULT_NASTECH_HOME', tmp_path)
     profile_dir = tmp_path / 'profiles' / 'alice'
     profile_dir.mkdir(parents=True)
     try:
         p.set_request_profile('alice')
-        assert p.get_active_nasmusicui_home() == profile_dir
+        assert p.get_active_naswebui_home() == profile_dir
         p.set_request_profile('default')
-        assert p.get_active_nasmusicui_home() == tmp_path
+        assert p.get_active_naswebui_home() == tmp_path
     finally:
         p.clear_request_profile()
 

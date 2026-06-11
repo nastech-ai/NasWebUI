@@ -10,7 +10,7 @@
 
 ## RFC Positioning
 
-This RFC is a child RFC under the NasMusicUI Live-to-Final product line.
+This RFC is a child RFC under the NasWebUI Live-to-Final product line.
 
 The Live-to-Final parent RFC defines how a running agent turn moves from live
 process, tool activity, recovery state, and replay into a settled final answer
@@ -25,7 +25,7 @@ semantics for user intervention during an active run.
 
 ## Problem
 
-NasMusicUI currently treats user input during a running agent turn as one of
+NasWebUI currently treats user input during a running agent turn as one of
 three busy modes: Queue, Interrupt, or Steer. These look like equivalent send
 modes, but they are not the same kind of action.
 
@@ -329,7 +329,7 @@ runtime applied the Steer without Agent/TUI Gateway evidence.
 This RFC defines product semantics, not a permanent WebUI-private runtime
 protocol.
 
-This boundary is necessary because NasMusicUI also has the #1925
+This boundary is necessary because NasWebUI also has the #1925
 RuntimeAdapter direction. The RuntimeAdapter contract moves WebUI toward clearer
 runtime interfaces instead of permanently owning all Agent runtime behavior
 directly. NasTech Desktop / TUI Gateway already exposes related surfaces such as

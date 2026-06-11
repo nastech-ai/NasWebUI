@@ -69,7 +69,7 @@ class TestPluginModelProvidersSettings:
     def test_get_providers_includes_plugin_model_provider(self, monkeypatch, tmp_path):
         _install_fake_yandex_plugin(monkeypatch)
         _install_fake_nastech_cli(monkeypatch, model_ids=["deepseek-v4-flash/latest"])
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         env_path = tmp_path / ".env"
         env_path.write_text("YANDEX_API_KEY=test-yandex-key-12345\n", encoding="utf-8")
@@ -122,7 +122,7 @@ class TestPluginModelProvidersSettings:
         monkeypatch.setitem(sys.modules, "nastech_cli", fake_pkg)
         monkeypatch.setitem(sys.modules, "nastech_cli.models", fake_models)
         monkeypatch.setitem(sys.modules, "nastech_cli.auth", fake_auth)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         old_cfg = dict(config.cfg)
         old_mtime = config._cfg_mtime
@@ -150,7 +150,7 @@ class TestPluginModelProvidersSettings:
 
     def test_set_provider_key_accepts_plugin_env_var(self, monkeypatch, tmp_path):
         _install_fake_yandex_plugin(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         from api.providers import set_provider_key
 
@@ -195,7 +195,7 @@ class TestPluginModelProvidersPicker:
             authenticated=True,
             model_ids=["gpt://folder/deepseek-v4-flash/latest"],
         )
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.setenv("NASTECH_HOME", str(tmp_path))
 
         old_cfg = dict(config.cfg)

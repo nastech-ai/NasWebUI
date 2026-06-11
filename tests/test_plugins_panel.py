@@ -538,7 +538,7 @@ class TestAutoHidePluginsTab:
 
     def test_switchSettingsSection_fallback_when_hidden(self):
         js = read("static/panels.js")
-        segment = js[js.find("function switchSettingsSection"):js.find("function _syncNasMusicUIPanelSessionActions")]
+        segment = js[js.find("function switchSettingsSection"):js.find("function _syncNasWebUIPanelSessionActions")]
 
         assert "section==='plugins'" in segment
         assert "display==='none'" in segment

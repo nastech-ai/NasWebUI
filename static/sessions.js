@@ -31,7 +31,7 @@ let _pendingCarryForwardSnapshot = null;
 // Debounced save — prevents hammering the server on every keystroke.
 let _draftSaveTimer = null;
 const _DRAFT_SAVE_DELAY_MS = 400;
-const NEW_CHAT_DRAFT_SESSION_KEY = 'nasmusicui-new-chat-draft';
+const NEW_CHAT_DRAFT_SESSION_KEY = 'naswebui-new-chat-draft';
 
 function _profileMatchesActiveProfile(profile, activeProfile){
   const eventName = (typeof profile === 'string' && profile.trim()) ? profile.trim() : 'default';
@@ -167,9 +167,9 @@ function _clearComposerDraft(sid) {
   }).catch(() => {});
 }
 
-const SESSION_VIEWED_COUNTS_KEY = 'nasmusicui-session-viewed-counts';
-const SESSION_COMPLETION_UNREAD_KEY = 'nasmusicui-session-completion-unread';
-const SESSION_OBSERVED_STREAMING_KEY = 'nasmusicui-session-observed-streaming';
+const SESSION_VIEWED_COUNTS_KEY = 'naswebui-session-viewed-counts';
+const SESSION_COMPLETION_UNREAD_KEY = 'naswebui-session-completion-unread';
+const SESSION_OBSERVED_STREAMING_KEY = 'naswebui-session-observed-streaming';
 let _sessionViewedCounts = null;
 let _sessionCompletionUnread = null;
 let _sessionObservedStreaming = null;
@@ -721,7 +721,7 @@ async function newSession(flash, options={}){
     S.lastUsage={...(data.session.last_usage||{})};
     if(!(options&&options.worktree)) _rememberNewChatDraftSession(S.session);
     if(flash)S.session._flash=true;
-    try{localStorage.setItem('nasmusicui-session',S.session.session_id);}catch(_){}
+    try{localStorage.setItem('naswebui-session',S.session.session_id);}catch(_){}
     _setActiveSessionUrl(S.session.session_id);
     if(typeof startSessionStream==='function') startSessionStream(S.session.session_id);
     _setSessionViewedCount(S.session.session_id, S.session.message_count || 0);
@@ -909,7 +909,7 @@ async function loadSession(sid){
         // Only the rethrow stays gated on !currentSid: boot rethrows to fall
         // through to empty-state; mid-session there is no boot path to reach.
         if(!currentSid || currentSid===sid){
-          try{ localStorage.removeItem('nasmusicui-session'); }catch(_){ }
+          try{ localStorage.removeItem('naswebui-session'); }catch(_){ }
           try{ history.replaceState(null,'',_appRootPath()); }catch(_){ }
           if (_loadingSessionId === sid) _loadingSessionId = null;
           if(!currentSid){
@@ -987,7 +987,7 @@ async function loadSession(sid){
   if(typeof syncTopbar==='function') syncTopbar();
   _setSessionViewedCount(S.session.session_id, Number(data.session.message_count || 0));
   _clearSessionCompletionUnread(S.session.session_id);
-  try{localStorage.setItem('nasmusicui-session',S.session.session_id);}catch(_){}
+  try{localStorage.setItem('naswebui-session',S.session.session_id);}catch(_){}
   _setActiveSessionUrl(S.session.session_id);
   if(typeof startSessionStream==='function') startSessionStream(S.session.session_id);
 
@@ -1357,13 +1357,13 @@ function _setSessionSourceFilter(filter) {
   _activeProject = null;
   _selectedSessions.clear();
   _sessionSelectMode = false;
-  try { localStorage.setItem('nasmusicui-session-source-filter', next); } catch (_e) {}
+  try { localStorage.setItem('naswebui-session-source-filter', next); } catch (_e) {}
   renderSessionListFromCache();
 }
 
 function _restoreSessionSourceFilter() {
   try {
-    const raw = localStorage.getItem('nasmusicui-session-source-filter');
+    const raw = localStorage.getItem('naswebui-session-source-filter');
     if (raw === 'cli' || raw === 'webui') _sessionSourceFilter = raw;
   } catch (_e) {}
 }
@@ -2746,7 +2746,7 @@ function _renderBatchActionBar(){
       const retainedCount=_worktreeResponseCount(results);
       ids.forEach(_clearHandoffStorageForSession);
       if(S.session&&ids.includes(S.session.session_id)){
-        S.session=null;S.messages=[];S.entries=[];localStorage.removeItem('nasmusicui-session');
+        S.session=null;S.messages=[];S.entries=[];localStorage.removeItem('naswebui-session');
         if(typeof _hydrateTodosFromSession==='function') _hydrateTodosFromSession(null);
         const remaining=await api('/api/sessions');
         if(remaining.sessions&&remaining.sessions.length){await loadSession(remaining.sessions[0].session_id);}
@@ -3532,15 +3532,15 @@ function ensureActiveSessionExternalRefreshPoll(){
   _activeSessionExternalRefreshTimer = setInterval(() => {
     void refreshActiveSessionIfExternallyUpdated('poll');
   }, _activeSessionExternalRefreshMs);
-  if(typeof document !== 'undefined' && !document._nasmusicuiExternalRefreshVisibilityHook){
+  if(typeof document !== 'undefined' && !document._naswebuiExternalRefreshVisibilityHook){
     document.addEventListener('visibilitychange', () => {
       if(!document.hidden) void refreshActiveSessionIfExternallyUpdated('visible');
     });
-    document._nasmusicuiExternalRefreshVisibilityHook = true;
+    document._naswebuiExternalRefreshVisibilityHook = true;
   }
-  if(typeof window !== 'undefined' && !window._nasmusicuiExternalRefreshFocusHook){
+  if(typeof window !== 'undefined' && !window._naswebuiExternalRefreshFocusHook){
     window.addEventListener('focus', () => { void refreshActiveSessionIfExternallyUpdated('focus'); });
-    window._nasmusicuiExternalRefreshFocusHook = true;
+    window._naswebuiExternalRefreshFocusHook = true;
   }
 }
 
@@ -3580,7 +3580,7 @@ function _closeSessionEventsSSE(){
 }
 
 function ensureSessionEventsSSE(){
-  if(typeof document !== 'undefined' && !document._nasmusicuiSessionEventsVisibilityHook){
+  if(typeof document !== 'undefined' && !document._naswebuiSessionEventsVisibilityHook){
     document.addEventListener('visibilitychange', () => {
       if(document.hidden){
         _closeSessionEventsSSE();
@@ -3589,7 +3589,7 @@ function ensureSessionEventsSSE(){
         void refreshSessionList('visible');
       }
     });
-    document._nasmusicuiSessionEventsVisibilityHook = true;
+    document._naswebuiSessionEventsVisibilityHook = true;
   }
   if(typeof EventSource==='undefined') return;
   if(typeof document !== 'undefined' && document.hidden) return;
@@ -4412,7 +4412,7 @@ function _sessionDisplayTitle(s){
 
 function _sessionTitleIsDefaultWebUI(rawTitle){
   const title=String(rawTitle||'').replace(/\s+/g,' ').trim();
-  return title==='NasMusicUI'||/^NasMusicUI #\d+$/.test(title);
+  return title==='NasWebUI'||/^NasWebUI #\d+$/.test(title);
 }
 
 function _sessionTitleTags(rawTitle){
@@ -4925,8 +4925,8 @@ function renderSessionListFromCache(){
   const now=_serverNowMs();
   // Collapse state persisted in localStorage
   let _groupCollapsed={};
-  try{_groupCollapsed=JSON.parse(localStorage.getItem('nasmusicui-date-groups-collapsed')||'{}');}catch(e){}
-  const _saveCollapsed=()=>{try{localStorage.setItem('nasmusicui-date-groups-collapsed',JSON.stringify(_groupCollapsed));}catch(e){}};
+  try{_groupCollapsed=JSON.parse(localStorage.getItem('naswebui-date-groups-collapsed')||'{}');}catch(e){}
+  const _saveCollapsed=()=>{try{localStorage.setItem('naswebui-date-groups-collapsed',JSON.stringify(_groupCollapsed));}catch(e){}};
   // Group sessions by date
   const groups=[];
   let curLabel=null,curItems=[];
@@ -5765,7 +5765,7 @@ function renderSessionListFromCache(){
 }
 
 async function _handleActiveSessionStorageEvent(e){
-  if(!e || e.key !== 'nasmusicui-session') return;
+  if(!e || e.key !== 'naswebui-session') return;
   // Do not treat localStorage as a global active-session bus. Each tab owns its
   // active conversation via its URL (/session/<id>), so another tab switching
   // sessions must not force this tab to navigate away from an in-flight turn.
@@ -5907,7 +5907,7 @@ async function deleteSession(sid, beforeDelete=null){
   if(S.session&&S.session.session_id===sid){
     S.session=null;S.messages=[];S.entries=[];
     if(typeof _hydrateTodosFromSession==='function') _hydrateTodosFromSession(null);
-    localStorage.removeItem('nasmusicui-session');
+    localStorage.removeItem('naswebui-session');
     // load the most recent remaining session, or show blank if none left
     const remaining=await api('/api/sessions');
     if(remaining.sessions&&remaining.sessions.length){

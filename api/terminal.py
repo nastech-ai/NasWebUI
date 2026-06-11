@@ -1,4 +1,4 @@
-"""Embedded workspace terminal support for NasMusicUI.
+"""Embedded workspace terminal support for NasWebUI.
 
 The terminal is intentionally independent from the agent execution path.  It
 starts a shell with an explicit cwd/env per process and never mutates

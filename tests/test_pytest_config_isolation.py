@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 
-def test_pytest_overrides_inherited_nasmusicui_config_path():
+def test_pytest_overrides_inherited_naswebui_config_path():
     """A live-agent NASTECH_CONFIG_PATH must never leak into WebUI tests.
 
     NasTech agents commonly run with NASTECH_CONFIG_PATH pointing at the real

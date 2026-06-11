@@ -9,7 +9,7 @@ state.
 These tests lock in:
   1. ``api()`` attaches HTTP context (``.status``, ``.statusText``, ``.body``)
      to thrown errors so callers can branch on status without re-parsing text.
-  2. ``loadSession()`` clears the stale ``nasmusicui-session`` key on a 404
+  2. ``loadSession()`` clears the stale ``naswebui-session`` key on a 404
      and strips the ``/session/<id>`` URL, then rethrows only at boot time so
      boot can fall through to the empty state (#2798, #2782).
   3. The server 404s a deleted *WebUI* session on ``GET /api/session`` instead
@@ -89,7 +89,7 @@ def test_load_session_clears_saved_stale_404_and_rethrows_to_boot():
     """A missing saved session should be removed and let boot show the empty state."""
     block = _load_session_error_block()
     assert "e.status===404" in block, "loadSession must keep a 404-specific branch"
-    assert "localStorage.removeItem('nasmusicui-session')" in block, (
+    assert "localStorage.removeItem('naswebui-session')" in block, (
         "loadSession must clear stale saved session IDs on 404"
     )
     assert "history.replaceState" in block, (
@@ -121,7 +121,7 @@ def test_load_session_404_self_heal_gated_to_active_or_boot():
         "self-heal must be gated to boot or the active session, not unconditional"
     )
     heal_idx = arm.find(self_heal)
-    clear_idx = arm.find("localStorage.removeItem('nasmusicui-session')")
+    clear_idx = arm.find("localStorage.removeItem('naswebui-session')")
     strip_idx = arm.find("history.replaceState")
     assert clear_idx > heal_idx, "localStorage clear must run inside the self-heal gate"
     assert strip_idx > heal_idx, "URL strip must run inside the self-heal gate"
@@ -141,7 +141,7 @@ def test_send_chat_start_404_self_heals_instead_of_error_bubble():
     assert "e.status===404" in block, (
         "send() must branch on a 404 from /api/chat/start before the generic path"
     )
-    assert "localStorage.removeItem('nasmusicui-session')" in block, (
+    assert "localStorage.removeItem('naswebui-session')" in block, (
         "send() 404 branch must clear the saved session key"
     )
     assert "history.replaceState" in block, (

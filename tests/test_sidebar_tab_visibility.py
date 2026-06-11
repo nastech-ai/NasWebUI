@@ -68,9 +68,9 @@ def test_frontend_static_contracts():
     assert "'chat'" in PANELS_JS.split("_ALWAYS_VISIBLE_TABS")[1][:80]
     assert "'settings'" in PANELS_JS.split("_ALWAYS_VISIBLE_TABS")[1][:80]
     assert "_HIDDEN_TABS_LS_KEY" in PANELS_JS
-    assert "nasmusicui-hidden-tabs" in PANELS_JS
+    assert "naswebui-hidden-tabs" in PANELS_JS
     assert "_TAB_ORDER_LS_KEY" in PANELS_JS
-    assert "nasmusicui-tab-order" in PANELS_JS
+    assert "naswebui-tab-order" in PANELS_JS
     for fn in ("_getHiddenTabs", "_setHiddenTabs", "_getTabOrder", "_setTabOrder",
                "_applyTabOrder", "_applyTabVisibility", "_renderTabVisibilityChips",
                "_toggleTabVisibilityChip", "_moveTabOrderPanel", "_wireTabChipDrag"):
@@ -97,7 +97,7 @@ def test_frontend_static_contracts():
 
     # No flash-prevention script in <head> (DOM elements don't exist at that point)
     head_end = INDEX_HTML.find("</head>")
-    assert "nasmusicui-hidden-tabs" not in INDEX_HTML[:head_end]
+    assert "naswebui-hidden-tabs" not in INDEX_HTML[:head_end]
 
 
 def test_boot_restores_visibility_from_localstorage():

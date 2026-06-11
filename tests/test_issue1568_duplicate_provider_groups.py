@@ -167,7 +167,7 @@ class TestProviderGroupDedup:
         (underscored) with ``model.provider: opencode-go`` (hyphenated)."""
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({
             "model": {"provider": "opencode-go", "default": "glm-5.1"},
@@ -201,7 +201,7 @@ class TestProviderGroupDedup:
     def test_uppercase_providers_key_does_not_create_phantom_group(self, monkeypatch, tmp_path):
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({
             "model": {"provider": "opencode-go", "default": "glm-5.1"},
@@ -222,7 +222,7 @@ class TestProviderGroupDedup:
         ``providers.z-ai.api_key`` should still see ONE Z.AI group, not two."""
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({
             "model": {"provider": "zai", "default": "glm-5"},
@@ -246,7 +246,7 @@ class TestProviderGroupDedup:
         """Sanity: when config keys are already canonical, behaviour is unchanged."""
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({
             "model": {"provider": "opencode-go", "default": "glm-5.1"},
@@ -278,7 +278,7 @@ class TestDefaultModelProviderIdGuard:
     def test_provider_id_as_default_does_not_inject_phantom(self, monkeypatch, tmp_path, caplog):
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({
             "model": {"provider": "opencode-go", "default": "opencode_go"},
@@ -314,7 +314,7 @@ class TestDefaultModelProviderIdGuard:
     def test_provider_alias_as_default_does_not_inject_phantom(self, monkeypatch, tmp_path):
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         # Z.AI / GLM has display name "Z.AI / GLM", canonical id "zai",
         # alias "z-ai". model.default == "z-ai" should be caught.
@@ -337,7 +337,7 @@ class TestDefaultModelProviderIdGuard:
         user's configured default isn't hidden from them."""
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({
             "model": {"provider": "anthropic", "default": "claude-opus-5.0-future"},
@@ -372,7 +372,7 @@ class TestEmptyGroupFilter:
         detection path leaked the bad id."""
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({
             "model": {"provider": "opencode-go", "default": "glm-5.1"},
@@ -401,7 +401,7 @@ class TestEmptyGroupFilter:
         as a reminder to fill in models."""
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({
             "model": {"provider": "custom", "default": "some-model"},

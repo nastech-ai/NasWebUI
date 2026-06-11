@@ -7,14 +7,14 @@ PID_FILE="${NASMUSICUI_PID_FILE:-${NASTECH_HOME}/webui.pid}"
 LOG_FILE="${NASMUSICUI_LOG_FILE:-${NASTECH_HOME}/webui.log}"
 STATE_FILE="${NASMUSICUI_CTL_STATE_FILE:-${NASTECH_HOME}/webui.ctl.env}"
 DEFAULT_STATE_DIR="${NASMUSICUI_STATE_DIR:-${NASTECH_HOME}/webui}"
-DEFAULT_LAUNCHD_LABEL="${NASMUSICUI_LAUNCHD_LABEL:-com.parantoux.nasmusicui}"
+DEFAULT_LAUNCHD_LABEL="${NASMUSICUI_LAUNCHD_LABEL:-com.parantoux.naswebui}"
 
 usage() {
   cat <<'EOF'
 Usage: ./ctl.sh <command> [args]
 
 Commands:
-  start [bootstrap args...]   Start NasMusicUI as a background daemon
+  start [bootstrap args...]   Start NasWebUI as a background daemon
   stop                        Stop the daemon started by ctl.sh
   restart [bootstrap args...] Stop, then start again
   status                      Show daemon, host/port, log, and health status
@@ -333,12 +333,12 @@ start_cmd() {
 
   local existing_pid
   if existing_pid="$(_current_pid 2>/dev/null)"; then
-    echo "[ctl] NasMusicUI is already running (PID ${existing_pid})"
+    echo "[ctl] NasWebUI is already running (PID ${existing_pid})"
     return 0
   fi
   local launchd_pid
   if launchd_pid="$(_launchd_webui_pid 2>/dev/null)"; then
-    echo "[ctl] Refusing to start a second NasMusicUI while launchd job ${NASMUSICUI_LAUNCHD_LABEL:-${DEFAULT_LAUNCHD_LABEL}} is running (PID ${launchd_pid})." >&2
+    echo "[ctl] Refusing to start a second NasWebUI while launchd job ${NASMUSICUI_LAUNCHD_LABEL:-${DEFAULT_LAUNCHD_LABEL}} is running (PID ${launchd_pid})." >&2
     echo "[ctl] Use launchctl kickstart -k gui/$(id -u)/${NASMUSICUI_LAUNCHD_LABEL:-${DEFAULT_LAUNCHD_LABEL}} or disable the launchd job before using ctl.sh start." >&2
     return 2
   fi
@@ -359,11 +359,11 @@ start_cmd() {
   _write_state "${pid}" "${CTL_HOST}" "${CTL_PORT}" "${python_exe}"
   sleep 0.15
   if ! _is_alive "${pid}"; then
-    echo "[ctl] NasMusicUI failed to stay running. Log: ${LOG_FILE}" >&2
+    echo "[ctl] NasWebUI failed to stay running. Log: ${LOG_FILE}" >&2
     rm -f "${PID_FILE}" "${STATE_FILE}"
     return 1
   fi
-  echo "[ctl] Started NasMusicUI (PID ${pid})"
+  echo "[ctl] Started NasWebUI (PID ${pid})"
   echo "[ctl] Bound: ${CTL_HOST}:${CTL_PORT}"
   echo "[ctl] Log: ${LOG_FILE}"
 }
@@ -372,7 +372,7 @@ stop_cmd() {
   ensure_home
   local pid
   if ! pid="$(_pid_from_file 2>/dev/null)"; then
-    echo "[ctl] NasMusicUI is stopped"
+    echo "[ctl] NasWebUI is stopped"
     rm -f "${PID_FILE}" "${STATE_FILE}"
     return 0
   fi
@@ -382,7 +382,7 @@ stop_cmd() {
     return 0
   fi
 
-  echo "[ctl] Stopping NasMusicUI (PID ${pid})"
+  echo "[ctl] Stopping NasWebUI (PID ${pid})"
   _stop_webui_pid "${pid}" TERM
   local i
   for i in {1..50}; do
@@ -436,7 +436,7 @@ status_cmd() {
   if pid="$(_current_pid 2>/dev/null)"; then
     uptime="$(ps -p "${pid}" -o etime= 2>/dev/null | sed 's/^ *//' || true)"
     health="$(_health_line "${host}" "${port}")"
-    echo "● nasmusicui — running"
+    echo "● naswebui — running"
     echo "  PID:     ${pid}"
     echo "  Uptime:  ${uptime:-unknown}"
     echo "  Bound:   ${host}:${port}"
@@ -444,7 +444,7 @@ status_cmd() {
     echo "  Health:  ${health}"
   else
     [[ -f "${PID_FILE}" ]] && _clear_stale_pid >/dev/null 2>&1 || true
-    echo "● nasmusicui — stopped"
+    echo "● naswebui — stopped"
     echo "  PID:     -"
     echo "  Bound:   ${host}:${port}"
     echo "  Log:     ${log_path}"

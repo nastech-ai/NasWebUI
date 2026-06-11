@@ -77,7 +77,7 @@ os.environ['NASTECH_CONFIG_PATH'] = str(TEST_STATE_DIR / 'config.yaml')
 
 
 @pytest.fixture(autouse=True)
-def _isolate_nasmusicui_config_path():
+def _isolate_naswebui_config_path():
     """Keep profile/.env side effects from leaking the live config path across tests."""
     isolated_config_path = str(TEST_STATE_DIR / 'config.yaml')
     os.environ['NASTECH_CONFIG_PATH'] = isolated_config_path
@@ -316,12 +316,12 @@ os.execv = _pytest_session_safe_execv
 #
 # A test that opts in via the `allow_outbound_network` fixture sees the real
 # socket.create_connection.
-import socket as _nasmusicui_test_socket
-_REAL_CREATE_CONNECTION = _nasmusicui_test_socket.create_connection
-_REAL_SOCKET_CONNECT = _nasmusicui_test_socket.socket.connect
+import socket as _naswebui_test_socket
+_REAL_CREATE_CONNECTION = _naswebui_test_socket.create_connection
+_REAL_SOCKET_CONNECT = _naswebui_test_socket.socket.connect
 
 
-def _nasmusicui_addr_is_local(host: str) -> bool:
+def _naswebui_addr_is_local(host: str) -> bool:
     """Return True for loopback / RFC1918 / link-local / reserved-TLD hosts."""
     if not isinstance(host, str):
         return False
@@ -370,12 +370,12 @@ def _nasmusicui_addr_is_local(host: str) -> bool:
     return False
 
 
-def _nasmusicui_blocked_create_connection(address, *a, **kw):
+def _naswebui_blocked_create_connection(address, *a, **kw):
     try:
         host = address[0]
     except (TypeError, IndexError):
         host = ""
-    if _nasmusicui_addr_is_local(host):
+    if _naswebui_addr_is_local(host):
         return _REAL_CREATE_CONNECTION(address, *a, **kw)
     raise OSError(
         f"nastech test network isolation: outbound socket to {address!r} is blocked. "
@@ -384,20 +384,20 @@ def _nasmusicui_blocked_create_connection(address, *a, **kw):
     )
 
 
-def _nasmusicui_blocked_socket_connect(self, address):
+def _naswebui_blocked_socket_connect(self, address):
     try:
         host = address[0]
     except (TypeError, IndexError):
         host = ""
-    if _nasmusicui_addr_is_local(host):
+    if _naswebui_addr_is_local(host):
         return _REAL_SOCKET_CONNECT(self, address)
     raise OSError(
         f"nastech test network isolation: socket.connect to {address!r} is blocked."
     )
 
 
-_nasmusicui_test_socket.create_connection = _nasmusicui_blocked_create_connection
-_nasmusicui_test_socket.socket.connect = _nasmusicui_blocked_socket_connect
+_naswebui_test_socket.create_connection = _naswebui_blocked_create_connection
+_naswebui_test_socket.socket.connect = _naswebui_blocked_socket_connect
 
 
 @pytest.fixture
@@ -414,8 +414,8 @@ def allow_outbound_network(monkeypatch):
     test_dns_resolution_failure case was rewritten to mock socket.getaddrinfo
     instead, which is fully hermetic.
     """
-    monkeypatch.setattr(_nasmusicui_test_socket, "create_connection", _REAL_CREATE_CONNECTION)
-    monkeypatch.setattr(_nasmusicui_test_socket.socket, "connect", _REAL_SOCKET_CONNECT)
+    monkeypatch.setattr(_naswebui_test_socket, "create_connection", _REAL_CREATE_CONNECTION)
+    monkeypatch.setattr(_naswebui_test_socket.socket, "connect", _REAL_SOCKET_CONNECT)
     yield
 
 
@@ -710,7 +710,7 @@ def test_server():
     # and every HTTP-dependent test then cascaded with ConnectionRefused —
     # hundreds of opaque failures from a single root cause.
     import tempfile as _tempfile
-    _server_log = pathlib.Path(_tempfile.gettempdir()) / f"nasmusicui-test-server-{TEST_PORT}.log"
+    _server_log = pathlib.Path(_tempfile.gettempdir()) / f"naswebui-test-server-{TEST_PORT}.log"
 
     # Boot the server, retrying once if it dies early or fails to bind. Boot
     # failures here are most often transient (a port not yet released by a prior

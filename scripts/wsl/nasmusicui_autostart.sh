@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# WSL-friendly autostart launcher for NasMusicUI.
+# WSL-friendly autostart launcher for NasWebUI.
 #
 # Safe defaults:
 # - derives the repo from this script location, override with NASMUSICUI_REPO
@@ -17,10 +17,10 @@ NASMUSICUI_HOST="${NASMUSICUI_HOST:-127.0.0.1}"
 NASMUSICUI_PORT="${NASMUSICUI_PORT:-8787}"
 NASMUSICUI_HEALTH_HOST="${NASMUSICUI_HEALTH_HOST:-127.0.0.1}"
 NASMUSICUI_HEALTH_URL="${NASMUSICUI_HEALTH_URL:-http://${NASMUSICUI_HEALTH_HOST}:${NASMUSICUI_PORT}/health}"
-NASMUSICUI_PID_FILE="${NASMUSICUI_PID_FILE:-${NASMUSICUI_LOG_DIR}/nasmusicui.pid}"
-NASMUSICUI_LOCK_FILE="${NASMUSICUI_LOCK_FILE:-/tmp/nasmusicui-autostart.lock}"
+NASMUSICUI_PID_FILE="${NASMUSICUI_PID_FILE:-${NASMUSICUI_LOG_DIR}/naswebui.pid}"
+NASMUSICUI_LOCK_FILE="${NASMUSICUI_LOCK_FILE:-/tmp/naswebui-autostart.lock}"
 AUTOSTART_LOG="${NASMUSICUI_LOG_DIR}/webui_autostart.log"
-WEBUI_LOG="${NASMUSICUI_LOG_DIR}/nasmusicui.log"
+WEBUI_LOG="${NASMUSICUI_LOG_DIR}/naswebui.log"
 
 # Make the WSL launcher knobs visible to start.sh/bootstrap.py.
 export NASMUSICUI_HOST NASMUSICUI_PORT
@@ -47,7 +47,7 @@ pid_is_alive() {
 
 validate_repo() {
   if [[ ! -d "${NASMUSICUI_REPO}" ]]; then
-    log "NasMusicUI repo not found: ${NASMUSICUI_REPO}"
+    log "NasWebUI repo not found: ${NASMUSICUI_REPO}"
     exit 1
   fi
   if [[ ! -f "${NASMUSICUI_REPO}/start.sh" ]]; then
@@ -57,7 +57,7 @@ validate_repo() {
 }
 
 maybe_require_agent_process() {
-  # NasMusicUI usually launches the agent in-process, so this check is opt-in.
+  # NasWebUI usually launches the agent in-process, so this check is opt-in.
   # Set NASMUSICUI_REQUIRE_AGENT_PROCESS=1 only if your setup depends on a
   # separately running NasTech gateway/agent before WebUI starts.
   if [[ "${NASMUSICUI_REQUIRE_AGENT_PROCESS:-0}" != "1" ]]; then
@@ -86,17 +86,17 @@ start_webui() {
   maybe_require_agent_process
 
   if webui_healthy; then
-    log "NasMusicUI already running at ${NASMUSICUI_HEALTH_URL}"
+    log "NasWebUI already running at ${NASMUSICUI_HEALTH_URL}"
     exit 0
   fi
 
   if pid_is_alive; then
-    log "NasMusicUI already running with pid $(cat "${NASMUSICUI_PID_FILE}")"
+    log "NasWebUI already running with pid $(cat "${NASMUSICUI_PID_FILE}")"
     exit 0
   fi
 
   rm -f "${NASMUSICUI_PID_FILE}"
-  log "Starting NasMusicUI from ${NASMUSICUI_REPO} on ${NASMUSICUI_HOST}:${NASMUSICUI_PORT}"
+  log "Starting NasWebUI from ${NASMUSICUI_REPO} on ${NASMUSICUI_HOST}:${NASMUSICUI_PORT}"
 
   (
     cd "${NASMUSICUI_REPO}"
@@ -106,16 +106,16 @@ start_webui() {
 
   sleep "${NASMUSICUI_STARTUP_GRACE_SECONDS:-2}"
   if webui_healthy; then
-    log "NasMusicUI started and passed health check"
+    log "NasWebUI started and passed health check"
     exit 0
   fi
 
   if pid_is_alive; then
-    log "NasMusicUI process started with pid $(cat "${NASMUSICUI_PID_FILE}"); health check not ready yet"
+    log "NasWebUI process started with pid $(cat "${NASMUSICUI_PID_FILE}"); health check not ready yet"
     exit 0
   fi
 
-  log "NasMusicUI failed to stay running; see ${WEBUI_LOG}"
+  log "NasWebUI failed to stay running; see ${WEBUI_LOG}"
   exit 1
 }
 

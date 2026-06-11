@@ -481,7 +481,7 @@ class TestSessionManifestRoute:
         data = json.loads(bytes(handler.body).decode("utf-8"))
         assert isinstance(data, dict)
 
-    def test_session_manifest_json_has_nasmusicui_name(self):
+    def test_session_manifest_json_has_naswebui_name(self):
         handler = self._get("/session/manifest.json")
         data = json.loads(bytes(handler.body).decode("utf-8"))
         assert data.get("name") == "NasTech"
@@ -546,7 +546,7 @@ class TestRootManifestRoute:
             f"expected application/manifest+json, got {ct!r}"
         )
 
-    def test_root_manifest_json_has_nasmusicui_name_and_512_icon(self):
+    def test_root_manifest_json_has_naswebui_name_and_512_icon(self):
         handler = self._get("/manifest.json")
         data = json.loads(bytes(handler.body).decode("utf-8"))
         assert data.get("name") == "NasTech"

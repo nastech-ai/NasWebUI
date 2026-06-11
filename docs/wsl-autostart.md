@@ -1,6 +1,6 @@
 # Windows / WSL auto-start
 
-NasMusicUI runs well under WSL2, but native Windows login does not automatically start Linux user processes. This guide covers two supported options:
+NasWebUI runs well under WSL2, but native Windows login does not automatically start Linux user processes. This guide covers two supported options:
 
 1. **WSL session startup** — simple and low-risk. WebUI starts the next time you open a WSL shell.
 2. **Windows Task Scheduler** — true Windows logon startup. Windows invokes `wsl.exe`, which runs the WSL launch script.
@@ -8,7 +8,7 @@ NasMusicUI runs well under WSL2, but native Windows login does not automatically
 Both paths use the same WSL launch script:
 
 ```text
-scripts/wsl/nasmusicui_autostart.sh
+scripts/wsl/naswebui_autostart.sh
 ```
 
 The script is safe to call repeatedly. It uses a lock file, checks the `/health` endpoint, checks a pid file, and writes logs before starting `start.sh --foreground` in the background. It does not hardcode a user path; by default it derives the repository root from its own location.
@@ -24,20 +24,20 @@ The WSL launcher supports these environment variables:
 | `NASMUSICUI_HOST` | `127.0.0.1` | Host passed through to `start.sh` / `bootstrap.py` |
 | `NASMUSICUI_PORT` | `8787` | WebUI port and health-check port |
 | `NASMUSICUI_HEALTH_URL` | `http://127.0.0.1:$NASMUSICUI_PORT/health` | URL used to decide whether WebUI is already running |
-| `NASMUSICUI_PID_FILE` | `$NASMUSICUI_LOG_DIR/nasmusicui.pid` | pid file used for duplicate prevention |
+| `NASMUSICUI_PID_FILE` | `$NASMUSICUI_LOG_DIR/naswebui.pid` | pid file used for duplicate prevention |
 | `NASMUSICUI_REQUIRE_AGENT_PROCESS` | `0` | Optional: set to `1` only if your local setup requires a separate NasTech process before WebUI starts |
 
 Make the script executable once inside WSL:
 
 ```bash
-cd /path/to/nasmusicui
-chmod +x scripts/wsl/nasmusicui_autostart.sh
+cd /path/to/naswebui
+chmod +x scripts/wsl/naswebui_autostart.sh
 ```
 
 Run it manually to verify your paths and logs:
 
 ```bash
-scripts/wsl/nasmusicui_autostart.sh
+scripts/wsl/naswebui_autostart.sh
 curl -fsS http://127.0.0.1:8787/health
 ```
 
@@ -45,7 +45,7 @@ Logs are written to:
 
 ```text
 $HOME/.nastech/webui/logs/webui_autostart.log
-$HOME/.nastech/webui/logs/nasmusicui.log
+$HOME/.nastech/webui/logs/naswebui.log
 ```
 
 ## Option 1: WSL session startup
@@ -55,9 +55,9 @@ This starts WebUI when your WSL login shell starts. It is the easiest option if 
 Add this to `~/.profile` or `~/.bashrc` inside WSL, adjusting the repo path:
 
 ```bash
-if [ -x "$HOME/nasmusicui/scripts/wsl/nasmusicui_autostart.sh" ]; then
-  NASMUSICUI_REPO="$HOME/nasmusicui" \
-    "$HOME/nasmusicui/scripts/wsl/nasmusicui_autostart.sh" >/dev/null 2>&1 &
+if [ -x "$HOME/naswebui/scripts/wsl/naswebui_autostart.sh" ]; then
+  NASMUSICUI_REPO="$HOME/naswebui" \
+    "$HOME/naswebui/scripts/wsl/naswebui_autostart.sh" >/dev/null 2>&1 &
 fi
 ```
 
@@ -84,14 +84,14 @@ From Windows PowerShell, run it with the WSL path to the launch script:
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\windows\setup_webui_autostart.ps1 `
-  -WslScriptPath "/home/your-user/nasmusicui/scripts/wsl/nasmusicui_autostart.sh" `
+  -WslScriptPath "/home/your-user/naswebui/scripts/wsl/naswebui_autostart.sh" `
   -Distro "Ubuntu"
 ```
 
 Notes:
 
 - `-Distro` is optional. Omit it to use your default WSL distro.
-- The default task name is `NasMusicUIAutoStart`; pass `-TaskName` if you need a different name.
+- The default task name is `NasWebUIAutoStart`; pass `-TaskName` if you need a different name.
 - The script is idempotent: rerunning it updates the existing scheduled task instead of creating duplicates.
 - The task runs as the current Windows user at logon with least privilege.
 - Add `-WhatIf` to preview the scheduled task registration.
@@ -101,8 +101,8 @@ Notes:
 To inspect or remove the task later:
 
 ```powershell
-Get-ScheduledTask -TaskName NasMusicUIAutoStart
-Unregister-ScheduledTask -TaskName NasMusicUIAutoStart -Confirm:$false
+Get-ScheduledTask -TaskName NasWebUIAutoStart
+Unregister-ScheduledTask -TaskName NasWebUIAutoStart -Confirm:$false
 ```
 
 ## Troubleshooting
@@ -111,7 +111,7 @@ Check the WSL logs first:
 
 ```bash
 tail -n 80 "$HOME/.nastech/webui/logs/webui_autostart.log"
-tail -n 80 "$HOME/.nastech/webui/logs/nasmusicui.log"
+tail -n 80 "$HOME/.nastech/webui/logs/naswebui.log"
 ```
 
 Common causes:
@@ -121,6 +121,6 @@ Common causes:
 | Task exists but WebUI is not reachable | WSL script path is wrong for the selected distro | Re-run the PowerShell setup with the correct `-WslScriptPath` and `-Distro` |
 | WebUI starts only after opening WSL | You used the WSL session startup option, not Task Scheduler | Install the Windows scheduled task |
 | Multiple login events happen quickly | Normal Windows startup behavior | The WSL script should log `already running` and avoid duplicate processes |
-| Health check fails but pid exists | WebUI is still booting or the port differs | Check `NASMUSICUI_PORT` and `nasmusicui.log` |
+| Health check fails but pid exists | WebUI is still booting or the port differs | Check `NASMUSICUI_PORT` and `naswebui.log` |
 
 If you want WSL2 systemd integration instead, see `docs/supervisor.md` for foreground process-supervisor guidance and adapt the Linux `systemd --user` pattern to your distro.

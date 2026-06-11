@@ -11,7 +11,7 @@ name: Docker smoke
 # Scope (intentionally small for v1):
 #   - 3 compose variants (single, two-container, three-container)
 #   - For multi-container variants, rebuild the local Dockerfile and re-tag
-#     it as ghcr.io/nastech-ai/nasmusicui:latest BEFORE `up` so the PR's
+#     it as ghcr.io/nastech-ai/naswebui:latest BEFORE `up` so the PR's
 #     changes to docker_init.bash / Dockerfile actually execute. Without this
 #     the multi-container variants would pull the previous release from GHCR
 #     and silently miss every PR-level regression.
@@ -83,7 +83,7 @@ jobs:
         with:
           context: .
           load: true
-          tags: ghcr.io/nastech-ai/nasmusicui:latest
+          tags: ghcr.io/nastech-ai/naswebui:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -112,7 +112,7 @@ jobs:
         with:
           context: .
           load: true
-          tags: ghcr.io/nastech-ai/nasmusicui:latest
+          tags: ghcr.io/nastech-ai/naswebui:latest
           cache-from: type=gha
 
       - name: Resolve compose file + project name
@@ -131,9 +131,9 @@ jobs:
               ;;
           esac
           # Per-run project name so concurrent jobs / reruns can't clobber each other.
-          echo "project=nasmusicui-smoke-${{ matrix.variant }}-${{ github.run_id }}-${{ github.run_attempt }}" >> "$GITHUB_OUTPUT"
+          echo "project=naswebui-smoke-${{ matrix.variant }}-${{ github.run_id }}-${{ github.run_attempt }}" >> "$GITHUB_OUTPUT"
 
-      - name: Reap any prior nasmusicui-smoke resources on this runner
+      - name: Reap any prior naswebui-smoke resources on this runner
         run: |
           set -euo pipefail
           # Hosted GHA runners are fresh, so this is mostly defence-in-depth for
@@ -142,14 +142,14 @@ jobs:
           # to clean up the resources THIS run creates; this step only sweeps
           # leftovers from prior runs that crashed before their trap fired.
           # Match by project-name prefix instead of labels (the compose files
-          # don't carry nasmusicui-smoke labels on their resources).
-          for c in $(docker ps -aq --filter "name=nasmusicui-smoke-"); do
+          # don't carry naswebui-smoke labels on their resources).
+          for c in $(docker ps -aq --filter "name=naswebui-smoke-"); do
             docker rm -f "$c" || true
           done
-          for v in $(docker volume ls -q | grep "^nasmusicui-smoke-" || true); do
+          for v in $(docker volume ls -q | grep "^naswebui-smoke-" || true); do
             docker volume rm -f "$v" || true
           done
-          for n in $(docker network ls --format '{{.Name}}' | grep "^nasmusicui-smoke-" || true); do
+          for n in $(docker network ls --format '{{.Name}}' | grep "^naswebui-smoke-" || true); do
             docker network rm "$n" || true
           done
 
@@ -157,8 +157,8 @@ jobs:
         id: paths
         run: |
           set -euo pipefail
-          STATE_DIR="$(mktemp -d -t nasmusicui-smoke-state-XXXXXX)"
-          WORK_DIR="$(mktemp -d -t nasmusicui-smoke-work-XXXXXX)"
+          STATE_DIR="$(mktemp -d -t naswebui-smoke-state-XXXXXX)"
+          WORK_DIR="$(mktemp -d -t naswebui-smoke-work-XXXXXX)"
           echo "state_dir=$STATE_DIR" >> "$GITHUB_OUTPUT"
           echo "work_dir=$WORK_DIR" >> "$GITHUB_OUTPUT"
           echo "Allocated:"

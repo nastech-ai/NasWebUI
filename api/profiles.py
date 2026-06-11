@@ -1,5 +1,5 @@
 """
-NasMusicUI -- Profile state management.
+NasWebUI -- Profile state management.
 Wraps nastech_cli.profiles to provide profile switching for the web UI.
 
 The web UI maintains a process-level "active profile" that determines which
@@ -1807,5 +1807,5 @@ def delete_profile_api(name: str) -> dict:
     return {'ok': True, 'name': name}
 
 # Branding aliases — tests and external callers may use either name
-get_active_nasmusicui_home = get_active_nastech_home
-get_nasmusicui_home_for_profile = get_nastech_home_for_profile
+get_active_naswebui_home = get_active_nastech_home
+get_naswebui_home_for_profile = get_nastech_home_for_profile

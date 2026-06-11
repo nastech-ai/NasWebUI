@@ -1,5 +1,5 @@
 """
-NasMusicUI -- Main server entry point.
+NasWebUI -- Main server entry point.
 Thin routing shell: imports Handler, delegates to api/routes.py, runs server.
 All business logic lives in api/*.
 """
@@ -108,7 +108,7 @@ if os.environ.get("NASMUSICUI_TEST_NETWORK_BLOCK", "").strip() in ("1", "true", 
         if _addr_is_local(host):
             return _REAL_CREATE_CONN(address, *a, **kw)
         raise OSError(
-            f"nasmusicui test network isolation (server.py): outbound to {address!r} blocked"
+            f"naswebui test network isolation (server.py): outbound to {address!r} blocked"
         )
 
     def _blocked_socket_connect(self, address):
@@ -119,7 +119,7 @@ if os.environ.get("NASMUSICUI_TEST_NETWORK_BLOCK", "").strip() in ("1", "true", 
         if _addr_is_local(host):
             return _REAL_SOCK_CONNECT(self, address)
         raise OSError(
-            f"nasmusicui test network isolation (server.py): socket.connect to {address!r} blocked"
+            f"naswebui test network isolation (server.py): socket.connect to {address!r} blocked"
         )
 
     socket.create_connection = _blocked_create_connection
@@ -258,7 +258,7 @@ class Handler(BaseHTTPRequestHandler):
             except OSError:
                 pass
     _ver_suffix = WEBUI_VERSION.removeprefix('v')
-    server_version = ('NasMusicUI/' + _ver_suffix) if _ver_suffix != 'unknown' else 'NasMusicUI'
+    server_version = ('NasWebUI/' + _ver_suffix) if _ver_suffix != 'unknown' else 'NasWebUI'
     _CSP_REPORT_TO = '{"group":"csp-endpoint","max_age":10886400,"endpoints":[{"url":"/api/csp-report"}]}'
 
     @classmethod
@@ -632,7 +632,7 @@ def main() -> None:
             print(f'[!!] WARNING: TLS setup failed ({e}), falling back to HTTP', flush=True)
             scheme = 'http'
 
-    print(f'  NasMusicUI listening on {scheme}://{HOST}:{PORT}', flush=True)
+    print(f'  NasWebUI listening on {scheme}://{HOST}:{PORT}', flush=True)
     if HOST in ('127.0.0.1', '::1') or within_container:
         print(f'  Remote access: ssh -N -L {PORT}:127.0.0.1:{PORT} <user>@<your-server>', flush=True)
     print(f'  Then open:     {scheme}://localhost:{PORT}', flush=True)

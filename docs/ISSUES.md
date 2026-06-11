@@ -3,7 +3,7 @@
 ## #1256: Browser tools fail with "Playwright not installed"
 
 ### Root Cause
-The check lives in **NasTech-Agent** (upstream), not nasmusicui:
+The check lives in **NasTech-Agent** (upstream), not naswebui:
 
 ```
 NasTech-Agent/tools/browser_tool.py → check_browser_requirements()

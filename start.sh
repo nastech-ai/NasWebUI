@@ -2,28 +2,28 @@
 set -euo pipefail
 
 # If invoked as root (e.g. via `sudo ./start.sh` or accidental root shell
-# inside the container), re-exec as the unprivileged nasmusicuiwebui user so the
+# inside the container), re-exec as the unprivileged naswebuiwebui user so the
 # WebUI process never owns root-only file modes on bind-mounted state.
 # Outside containers the EUID==0 case is rare; inside the production image
-# the entrypoint drops to nasmusicuiwebui itself, so this is a defensive guard.
+# the entrypoint drops to naswebuiwebui itself, so this is a defensive guard.
 # Sourced from PR #1686 (@binhpt310) — Cluster 1 (operational hardening),
 # extracted to a focused follow-up after the parent PR was deferred over a
 # separate sibling-repo build-context concern unrelated to this fix.
 #
 # Four preconditions to fire (all must hold):
 #   - EUID == 0
-#   - nasmusicuiwebui user actually exists (id lookup)
+#   - naswebuiwebui user actually exists (id lookup)
 #   - sudo is on PATH (production image does not ship sudo, so this is the
 #     load-bearing no-op guard for the canonical container path)
-#   - sudo -u nasmusicuiwebui passes without prompting (NOPASSWD precheck)
-# The NOPASSWD precheck via `sudo -n -u nasmusicuiwebui true` makes this a silent
-# fall-through on host machines where the developer's nasmusicuiwebui user
+#   - sudo -u naswebuiwebui passes without prompting (NOPASSWD precheck)
+# The NOPASSWD precheck via `sudo -n -u naswebuiwebui true` makes this a silent
+# fall-through on host machines where the developer's naswebuiwebui user
 # requires a password — better than exiting non-zero with `sudo: a password
 # is required` and surprising the user who didn't ask for sudo behavior.
-if [[ ${EUID:-$(id -u)} -eq 0 ]] && id nasmusicuiwebui >/dev/null 2>&1 \
+if [[ ${EUID:-$(id -u)} -eq 0 ]] && id naswebuiwebui >/dev/null 2>&1 \
         && command -v sudo >/dev/null 2>&1 \
-        && sudo -n -u nasmusicuiwebui true 2>/dev/null; then
-  exec sudo -n -u nasmusicuiwebui "$0" "$@"
+        && sudo -n -u naswebuiwebui true 2>/dev/null; then
+  exec sudo -n -u naswebuiwebui "$0" "$@"
 fi
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -40,14 +40,14 @@ if [[ -f "${REPO_ROOT}/.env" ]]; then
   # both `source` and `.env`.
   # Sourced from PR #1686 (@binhpt310) — Cluster 1 (operational hardening),
   # extracted to a focused follow-up after the parent PR was deferred.
-  _nasmusicui_env_filtered="$(mktemp "${TMPDIR:-/tmp}/nasmusicui-env.XXXXXX")"
-  grep -vE '^[[:space:]]*(export[[:space:]]+)?(UID|GID|EUID|EGID|PPID)=' "${REPO_ROOT}/.env" > "${_nasmusicui_env_filtered}" || true
+  _naswebui_env_filtered="$(mktemp "${TMPDIR:-/tmp}/naswebui-env.XXXXXX")"
+  grep -vE '^[[:space:]]*(export[[:space:]]+)?(UID|GID|EUID|EGID|PPID)=' "${REPO_ROOT}/.env" > "${_naswebui_env_filtered}" || true
   set -a
   # shellcheck source=/dev/null
-  source "${_nasmusicui_env_filtered}"
+  source "${_naswebui_env_filtered}"
   set +a
-  rm -f "${_nasmusicui_env_filtered}"
-  unset _nasmusicui_env_filtered
+  rm -f "${_naswebui_env_filtered}"
+  unset _naswebui_env_filtered
 fi
 
 PYTHON="${NASMUSICUI_PYTHON:-}"

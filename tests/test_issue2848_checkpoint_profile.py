@@ -19,7 +19,7 @@ def test_checkpoint_save_uses_session_profile_env(monkeypatch, tmp_path):
     profile_home.mkdir(parents=True)
     captured = {}
 
-    monkeypatch.setattr(profiles, "get_nasmusicui_home_for_profile", lambda profile: profile_home)
+    monkeypatch.setattr(profiles, "get_naswebui_home_for_profile", lambda profile: profile_home)
     monkeypatch.setattr(profiles, "get_profile_runtime_env", lambda home: {"NASTECH_CONFIG_PATH": str(Path(home) / "config.yaml")})
 
     def fake_save(self, *args, **kwargs):

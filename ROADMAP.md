@@ -1,4 +1,4 @@
-# NasMusicUI — Roadmap
+# NasWebUI — Roadmap
 
 > Web companion to the NasTech Agent CLI. Same workflows, browser-native.
 >
@@ -252,7 +252,7 @@ Remaining gaps and forward work live in [Forward Work](#forward-work) below.
 - [x] GHCR auto-publish on tag push
 - [x] Subpath mount support (reverse proxy at `/nastech/`)
 - [x] PWA installable from any browser
-- [x] Native macOS app — universal Intel + Apple Silicon, signed + notarized DMG, Sparkle 2 auto-update — see `nasmusicui/nastech-swift-mac` repo
+- [x] Native macOS app — universal Intel + Apple Silicon, signed + notarized DMG, Sparkle 2 auto-update — see `naswebui/nastech-swift-mac` repo
 
 ---
 
@@ -286,7 +286,7 @@ Remaining gaps and forward work live in [Forward Work](#forward-work) below.
 ### Backlog (deferred, listed for visibility)
 
 - **Insights / monitoring suite** — agent heartbeat + alerts (#716), quota / rate-limit display (#706), data tabs (#722), monitor dashboard concepts (#766, #721)
-- **Native MCP server expose** — NasMusicUI as an MCP server for direct agent integration (#733)
+- **Native MCP server expose** — NasWebUI as an MCP server for direct agent integration (#733)
 - **Teams / agents management panel** — editable names, roles, assignments (#719)
 - **Web UI profile model alignment with NasTech runtime** — design parity (#749)
 - **DOM windowing / message virtualization** — for sessions with hundreds of messages (#734)

@@ -1,7 +1,7 @@
 # PR Body Draft — #2518 follow-up: cold-start /api/session/new fast path
 
 > **Note to Reviewer:** implementer-prepared. Please copy/paste into the PR
-> description on `franksong2702/nasmusicui-fork`, then trim or expand as
+> description on `franksong2702/naswebui-fork`, then trim or expand as
 > you see fit. Sections follow the CONTRIBUTING.md "What We Expect in Every
 > PR" template.
 
@@ -9,7 +9,7 @@
 
 ## Thinking Path
 
-- NasMusicUI is intentionally a no-build-step Python + vanilla JS app; the
+- NasWebUI is intentionally a no-build-step Python + vanilla JS app; the
   New Conversation button is the most-clicked affordance and must feel
   immediate.
 - Issue **#2518** documented cold clicks hanging on
@@ -159,7 +159,7 @@ shortcut are deduped through the in-flight promise. The wait behind
   normalizes provider to the active route — exactly what
   `S.session.model_provider` previously carried. Not a regression.
 - **Migration risk for pre-provider localStorage.** The legacy
-  `nasmusicui-model` localStorage key (no provider) now falls back
+  `naswebui-model` localStorage key (no provider) now falls back
   through the new chain. The first request from a user who has never
   updated their model picker still works because the server's slow path
   is intact; the speedup only kicks in once the dropdown has

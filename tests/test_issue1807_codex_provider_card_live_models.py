@@ -27,7 +27,7 @@ def _install_fake_nastech_cli(monkeypatch, provider_model_ids):
 
 
 def _configure_codex(monkeypatch, tmp_path):
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
     monkeypatch.setattr(config, "_get_config_path", lambda: tmp_path / "missing-config.yaml")
     monkeypatch.setattr(config, "cfg", {
         "model": {"provider": "openai-codex", "default": "gpt-5.5"},

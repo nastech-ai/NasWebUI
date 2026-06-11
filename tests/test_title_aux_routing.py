@@ -678,7 +678,7 @@ class TestBackgroundTitleProfileRouting(unittest.TestCase):
 
         with patch.object(
             profiles,
-            'get_nasmusicui_home_for_profile',
+            'get_naswebui_home_for_profile',
             side_effect=RuntimeError('profile lookup failed'),
         ):
             with patch.dict(os.environ, {'NASTECH_HOME': 'default-home'}, clear=False):
@@ -758,14 +758,14 @@ class TestBackgroundTitleProfileRouting(unittest.TestCase):
         sys.modules['tools.skills_tool'] = fake_skill_module
 
         def fake_aux_title(*args, **kwargs):
-            captured['nasmusicui_home'] = os.environ.get('NASTECH_HOME')
+            captured['naswebui_home'] = os.environ.get('NASTECH_HOME')
             captured['skill_module_home'] = getattr(fake_skill_module, 'NASTECH_HOME')
             captured['skill_module_dir'] = getattr(fake_skill_module, 'SKILLS_DIR')
             return ('Profile Routed Title', 'llm_aux', '')
 
         events = []
         try:
-            with patch('api.profiles.get_nasmusicui_home_for_profile', return_value='profile-home'):
+            with patch('api.profiles.get_naswebui_home_for_profile', return_value='profile-home'):
                 with patch('api.streaming._generate_llm_session_title_via_aux', side_effect=fake_aux_title):
                     with patch.dict(os.environ, {'NASTECH_HOME': 'default-home'}, clear=False):
                         _run_background_title_update(
@@ -776,17 +776,17 @@ class TestBackgroundTitleProfileRouting(unittest.TestCase):
                             put_event=lambda event_type, data: events.append((event_type, data)),
                             agent=None,
                         )
-                        captured['restored_nasmusicui_home'] = os.environ.get('NASTECH_HOME')
+                        captured['restored_naswebui_home'] = os.environ.get('NASTECH_HOME')
         finally:
             if original_skill_module is None:
                 sys.modules.pop('tools.skills_tool', None)
             else:
                 sys.modules['tools.skills_tool'] = original_skill_module
 
-        self.assertEqual(captured.get('nasmusicui_home'), 'profile-home')
+        self.assertEqual(captured.get('naswebui_home'), 'profile-home')
         self.assertEqual(str(captured.get('skill_module_home')), 'profile-home')
         self.assertEqual(str(captured.get('skill_module_dir')), 'profile-home/skills')
-        self.assertEqual(captured.get('restored_nasmusicui_home'), 'default-home')
+        self.assertEqual(captured.get('restored_naswebui_home'), 'default-home')
         self.assertEqual(getattr(fake_skill_module, 'NASTECH_HOME'), 'default-home')
         self.assertEqual(getattr(fake_skill_module, 'SKILLS_DIR'), 'default-home/skills')
         self.assertEqual(mock_session.title, 'Profile Routed Title')
@@ -800,7 +800,7 @@ class TestBackgroundTitleProfileRouting(unittest.TestCase):
         import api.profiles as profiles
         from api.config import _thread_ctx
         try:
-            from nastech_cli import config as nasmusicui_config
+            from nastech_cli import config as naswebui_config
         except ModuleNotFoundError:
             pytest.skip('nastech_cli is not installed in this CI environment')
 
@@ -817,7 +817,7 @@ class TestBackgroundTitleProfileRouting(unittest.TestCase):
             with open(os.path.join(profile_home, 'config.yaml'), 'w', encoding='utf-8') as f:
                 f.write('model:\n  provider: profile-provider\n  default: profile-model\n')
 
-            with patch('api.profiles.get_nasmusicui_home_for_profile', return_value=profile_home):
+            with patch('api.profiles.get_naswebui_home_for_profile', return_value=profile_home):
                 runtime_env = {
                     'PROFILE_ONLY_KEY': 'profile-only',
                     'OPENROUTER_API_KEY': 'profile-openrouter-key',
@@ -825,9 +825,9 @@ class TestBackgroundTitleProfileRouting(unittest.TestCase):
                 with patch('api.profiles.get_profile_runtime_env', return_value=runtime_env):
                     with patch.dict(os.environ, {'NASTECH_HOME': default_home, 'OPENROUTER_API_KEY': 'default-openrouter-key'}, clear=False):
                         os.environ.pop('PROFILE_ONLY_KEY', None)
-                        nasmusicui_config._LOAD_CONFIG_CACHE.clear()
+                        naswebui_config._LOAD_CONFIG_CACHE.clear()
                         with profiles.profile_env_for_background_worker(session, 'background title'):
-                            loaded = nasmusicui_config.load_config()
+                            loaded = naswebui_config.load_config()
                             captured['loaded_provider'] = loaded.get('model', {}).get('provider')
                             captured['process_home'] = os.environ.get('NASTECH_HOME')
                             captured['process_runtime_key'] = os.environ.get('PROFILE_ONLY_KEY')
@@ -837,7 +837,7 @@ class TestBackgroundTitleProfileRouting(unittest.TestCase):
                         captured['restored_home'] = os.environ.get('NASTECH_HOME')
                         captured['restored_runtime_key'] = os.environ.get('PROFILE_ONLY_KEY')
                         captured['restored_provider_credential'] = os.environ.get('OPENROUTER_API_KEY')
-                        nasmusicui_config._LOAD_CONFIG_CACHE.clear()
+                        naswebui_config._LOAD_CONFIG_CACHE.clear()
 
         self.assertEqual(captured['loaded_provider'], 'profile-provider')
         self.assertEqual(captured['process_home'], profile_home)

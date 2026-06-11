@@ -141,7 +141,7 @@ class TestBootstrapForegroundWindows:
         import bootstrap as bs
         monkeypatch.setattr(bs, "ensure_supported_platform", lambda: None)
         monkeypatch.setattr(bs, "discover_agent_dir", lambda: tmp_path / "agent")
-        monkeypatch.setattr(bs, "nasmusicui_command_exists", lambda: True)
+        monkeypatch.setattr(bs, "naswebui_command_exists", lambda: True)
         python_exe = sys.executable
         monkeypatch.setattr(bs, "discover_launcher_python", lambda *a: python_exe)
         monkeypatch.setattr(bs, "ensure_python_has_webui_deps", lambda *a, **kw: a[0])

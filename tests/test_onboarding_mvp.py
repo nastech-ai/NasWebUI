@@ -60,7 +60,7 @@ def _server_nastech_home() -> pathlib.Path:
 
 
 @pytest.fixture(autouse=True)
-def clean_nasmusicui_config_files():
+def clean_naswebui_config_files():
     nastech_home = _server_nastech_home()
     for rel in ("config.yaml", ".env"):
         (nastech_home / rel).unlink(missing_ok=True)
@@ -103,7 +103,7 @@ def test_onboarding_setup_openrouter_writes_real_config_and_env():
     assert status == 200
     assert data["system"]["provider_configured"] is True
     assert data["system"]["provider_ready"] is True
-    if data["system"]["imports_ok"] and data["system"]["nasmusicui_found"]:
+    if data["system"]["imports_ok"] and data["system"]["naswebui_found"]:
         assert data["system"]["chat_ready"] is True
         assert data["system"]["setup_state"] == "ready"
     else:
@@ -131,7 +131,7 @@ def test_onboarding_setup_custom_endpoint_writes_runtime_files():
     assert status == 200
     assert data["system"]["provider_configured"] is True
     assert data["system"]["provider_ready"] is True
-    if data["system"]["imports_ok"] and data["system"]["nasmusicui_found"]:
+    if data["system"]["imports_ok"] and data["system"]["naswebui_found"]:
         assert data["system"]["chat_ready"] is True
         assert data["system"]["setup_state"] == "ready"
     else:

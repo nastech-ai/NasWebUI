@@ -11,7 +11,7 @@ def _flatten_ids(groups):
     return [m.get("id") for g in groups for m in g.get("models", [])]
 
 
-def _install_fake_nasmusicui_models(monkeypatch, provider_model_ids):
+def _install_fake_naswebui_models(monkeypatch, provider_model_ids):
     nastech_cli = types.ModuleType("nastech_cli")
     nastech_cli.__path__ = []
     models = types.ModuleType("nastech_cli.models")
@@ -48,7 +48,7 @@ def test_openai_codex_group_uses_provider_model_ids_for_spark(monkeypatch, tmp_p
         assert provider == "openai-codex"
         return ["gpt-5.4", "gpt-5.3-codex-spark", "gpt-5.3-codex"]
 
-    _install_fake_nasmusicui_models(monkeypatch, provider_model_ids)
+    _install_fake_naswebui_models(monkeypatch, provider_model_ids)
     _configure_codex(monkeypatch, tmp_path)
 
     result = config.get_available_models()
@@ -79,7 +79,7 @@ def test_openai_codex_group_merges_visible_codex_cache_models(monkeypatch, tmp_p
         assert provider == "openai-codex"
         return ["gpt-5.4", "gpt-5.3-codex"]
 
-    _install_fake_nasmusicui_models(monkeypatch, provider_model_ids)
+    _install_fake_naswebui_models(monkeypatch, provider_model_ids)
     _configure_codex(monkeypatch, tmp_path, default="gpt-5.4")
 
     codex_home = tmp_path / "codex-home"

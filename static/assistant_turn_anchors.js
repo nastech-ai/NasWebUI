@@ -185,7 +185,7 @@
     };
   }
 
-  ROOT.NasMusicUIAssistantTurnAnchors=Object.freeze({
+  ROOT.NasWebUIAssistantTurnAnchors=Object.freeze({
     version:'phase0',
     activityEventKinds:ACTIVITY_EVENT_KINDS,
     stateLayers:STATE_LAYERS,

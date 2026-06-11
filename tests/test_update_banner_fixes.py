@@ -98,7 +98,7 @@ class TestUpdateChecker:
         import api.updates as upd
 
         assert upd._build_compare_url('javascript:alert(1)', 'abc1234', 'def5678') is None
-        assert upd._build_compare_url('file:///tmp/nasmusicui', 'abc1234', 'def5678') is None
+        assert upd._build_compare_url('file:///tmp/naswebui', 'abc1234', 'def5678') is None
         assert upd._build_compare_url('https:github.com/nastech-ai/NasWebUI', 'abc1234', 'def5678') is None
         assert upd._build_compare_url('https://github.com/nastech-ai/NasWebUI', 'abc1234', 'def5678')
 

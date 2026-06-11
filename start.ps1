@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Native Windows launcher for NasMusicUI - PowerShell equivalent
+    Native Windows launcher for NasWebUI - PowerShell equivalent
     of start.sh, bypassing bootstrap.py's platform refusal.
 
 .DESCRIPTION
@@ -108,15 +108,15 @@ if (-not $AgentDir) {
     # stays robust across Windows variants. USERPROFILE is always set so it
     # stays unguarded; the dev-checkout sibling is path-derived, not env-based.
     $candidates = @()
-    $candidates += (Join-Path $env:USERPROFILE '.nasmusicui\NasTech-Agent')
+    $candidates += (Join-Path $env:USERPROFILE '.naswebui\NasTech-Agent')
     foreach ($root in @($env:LOCALAPPDATA, ${env:ProgramW6432}, ${env:ProgramFiles}, ${env:ProgramFiles(x86)})) {
-        if ($root) { $candidates += (Join-Path $root 'nasmusicui\NasTech-Agent') }
+        if ($root) { $candidates += (Join-Path $root 'naswebui\NasTech-Agent') }
     }
     $candidates += (Join-Path (Split-Path -Parent $RepoRoot) 'NasTech-Agent')
     # De-dup: when running in a WOW64 (32-bit-on-64-bit) PowerShell process,
     # $env:ProgramFiles is redirected to C:\Program Files (x86), so without
     # $env:ProgramW6432 (the canonical 64-bit override) we'd miss the real
-    # C:\Program Files\nasmusicui\NasTech-Agent AND duplicate the x86 entry.
+    # C:\Program Files\naswebui\NasTech-Agent AND duplicate the x86 entry.
     # Select-Object -Unique collapses any collisions regardless of cause.
     $candidates = $candidates | Select-Object -Unique
     foreach ($c in $candidates) {
@@ -161,9 +161,9 @@ $env:NASMUSICUI_HOST = $BindHostFinal
 $env:NASMUSICUI_PORT = "$PortFinal"
 if (-not $env:NASTECH_HOME) {
     if ($env:LOCALAPPDATA) {
-        $env:NASTECH_HOME = Join-Path $env:LOCALAPPDATA 'nasmusicui'
+        $env:NASTECH_HOME = Join-Path $env:LOCALAPPDATA 'naswebui'
     } else {
-        $env:NASTECH_HOME = Join-Path $env:USERPROFILE '.nasmusicui'
+        $env:NASTECH_HOME = Join-Path $env:USERPROFILE '.naswebui'
     }
 }
 if (-not $env:NASMUSICUI_STATE_DIR) {
@@ -175,7 +175,7 @@ New-Item -ItemType Directory -Force -Path $env:NASTECH_HOME | Out-Null
 New-Item -ItemType Directory -Force -Path $env:NASMUSICUI_STATE_DIR | Out-Null
 
 # === Launch (foreground, matches start.sh) =============================
-Write-Host "[start.ps1] NasMusicUI native Windows launcher" -ForegroundColor Cyan
+Write-Host "[start.ps1] NasWebUI native Windows launcher" -ForegroundColor Cyan
 Write-Host "[start.ps1] Python:     $Python"
 Write-Host "[start.ps1] Agent dir:  $AgentDir"
 Write-Host "[start.ps1] State dir:  $env:NASMUSICUI_STATE_DIR"
@@ -184,7 +184,7 @@ Write-Host ""
 
 $serverPath = Join-Path $RepoRoot 'server.py'
 if (-not (Test-Path $serverPath)) {
-    Write-Error "server.py not found at $serverPath - is this the nasmusicui repo root?"
+    Write-Error "server.py not found at $serverPath - is this the naswebui repo root?"
     exit 1
 }
 

@@ -1,4 +1,4 @@
-# NasMusicUI
+# NasWebUI
 
 [![CI — Self-Hosted](https://github.com/nastech-ai/NasWebUI/actions/workflows/ci-self-hosted.yml/badge.svg)](https://github.com/nastech-ai/NasWebUI/actions/workflows/ci-self-hosted.yml)
 [![Tests](https://github.com/nastech-ai/NasWebUI/actions/workflows/tests.yml/badge.svg)](https://github.com/nastech-ai/NasWebUI/actions/workflows/tests.yml)
@@ -9,13 +9,13 @@
 
 
 <p align="center">
-  <img src="static/NasBanner.png" alt="NasMusicUI" width="360"/>
+  <img src="static/NasBanner.png" alt="NasWebUI" width="360"/>
 </p>
 
 
-  **NasMusicUI** is the official web interface for [NasTech AI Agent](https://github.com/nastech-ai/NasTech-Agent) — a powerful, locally-run AI assistant by **NasTech AI**.
+  **NasWebUI** is the official web interface for [NasTech AI Agent](https://github.com/nastech-ai/NasTech-Agent) — a powerful, locally-run AI assistant by **NasTech AI**.
 
-  NasMusicUI gives you a full-featured browser UI for multi-turn conversations, file browsing, task management, and agent monitoring — all running on your own machine.
+  NasWebUI gives you a full-featured browser UI for multi-turn conversations, file browsing, task management, and agent monitoring — all running on your own machine.
 
   ---
 
@@ -49,7 +49,7 @@
   bash <(curl -fsSL https://raw.githubusercontent.com/nastech-ai/NasTech-Agent/main/install.sh)
   ```
 
-  ### 2. Clone NasMusicUI
+  ### 2. Clone NasWebUI
 
   ```bash
   git clone https://github.com/nastech-ai/NasWebUI.git
@@ -95,7 +95,7 @@
 
   ## AMOLED Theme
 
-  NasMusicUI ships with a **Super AMOLED black glassy theme** — the default signature skin for NasTech.
+  NasWebUI ships with a **Super AMOLED black glassy theme** — the default signature skin for NasTech.
 
   To activate it, open **Settings → Appearance → Skin** and select **AMOLED**.
 
@@ -110,7 +110,7 @@
 
   ## Agent Discovery
 
-  NasMusicUI auto-discovers your NasTech Agent installation by checking these paths in order:
+  NasWebUI auto-discovers your NasTech Agent installation by checking these paths in order:
 
   1. `NASMUSICUI_AGENT_DIR` environment variable
   2. `NASTECH_HOME/NasTech-Agent/run_agent.py` (default: `~/.nastech/NasTech-Agent`)
@@ -140,5 +140,5 @@
   ## Links
 
   - [NasTech Agent](https://github.com/nastech-ai/NasTech-Agent)
-  - [NasMusicUI Repository](https://github.com/nastech-ai/NasMusicUI)
+  - [NasWebUI Repository](https://github.com/nastech-ai/NasWebUI)
   

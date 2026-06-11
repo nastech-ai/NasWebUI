@@ -26,7 +26,7 @@ def _run_available_models_with_cfg(monkeypatch, tmp_path, cfg):
     old_mtime = config._cfg_mtime
     monkeypatch.setattr(config, "_models_cache_path", tmp_path / "models_cache.json")
     monkeypatch.setattr(config, "_get_config_path", lambda: tmp_path / "missing-config.yaml")
-    monkeypatch.setattr("api.profiles.get_active_nasmusicui_home", lambda: tmp_path, raising=False)
+    monkeypatch.setattr("api.profiles.get_active_naswebui_home", lambda: tmp_path, raising=False)
     config.cfg.clear()
     config.cfg.update(cfg)
     config._cfg_mtime = 0.0
@@ -53,7 +53,7 @@ def test_xiaomi_api_key_env_var_detects_model_group(monkeypatch, tmp_path):
 
 
 def test_xiaomi_provider_settings_detects_env_key(monkeypatch, tmp_path):
-    monkeypatch.setattr(providers, "_get_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(providers, "_get_naswebui_home", lambda: tmp_path)
     monkeypatch.setenv("XIAOMI_API_KEY", "test-xiaomi-key")
 
     assert providers._PROVIDER_ENV_VAR["xiaomi"] == "XIAOMI_API_KEY"

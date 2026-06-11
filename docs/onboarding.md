@@ -1,6 +1,6 @@
 # First-run onboarding guide
 
-This guide explains what happens the first time NasMusicUI starts, which
+This guide explains what happens the first time NasWebUI starts, which
 setup path to choose, and how to recover when the wizard cannot finish.
 
 If an AI assistant is helping with install, reinstall, bootstrap, provider
@@ -15,7 +15,7 @@ below.
 
 ## Before you start
 
-NasMusicUI is only the browser interface. The actual agent runtime, memory,
+NasWebUI is only the browser interface. The actual agent runtime, memory,
 skills, config, cron jobs, and provider credentials belong to NasTech Agent.
 
 The bootstrap supports Linux, macOS, and WSL2. Native Windows is not supported
@@ -131,7 +131,7 @@ use the server's LAN IP address, or add a Linux Docker host alias:
 
 ```yaml
 services:
-  nasmusicui:
+  naswebui:
     extra_hosts:
       - "api.local:host-gateway"
 ```
@@ -194,7 +194,7 @@ configuration. Include:
    container, for example:
 
 ```bash
-docker exec nasmusicui sh -c 'curl -sS -w "\nHTTP %{http_code}\n" http://host.docker.internal:1234/v1/models | head -50'
+docker exec naswebui sh -c 'curl -sS -w "\nHTTP %{http_code}\n" http://host.docker.internal:1234/v1/models | head -50'
 ```
 
 5. Any inline wizard error text and relevant logs.

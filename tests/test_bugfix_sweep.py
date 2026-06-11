@@ -117,11 +117,11 @@ def test_critical_boot_storage_access_is_guarded():
     boot = (ROOT / "static" / "boot.js").read_text(encoding="utf-8")
     i18n = (ROOT / "static" / "i18n.js").read_text(encoding="utf-8")
 
-    theme_script = re.search(r"<script>\(function\(\)\{[\s\S]*?nasmusicui-theme[\s\S]*?\}\)\(\)</script>", index)
-    font_script = re.search(r"<script>\(function\(\)\{[\s\S]*?nasmusicui-font-size[\s\S]*?\}\)\(\)</script>", index)
+    theme_script = re.search(r"<script>\(function\(\)\{[\s\S]*?naswebui-theme[\s\S]*?\}\)\(\)</script>", index)
+    font_script = re.search(r"<script>\(function\(\)\{[\s\S]*?naswebui-font-size[\s\S]*?\}\)\(\)</script>", index)
     assert theme_script and "try" in theme_script.group(0)
     assert font_script and "try" in font_script.group(0)
-    assert "try{localStorage.removeItem('nasmusicui-server-stopped')" in boot
+    assert "try{localStorage.removeItem('naswebui-server-stopped')" in boot
     assert "try { localStorage.setItem('nastech-lang', resolved); } catch" in i18n
     assert "try { stored = localStorage.getItem('nastech-lang'); } catch" in i18n
 

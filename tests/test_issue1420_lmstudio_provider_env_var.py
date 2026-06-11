@@ -133,7 +133,7 @@ class TestIssue1420LMStudioProviderEnvVar:
     def test_lmstudio_has_key_true_when_env_var_set(self, monkeypatch, tmp_path):
         """`LM_API_KEY` in env should mark LM Studio configured in Settings (canonical, post-#1500)."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.delenv("LMSTUDIO_API_KEY", raising=False)
         monkeypatch.delenv("LM_API_KEY", raising=False)
         monkeypatch.setenv("LM_API_KEY", "lm-studio")
@@ -175,7 +175,7 @@ class TestIssue1420LMStudioProviderEnvVar:
         `_provider_has_key` should still detect them.
         """
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.delenv("LMSTUDIO_API_KEY", raising=False)
         monkeypatch.delenv("LM_API_KEY", raising=False)
 
@@ -207,7 +207,7 @@ class TestIssue1420LMStudioProviderEnvVar:
         is exactly what was missing pre-fix.
         """
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.delenv("LMSTUDIO_API_KEY", raising=False)
         monkeypatch.delenv("LM_API_KEY", raising=False)
 
@@ -236,7 +236,7 @@ class TestIssue1420LMStudioProviderEnvVar:
         edit that does share it from regressing.
         """
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         # Strip every other detection signal so LMSTUDIO_API_KEY is the only
         # input — any other provider showing has_key=True must be a leak.
         for var in (

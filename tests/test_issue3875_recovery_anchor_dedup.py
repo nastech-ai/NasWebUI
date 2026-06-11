@@ -25,10 +25,10 @@ from api.run_journal import append_run_event
 
 
 @pytest.fixture
-def nasmusicui_home(tmp_path, monkeypatch):
+def naswebui_home(tmp_path, monkeypatch):
     # Mirror tests/test_session_lost_response_regression.py — isolate NASTECH_HOME
     # so Session.save() + run-journal writes land in a throwaway sandbox.
-    home = tmp_path / "nasmusicui_home"
+    home = tmp_path / "naswebui_home"
     home.mkdir()
     (home / "sessions").mkdir()
     monkeypatch.setenv("NASTECH_HOME", str(home))
@@ -43,7 +43,7 @@ def _tool_first_journal(session_id: str, stream_id: str) -> None:
     append_run_event(session_id, stream_id, "tool_complete", {"name": "search_files", "preview": "done"})
 
 
-def test_tool_first_recovery_creates_single_empty_anchor(nasmusicui_home):
+def test_tool_first_recovery_creates_single_empty_anchor(naswebui_home):
     sid = "issue3875_anchor"
     stream_id = "stream-A"
     _tool_first_journal(sid, stream_id)
@@ -61,7 +61,7 @@ def test_tool_first_recovery_creates_single_empty_anchor(nasmusicui_home):
     assert len(anchors) == 1, "first recovery should create exactly one empty anchor"
 
 
-def test_repeated_recovery_does_not_accumulate_empty_anchors(nasmusicui_home):
+def test_repeated_recovery_does_not_accumulate_empty_anchors(naswebui_home):
     """The #3875 root cause: re-running recovery for the SAME stream must reuse the
     existing empty anchor, not pile up a fresh one each time."""
     sid = "issue3875_repeat"
@@ -85,7 +85,7 @@ def test_repeated_recovery_does_not_accumulate_empty_anchors(nasmusicui_home):
     )
 
 
-def test_distinct_streams_get_distinct_anchors(nasmusicui_home):
+def test_distinct_streams_get_distinct_anchors(naswebui_home):
     """Dedup is scoped per stream — two genuinely different interrupted streams
     each keep their own anchor (we are not collapsing unrelated turns)."""
     sid = "issue3875_multi"
@@ -108,7 +108,7 @@ def test_distinct_streams_get_distinct_anchors(nasmusicui_home):
     assert stream_ids == {"stream-X", "stream-Y", "stream-Z"}
 
 
-def test_text_bearing_recovery_still_appends_real_content(nasmusicui_home):
+def test_text_bearing_recovery_still_appends_real_content(naswebui_home):
     """The dedup guard must not suppress recovery of genuine visible text — a
     stream that emitted tokens still produces a content-bearing recovered row."""
     sid = "issue3875_text"

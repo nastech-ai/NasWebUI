@@ -89,7 +89,7 @@ def test_agent_health_uses_root_gateway_state_when_nastech_home_is_profile(monke
     monkeypatch.setitem(
         sys.modules,
         "nastech_constants",
-        types.SimpleNamespace(get_default_nasmusicui_root=lambda: root_home),
+        types.SimpleNamespace(get_default_naswebui_root=lambda: root_home),
     )
     monkeypatch.setattr(agent_health, "_gateway_status_module", lambda: fake_gateway_status)
 

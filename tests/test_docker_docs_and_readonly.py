@@ -33,7 +33,7 @@ def test_two_container_webui_mounts_agent_src_readonly():
     cannot rewrite the agent source it then imports."""
     src = (REPO / "docker-compose.two-container.yml").read_text(encoding="utf-8")
     assert (
-        "NasTech-Agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro" in src
+        "NasTech-Agent-src:/home/naswebuiwebui/.nastech/NasTech-Agent:ro" in src
     ), (
         "two-container: the WebUI must mount NasTech-Agent-src with :ro. "
         "Without :ro, a compromised WebUI process can rewrite the agent's "
@@ -44,7 +44,7 @@ def test_two_container_webui_mounts_agent_src_readonly():
 def test_three_container_webui_mounts_agent_src_readonly():
     src = (REPO / "docker-compose.three-container.yml").read_text(encoding="utf-8")
     assert (
-        "NasTech-Agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro" in src
+        "NasTech-Agent-src:/home/naswebuiwebui/.nastech/NasTech-Agent:ro" in src
     ), (
         "three-container: the WebUI must mount NasTech-Agent-src with :ro."
     )

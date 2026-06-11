@@ -1,6 +1,6 @@
-# NasMusicUI — Themes
+# NasWebUI — Themes
 
-NasMusicUI splits **appearance** into two independent pickers:
+NasWebUI splits **appearance** into two independent pickers:
 
 - **Theme** — the mode: `System`, `Dark`, or `Light`. Drives the background,
   text, surface, and chrome colors.

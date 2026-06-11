@@ -1,6 +1,6 @@
 # Advanced chat setup
 
-Two optional features for self-hosted NasMusicUI deployments. **Most users need neither** — the defaults (in-process chat, no prefill) work out of the box.
+Two optional features for self-hosted NasWebUI deployments. **Most users need neither** — the defaults (in-process chat, no prefill) work out of the box.
 
 ## Session recall prefill
 

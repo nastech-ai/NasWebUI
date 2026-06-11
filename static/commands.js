@@ -242,7 +242,7 @@ function cliOnlyCommandResponse(cmdName, meta){
   if(name==='browser'){
     extra='\n\nBrowser tools in WebUI must be configured server-side with the agent/browser environment. Once configured, ask the model to use browser tools directly; `/browser` itself only works in `nastech chat`.';
   }
-  return `\`/${name}\` is a NasMusicUI CLI-only command and cannot run inside the WebUI.${detail}${extra}`;
+  return `\`/${name}\` is a NasWebUI CLI-only command and cannot run inside the WebUI.${detail}${extra}`;
 }
 
 async function executeAgentCommand(text,_meta){
@@ -651,7 +651,7 @@ async function _applyManualCompressionResult(data, focusTopic, visibleCount, com
       S.messages=data.session.messages||[];
       S.toolCalls=data.session.tool_calls||[];
       clearLiveToolCards();
-      try{localStorage.setItem('nasmusicui-session',S.session.session_id);}catch(_){}
+      try{localStorage.setItem('naswebui-session',S.session.session_id);}catch(_){}
       if(typeof _setActiveSessionUrl==='function') _setActiveSessionUrl(S.session.session_id);
       syncTopbar();
       renderMessages();
@@ -845,10 +845,10 @@ async function cmdTheme(args){
   if(themes.includes(val)||legacyThemes.includes(val)){
     const appearance=_normalizeAppearance(
       val,
-      legacyThemes.includes(val)?null:localStorage.getItem('nasmusicui-skin')
+      legacyThemes.includes(val)?null:localStorage.getItem('naswebui-skin')
     );
-    localStorage.setItem('nasmusicui-theme',appearance.theme);
-    localStorage.setItem('nasmusicui-skin',appearance.skin);
+    localStorage.setItem('naswebui-theme',appearance.theme);
+    localStorage.setItem('naswebui-skin',appearance.skin);
     _applyTheme(appearance.theme);
     _applySkin(appearance.skin);
     try{await api('/api/settings',{method:'POST',body:JSON.stringify({theme:appearance.theme,skin:appearance.skin})});}catch(e){}
@@ -863,9 +863,9 @@ async function cmdTheme(args){
   }
   // Check if it's a skin
   if(skins.includes(val)){
-    const appearance=_normalizeAppearance(localStorage.getItem('nasmusicui-theme'),val);
-    localStorage.setItem('nasmusicui-theme',appearance.theme);
-    localStorage.setItem('nasmusicui-skin',appearance.skin);
+    const appearance=_normalizeAppearance(localStorage.getItem('naswebui-theme'),val);
+    localStorage.setItem('naswebui-theme',appearance.theme);
+    localStorage.setItem('naswebui-skin',appearance.skin);
     _applyTheme(appearance.theme);
     _applySkin(appearance.skin);
     try{await api('/api/settings',{method:'POST',body:JSON.stringify({theme:appearance.theme,skin:appearance.skin})});}catch(e){}

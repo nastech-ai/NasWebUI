@@ -174,8 +174,8 @@ def test_boot_settings_applies_default_without_deleting_browser_model_state():
     assert "if(sel&&typeof _applyModelToDropdown==='function')" in snippet
     assert "if(sel&&!savedState&&typeof _applyModelToDropdown==='function')" not in BOOT_JS
     assert "_clearPersistedModelState" not in snippet
-    assert "localStorage.removeItem('nasmusicui-model')" not in snippet
-    assert "localStorage.removeItem('nasmusicui-model-state')" not in snippet
+    assert "localStorage.removeItem('naswebui-model')" not in snippet
+    assert "localStorage.removeItem('naswebui-model-state')" not in snippet
 
 
 def test_boot_model_dropdown_explicitly_requests_profile_default_precedence():
@@ -200,7 +200,7 @@ def test_populate_model_dropdown_reconciles_selection_after_rebuild():
     assert "return _applyModelToDropdown(activeSession.model,sel,activeSession.model_provider||null);" in snippet
     assert "return _applyModelToDropdown(previousState.model,sel,previousState.model_provider||null);" in snippet
     assert "_readPersistedModelState()" not in snippet
-    assert "localStorage.getItem('nasmusicui-model')" not in snippet
+    assert "localStorage.getItem('naswebui-model')" not in snippet
 
 
 @pytest.mark.skipif(NODE is None, reason="node not on PATH")

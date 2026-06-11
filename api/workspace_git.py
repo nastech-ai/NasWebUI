@@ -39,7 +39,7 @@ _GIT_ENV_SCRUB_KEYS = (
     "GIT_SSH_COMMAND",
 )
 _GIT_ENV_SCRUB_PREFIXES = ("GIT_CONFIG_KEY_", "GIT_CONFIG_VALUE_")
-_NASTECH_BRANCH_SWITCH_STASH_PREFIX = "nasmusicui branch switch"
+_NASTECH_BRANCH_SWITCH_STASH_PREFIX = "naswebui branch switch"
 _GIT_HARDENED_CONFIG = (
     # Workspace Git operations can run against repositories provided by agents,
     # restored sessions, or mounted workspaces. Keep repo-local configuration
@@ -684,7 +684,7 @@ def _stash_subject_parts(subject: str) -> tuple[str, str] | None:
     return branch, message
 
 
-def _nasmusicui_branch_switch_stashes(ctx: GitContext) -> list[dict]:
+def _naswebui_branch_switch_stashes(ctx: GitContext) -> list[dict]:
     result = _run_git(ctx, ["stash", "list", "--format=%gd%x00%gs"], check=False)
     if result.returncode != 0:
         return []
@@ -705,7 +705,7 @@ def _nasmusicui_branch_switch_stashes(ctx: GitContext) -> list[dict]:
 def _restore_branch_switch_stash_locked(ctx: GitContext, branch: str) -> dict:
     if _dirty_worktree(ctx):
         return {}
-    for item in _nasmusicui_branch_switch_stashes(ctx):
+    for item in _naswebui_branch_switch_stashes(ctx):
         if item.get("branch") != branch:
             continue
         result = _run_git(ctx, ["stash", "pop", "--index", item["ref"]], check=False)
@@ -1056,7 +1056,7 @@ def _staged_diff_text(ctx: GitContext) -> tuple[str, bool]:
 
 
 def _selected_temp_index_env(ctx: GitContext, specs: list[str]) -> tuple[dict[str, str], str]:
-    fd, index_path = tempfile.mkstemp(prefix="nasmusicui-git-index-")
+    fd, index_path = tempfile.mkstemp(prefix="naswebui-git-index-")
     os.close(fd)
     Path(index_path).unlink(missing_ok=True)
     env = {"GIT_INDEX_FILE": index_path}

@@ -1,5 +1,5 @@
 /**
- * NasMusicUI Service Worker
+ * NasWebUI Service Worker
  * Minimal PWA service worker — enables "Add to Home Screen".
  * No offline caching of API responses (the UI requires a live backend).
  * Caches only static shell assets so the app shell loads fast on repeat visits.

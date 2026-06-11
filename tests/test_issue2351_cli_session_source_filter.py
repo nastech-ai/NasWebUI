@@ -9,7 +9,7 @@ STYLE_CSS = ROOT / "static" / "style.css"
 def test_sidebar_has_separate_webui_and_cli_session_source_tabs():
     src = SESSIONS_JS.read_text(encoding="utf-8")
     assert "let _sessionSourceFilter = 'webui'" in src
-    assert "nasmusicui-session-source-filter" in src
+    assert "naswebui-session-source-filter" in src
     assert "session-source-tabs" in src
     assert "WebUI sessions" in src
     assert "CLI sessions" in src

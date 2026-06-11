@@ -57,7 +57,7 @@ def _make_status(
         "current_provider": "openrouter" if chat_ready else None,
         "current_model": "anthropic/claude-sonnet-4.6" if chat_ready else None,
         "current_base_url": None,
-        "env_path": str(tmp_path / ".nasmusicui_test" / ".env"),
+        "env_path": str(tmp_path / ".naswebui_test" / ".env"),
     }
 
     with (
@@ -140,7 +140,7 @@ class TestOnboardingGate:
             "current_provider": "openrouter",
             "current_model": "anthropic/claude-sonnet-4.6",
             "current_base_url": None,
-            "env_path": str(tmp_path / ".nasmusicui_test" / ".env"),
+            "env_path": str(tmp_path / ".naswebui_test" / ".env"),
         }
         fake_config_path = tmp_path / "_test_config.yaml"
 
@@ -359,7 +359,7 @@ class TestOnboardingGateIntegration:
         # — but only when nastech_cli imports are available
         data, _ = _http_get("/api/onboarding/status")
         try:
-            if data["system"]["nasmusicui_found"] and data["system"]["imports_ok"]:
+            if data["system"]["naswebui_found"] and data["system"]["imports_ok"]:
                 (nastech_home / ".env").write_text(
                     "OPENROUTER_API_KEY=test-e...\n", encoding="utf-8"
                 )

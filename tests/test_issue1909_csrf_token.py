@@ -155,7 +155,7 @@ def test_index_shell_includes_csrf_fetch_and_sendbeacon_injection():
     src = (routes._INDEX_HTML_PATH).read_text(encoding="utf-8")
 
     assert "csrfToken:__CSRF_TOKEN_JSON__" in src
-    assert "X-NasMusicUI-CSRF-Token" in src
+    assert "X-NasWebUI-CSRF-Token" in src
     assert "window.fetch=function" in src
     assert "navigator.sendBeacon=function" in src
     assert "auth\\/login|csp-report" in src

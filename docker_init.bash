@@ -48,26 +48,26 @@ write_privtmpfile() {
   chmod 600 "$tmpfile"
 }
 
-itdir=/tmp/nasmusicuiwebui_init
+itdir=/tmp/naswebuiwebui_init
 if [ ! -d "$itdir" ]; then mkdir -p "$itdir"; fi
 chmod 700 "$itdir" || error_exit "Failed to secure $itdir"
 if [ ! -d "$itdir" ]; then error_exit "Failed to create $itdir"; fi
 
 # Set user and group id
 # logic: if not set and file exists, use file value, else use default. Create file for persistence when the container is re-run
-# reasoning: needed when using docker compose as the file will exist in the stopped container, and changing the value from environment variables or configuration file must be propagated from the root init phase to the nasmusicuiwebui runtime phase
-it=$itdir/nasmusicuiwebui_user_uid
+# reasoning: needed when using docker compose as the file will exist in the stopped container, and changing the value from environment variables or configuration file must be propagated from the root init phase to the naswebuiwebui runtime phase
+it=$itdir/naswebuiwebui_user_uid
 if [ -z "${WANTED_UID+x}" ]; then
   if [ -f $it ]; then WANTED_UID=$(cat $it); fi
 fi
 # Auto-detect from mounted volumes if still unset (#569, #668).
 # On macOS, host UIDs start at 501. Using the wrong UID means the container
 # user cannot read the bind-mounted files, making the workspace appear empty.
-# In two-container setups (NasTech-Agent + nasmusicui), the shared nasmusicui-home
+# In two-container setups (NasTech-Agent + naswebui), the shared naswebui-home
 # volume may be owned by the agent container's UID — detect from there first.
 if [ -z "${WANTED_UID+x}" ] || [ "${WANTED_UID}" = "1024" ]; then
-  # Priority 1: nasmusicui-home shared volume — covers two-container Zeabur/Compose setups (#668)
-  for _probe_dir in "/home/nasmusicuiwebui/.nastech" "$NASTECH_HOME" "/opt/data"; do
+  # Priority 1: naswebui-home shared volume — covers two-container Zeabur/Compose setups (#668)
+  for _probe_dir in "/home/naswebuiwebui/.nastech" "$NASTECH_HOME" "/opt/data"; do
     if [ -d "$_probe_dir" ]; then
       _detected_uid=$(stat -c '%u' "$_probe_dir" 2>/dev/null || echo "")
       if [ -n "$_detected_uid" ] && [ "$_detected_uid" != "0" ]; then
@@ -92,14 +92,14 @@ WANTED_UID=${WANTED_UID:-1024}
 write_privtmpfile $it "$WANTED_UID"
 echo "-- WANTED_UID: \"${WANTED_UID}\""
 
-it=$itdir/nasmusicuiwebui_user_gid
+it=$itdir/naswebuiwebui_user_gid
 if [ -z "${WANTED_GID+x}" ]; then
   if [ -f $it ]; then WANTED_GID=$(cat $it); fi
 fi
 # Auto-detect GID from mounted volumes to match (#569, #668)
 if [ -z "${WANTED_GID+x}" ] || [ "${WANTED_GID}" = "1024" ]; then
-  # Priority 1: nasmusicui-home shared volume
-  for _probe_dir in "/home/nasmusicuiwebui/.nastech" "$NASTECH_HOME" "/opt/data"; do
+  # Priority 1: naswebui-home shared volume
+  for _probe_dir in "/home/naswebuiwebui/.nastech" "$NASTECH_HOME" "/opt/data"; do
     if [ -d "$_probe_dir" ]; then
       _detected_gid=$(stat -c '%g' "$_probe_dir" 2>/dev/null || echo "")
       if [ -n "$_detected_gid" ] && [ "$_detected_gid" != "0" ]; then
@@ -181,7 +181,7 @@ load_env() {
   fi
 }
 
-chown_home_nasmusicuiwebui() {
+chown_home_naswebuiwebui() {
   # macOS Docker bind mounts can expose NasTech-Agent git object packs as
   # read-only host files. The runtime only needs to read those existing objects;
   # requiring chown on them makes startup fail before WebUI can run (#2237).
@@ -194,20 +194,20 @@ chown_home_nasmusicuiwebui() {
   # source — prune the entire NasTech-Agent path from the chown walk so a
   # read-only or partially-read-only mount doesn't break the rest of the home
   # ownership alignment.
-  find /home/nasmusicuiwebui \
-    -path "/home/nasmusicuiwebui/.nastech/NasTech-Agent" -prune \
+  find /home/naswebuiwebui \
+    -path "/home/naswebuiwebui/.nastech/NasTech-Agent" -prune \
     -o -name ".git" -prune \
     -o -exec chown -h "${WANTED_UID}:${WANTED_GID}" {} +
 }
 
 # The production image does not ship sudo. The entrypoint starts as root only
-# long enough to align the nasmusicuiwebui UID/GID with mounted volumes, prepare
+# long enough to align the naswebuiwebui UID/GID with mounted volumes, prepare
 # root-owned paths, and then drop privileges for the server process.
 if [ "A${whoami}" == "Aroot" ]; then
-  echo "-- Running as root for one-time container init; will switch to nasmusicuiwebui"
+  echo "-- Running as root for one-time container init; will switch to naswebuiwebui"
 
-  # We are altering the UID/GID of the nasmusicuiwebui user to the desired ones and restarting as that user
-  # using usermod for the already created nasmusicuiwebui user, knowing it is not already in use
+  # We are altering the UID/GID of the naswebuiwebui user to the desired ones and restarting as that user
+  # using usermod for the already created naswebuiwebui user, knowing it is not already in use
   # per usermod manual: "You must make certain that the named user is not executing any processes when this command is being executed"
   # Guard for read-only root filesystem (podman with read_only=true, issue #1470).
   _readonly_root=false
@@ -216,43 +216,43 @@ if [ "A${whoami}" == "Aroot" ]; then
     echo "  !! Detected read-only root filesystem — /etc/group or /etc/passwd is not writable"
   fi
   if [ "A${_readonly_root}" == "Atrue" ]; then
-    _current_nasmusicuiwebui_gid=$(id -g nasmusicuiwebui 2>/dev/null || echo "")
-    _current_nasmusicuiwebui_uid=$(id -u nasmusicuiwebui 2>/dev/null || echo "")
-    if [ "A${_current_nasmusicuiwebui_gid}" == "A${WANTED_GID}" ] && [ "A${_current_nasmusicuiwebui_uid}" == "A${WANTED_UID}" ]; then
-      echo "  -- Skipping groupmod/usermod — nasmusicuiwebui already has UID ${WANTED_UID} GID ${WANTED_GID} and root fs is read-only"
+    _current_naswebuiwebui_gid=$(id -g naswebuiwebui 2>/dev/null || echo "")
+    _current_naswebuiwebui_uid=$(id -u naswebuiwebui 2>/dev/null || echo "")
+    if [ "A${_current_naswebuiwebui_gid}" == "A${WANTED_GID}" ] && [ "A${_current_naswebuiwebui_uid}" == "A${WANTED_UID}" ]; then
+      echo "  -- Skipping groupmod/usermod — naswebuiwebui already has UID ${WANTED_UID} GID ${WANTED_GID} and root fs is read-only"
     else
-      error_exit "Cannot modify /etc/group or /etc/passwd (read-only root fs). Set UID=${_current_nasmusicuiwebui_uid} and GID=${_current_nasmusicuiwebui_gid} to match, or run without read_only=true. See issue #1470."
+      error_exit "Cannot modify /etc/group or /etc/passwd (read-only root fs). Set UID=${_current_naswebuiwebui_uid} and GID=${_current_naswebuiwebui_gid} to match, or run without read_only=true. See issue #1470."
     fi
   else
-    groupmod -o -g "${WANTED_GID}" nasmusicuiwebui || error_exit "Failed to set GID of nasmusicuiwebui user"
-    usermod -o -u "${WANTED_UID}" nasmusicuiwebui || error_exit "Failed to set UID of nasmusicuiwebui user"
+    groupmod -o -g "${WANTED_GID}" naswebuiwebui || error_exit "Failed to set GID of naswebuiwebui user"
+    usermod -o -u "${WANTED_UID}" naswebuiwebui || error_exit "Failed to set UID of naswebuiwebui user"
   fi
 
-  chown_home_nasmusicuiwebui || error_exit "Failed to set owner of /home/nasmusicuiwebui"
+  chown_home_naswebuiwebui || error_exit "Failed to set owner of /home/naswebuiwebui"
 
-  echo ""; echo "-- Preparing /app for the nasmusicuiwebui runtime user"
+  echo ""; echo "-- Preparing /app for the naswebuiwebui runtime user"
   mkdir -p /app || error_exit "Failed to create /app directory"
-  chown nasmusicuiwebui:nasmusicuiwebui /app || error_exit "Failed to set owner of /app to nasmusicuiwebui user"
-  rsync -av --chown=nasmusicuiwebui:nasmusicuiwebui /apptoo/ /app/ || error_exit "Failed to sync /apptoo to /app with correct ownership"
+  chown naswebuiwebui:naswebuiwebui /app || error_exit "Failed to set owner of /app to naswebuiwebui user"
+  rsync -av --chown=naswebuiwebui:naswebuiwebui /apptoo/ /app/ || error_exit "Failed to sync /apptoo to /app with correct ownership"
 
   if [ -z "${NASMUSICUI_DEFAULT_WORKSPACE+x}" ]; then export NASMUSICUI_DEFAULT_WORKSPACE="/workspace"; fi
   if [ ! -d "$NASMUSICUI_DEFAULT_WORKSPACE" ]; then
     mkdir -p "$NASMUSICUI_DEFAULT_WORKSPACE" || error_exit "Failed to create default workspace at $NASMUSICUI_DEFAULT_WORKSPACE"
   fi
   if [ ! -d "$NASMUSICUI_DEFAULT_WORKSPACE" ]; then error_exit "NASMUSICUI_DEFAULT_WORKSPACE directory does not exist at $NASMUSICUI_DEFAULT_WORKSPACE"; fi
-  chown nasmusicuiwebui:nasmusicuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE" 2>/dev/null || echo "!! WARNING: Could not chown $NASMUSICUI_DEFAULT_WORKSPACE (continuing)"
+  chown naswebuiwebui:naswebuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE" 2>/dev/null || echo "!! WARNING: Could not chown $NASMUSICUI_DEFAULT_WORKSPACE (continuing)"
 
   export UV_CACHE_DIR=${UV_CACHE_DIR:-/uv_cache}
   mkdir -p "${UV_CACHE_DIR}" || error_exit "Failed to create ${UV_CACHE_DIR} directory"
-  chown nasmusicuiwebui:nasmusicuiwebui "${UV_CACHE_DIR}" || error_exit "Failed to set owner of ${UV_CACHE_DIR} to nasmusicuiwebui user"
+  chown naswebuiwebui:naswebuiwebui "${UV_CACHE_DIR}" || error_exit "Failed to set owner of ${UV_CACHE_DIR} to naswebuiwebui user"
 
   chown -R "${WANTED_UID}:${WANTED_GID}" "$itdir" || error_exit "Failed to set owner of $itdir"
   # Issue #2010 — Railway / user-namespaced runtimes: in-container UID 0 may map
   # to a host UID outside the writable subuid range, so /tmp writes fail despite
   # id -u == 0. Probe writability and fall back through $itdir → /app.
-  ENV_FILE="/tmp/nasmusicuiwebui_root_env.txt"
+  ENV_FILE="/tmp/naswebuiwebui_root_env.txt"
   if ! ( : > "$ENV_FILE" ) 2>/dev/null; then
-    ENV_FILE="${itdir:-/tmp/nasmusicuiwebui_init}/nasmusicuiwebui_root_env.txt"
+    ENV_FILE="${itdir:-/tmp/naswebuiwebui_init}/naswebuiwebui_root_env.txt"
     mkdir -p "$(dirname "$ENV_FILE")" 2>/dev/null
     if ! ( : > "$ENV_FILE" ) 2>/dev/null; then
       ENV_FILE="/app/.nastechwebui_root_env"
@@ -267,7 +267,7 @@ if [ "A${whoami}" == "Aroot" ]; then
   # Preserve Docker --group-add supplemental groups (for example render/video
   # for /dev/dri GPU access) when dropping privileges. `su` rebuilds the target
   # user's groups from /etc/group, so host-passed numeric groups must be made
-  # visible to nasmusicuiwebui before re-entering as the runtime user.
+  # visible to naswebuiwebui before re-entering as the runtime user.
   for gid in $(id -G); do
     if [ "$gid" = "0" ] || [ "$gid" = "$WANTED_GID" ]; then
       continue
@@ -283,28 +283,28 @@ if [ "A${whoami}" == "Aroot" ]; then
       continue
     fi
     if [ -n "$group_name" ]; then
-      usermod -a -G "$group_name" nasmusicuiwebui 2>/dev/null || echo "!! WARNING: Could not add nasmusicuiwebui to supplemental group $group_name ($gid)"
+      usermod -a -G "$group_name" naswebuiwebui 2>/dev/null || echo "!! WARNING: Could not add naswebuiwebui to supplemental group $group_name ($gid)"
     fi
   done
 
-  # restart the script as nasmusicuiwebui set with the correct UID/GID this time
-  echo "-- Restarting as nasmusicuiwebui user with UID ${WANTED_UID} GID ${WANTED_GID}"
-  exec su -s /bin/bash -c "exec \"${script_fullname}\"" nasmusicuiwebui || error_exit "subscript failed"
+  # restart the script as naswebuiwebui set with the correct UID/GID this time
+  echo "-- Restarting as naswebuiwebui user with UID ${WANTED_UID} GID ${WANTED_GID}"
+  exec su -s /bin/bash -c "exec \"${script_fullname}\"" naswebuiwebui || error_exit "subscript failed"
 fi
 
 # If we are here, the script is started as an unprivileged runtime user.
-# Because the whoami value for the nasmusicuiwebui user can be any existing user, we cannot check against it;
+# Because the whoami value for the naswebuiwebui user can be any existing user, we cannot check against it;
 # instead we check if the UID/GID are the expected ones.
-if [ "$WANTED_GID" != "$new_gid" ]; then error_exit "nasmusicuiwebui MUST be running as UID ${WANTED_UID} GID ${WANTED_GID}, current UID ${new_uid} GID ${new_gid}"; fi
-if [ "$WANTED_UID" != "$new_uid" ]; then error_exit "nasmusicuiwebui MUST be running as UID ${WANTED_UID} GID ${WANTED_GID}, current UID ${new_uid} GID ${new_gid}"; fi
+if [ "$WANTED_GID" != "$new_gid" ]; then error_exit "naswebuiwebui MUST be running as UID ${WANTED_UID} GID ${WANTED_GID}, current UID ${new_uid} GID ${new_gid}"; fi
+if [ "$WANTED_UID" != "$new_uid" ]; then error_exit "naswebuiwebui MUST be running as UID ${WANTED_UID} GID ${WANTED_GID}, current UID ${new_uid} GID ${new_gid}"; fi
 
-########## 'nasmusicuiwebui' specific section below
+########## 'naswebuiwebui' specific section below
 
-# We are therefore running as nasmusicuiwebui
-echo ""; echo "== Running as nasmusicuiwebui"
+# We are therefore running as naswebuiwebui
+echo ""; echo "== Running as naswebuiwebui"
 
 # Load environment variables one by one if they do not exist from the root init phase
-tmp_root_env="${_HW_ROOT_ENV_PATH:-/tmp/nasmusicuiwebui_root_env.txt}"
+tmp_root_env="${_HW_ROOT_ENV_PATH:-/tmp/naswebuiwebui_root_env.txt}"
 if [ -f $tmp_root_env ]; then
   echo "-- Loading not already set environment variables from $tmp_root_env"
   load_env $tmp_root_env true
@@ -316,14 +316,14 @@ if [ ! -f /app/server.py ] && [ -d /apptoo ]; then
   cp -a /apptoo/. /app/ || error_exit "Failed to seed /app from /apptoo (is /app writable by the runtime user?)"
 fi
 
-echo ""; echo "-- Verifying /app is writable by the nasmusicuiwebui runtime user"
+echo ""; echo "-- Verifying /app is writable by the naswebuiwebui runtime user"
 if [ ! -d /app ]; then error_exit "/app directory does not exist"; fi
 it=/app/.testfile; touch $it || error_exit "Failed to verify /app directory"
 rm -f $it || error_exit "Failed to delete test file in /app"
 
 ######## Environment variables (consume AFTER the load_env)
 
-echo ""; echo "== Checking required environment variables for nasmusicui"
+echo ""; echo "== Checking required environment variables for naswebui"
 
 echo ""; echo "-- NASMUSICUI_STATE_DIR: Where to store sessions, workspaces, and other state (default: ~/.nastech/webui)"
 if [ -z "${NASMUSICUI_STATE_DIR+x}" ]; then error_exit "NASMUSICUI_STATE_DIR not set"; fi; 
@@ -351,9 +351,9 @@ else
 fi
 
 echo ""; echo "==================="
-echo ""; echo "== Installing uv and creating a new virtual environment for nasmusicui"
+echo ""; echo "== Installing uv and creating a new virtual environment for naswebui"
 
-export PATH="/home/nasmusicuiwebui/.local/bin/:$PATH"
+export PATH="/home/naswebuiwebui/.local/bin/:$PATH"
 if command -v uv &>/dev/null; then
   echo "-- uv already installed ($(uv --version)), skipping download"
 else
@@ -364,7 +364,7 @@ export UV_PROJECT_ENVIRONMENT=venv
 
 export UV_CACHE_DIR=${UV_CACHE_DIR:-/uv_cache}
 mkdir -p "${UV_CACHE_DIR}" || error_exit "Failed to create ${UV_CACHE_DIR} directory"
-test -w "${UV_CACHE_DIR}" || error_exit "${UV_CACHE_DIR} is not writable by nasmusicuiwebui"
+test -w "${UV_CACHE_DIR}" || error_exit "${UV_CACHE_DIR} is not writable by naswebuiwebui"
 
 cd /app
 if [ -f /app/venv/bin/python3 ]; then
@@ -377,8 +377,8 @@ export VIRTUAL_ENV=/app/venv
 test -d /app/venv
 test -f /app/venv/bin/activate
 
-echo "";echo "== Activating nasmusicui's virtual environment"
-source /app/venv/bin/activate || error_exit "Failed to activate nasmusicuiwebui virtual environment"
+echo "";echo "== Activating naswebui's virtual environment"
+source /app/venv/bin/activate || error_exit "Failed to activate naswebuiwebui virtual environment"
 test -x /app/venv/bin/python3
 
 ensure_hindsight_client_docker_dependency() {
@@ -397,15 +397,15 @@ ensure_hindsight_client_docker_dependency() {
 if [ -f /app/venv/.deps_installed ]; then
   echo ""; echo "== Dependencies already installed — skipping (fast restart)"
 else
-  echo ""; echo "== Installing nasmusicui dependencies"
+  echo ""; echo "== Installing naswebui dependencies"
   uv pip install -r requirements.txt --trusted-host pypi.org --trusted-host files.pythonhosted.org
   uv pip install -U pip setuptools --trusted-host pypi.org --trusted-host files.pythonhosted.org
   test -x /app/venv/bin/pip
 
   echo ""; echo "== Adding NasTech-Agent's pyproject.toml base dependencies to the virtual environment"
   _agent_paths=(
-    "/home/nasmusicuiwebui/.nastech/NasTech-Agent"
-    "/opt/nasmusicui"
+    "/home/naswebuiwebui/.nastech/NasTech-Agent"
+    "/opt/naswebui"
   )
   _agent_src=""
   for _p in "${_agent_paths[@]}"; do
@@ -466,7 +466,7 @@ else
     echo "!! The WebUI will start with reduced functionality (no model auto-detection,"
     echo "!! no personality routing, no CLI session imports)."
     echo "!! To fix: mount the agent source volume into the container:"
-    echo "!!   -v /path/to/NasTech-Agent:/home/nasmusicuiwebui/.nastech/NasTech-Agent"
+    echo "!!   -v /path/to/NasTech-Agent:/home/naswebuiwebui/.nastech/NasTech-Agent"
     echo "!! Or see the two-container compose example:"
     echo "!!   https://github.com/nastech-ai/NasWebUI/blob/main/docker-compose.two-container.yml"
     echo ""
@@ -476,8 +476,8 @@ fi
 
 ensure_hindsight_client_docker_dependency
 
-echo ""; echo "== Running nasmusicui"
-cd /app; python server.py || error_exit "nasmusicui failed or exited with an error"
+echo ""; echo "== Running naswebui"
+cd /app; python server.py || error_exit "naswebui failed or exited with an error"
 
 # we should never be here because the server should be running indefinitely, but if we are, we exit safely
 ok_exit "Clean exit"

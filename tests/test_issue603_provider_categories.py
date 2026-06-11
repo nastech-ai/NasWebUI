@@ -206,7 +206,7 @@ class TestApplyBaseURL:
         env_path = str(tmp_path / ".env")
 
         monkeypatch.setattr("api.onboarding._get_config_path", lambda: config_path)
-        monkeypatch.setattr("api.onboarding._get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr("api.onboarding._get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.setattr("api.onboarding._load_yaml_config", lambda p: {})
         monkeypatch.setattr(
             "api.onboarding._normalize_model_for_provider", lambda prov, m: m
@@ -236,7 +236,7 @@ class TestApplyBaseURL:
         config_path = str(tmp_path / "config.yaml")
 
         monkeypatch.setattr("api.onboarding._get_config_path", lambda: config_path)
-        monkeypatch.setattr("api.onboarding._get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr("api.onboarding._get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.setattr("api.onboarding._load_yaml_config", lambda p: {})
         monkeypatch.setattr(
             "api.onboarding._normalize_model_for_provider", lambda prov, m: m
@@ -264,7 +264,7 @@ class TestApplyBaseURL:
         config_path = str(tmp_path / "config.yaml")
 
         monkeypatch.setattr("api.onboarding._get_config_path", lambda: config_path)
-        monkeypatch.setattr("api.onboarding._get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr("api.onboarding._get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.setattr("api.onboarding._load_yaml_config", lambda p: {})
         monkeypatch.setattr(
             "api.onboarding._normalize_model_for_provider", lambda prov, m: m
@@ -335,7 +335,7 @@ class TestApplyBaseURLSpecialized:
         model = self._PROVIDER_DEFAULT_MODELS.get(provider, "test-model")
 
         monkeypatch.setattr("api.onboarding._get_config_path", lambda: config_path)
-        monkeypatch.setattr("api.onboarding._get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr("api.onboarding._get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.setattr("api.onboarding._load_yaml_config", lambda p: {})
         monkeypatch.setattr("api.onboarding._normalize_model_for_provider", lambda prov, m: m)
         monkeypatch.setattr("api.onboarding._write_env_file", lambda p, d: None)

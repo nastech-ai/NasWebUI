@@ -52,8 +52,8 @@ eval(extractFunc('_isChildSession'));
 eval(extractFunc('_sessionLineageKey'));
 eval(extractFunc('_collapseSessionLineageForSidebar'));
 const sessions = [
-  {{session_id:'root', title:'NasMusicUI', message_count:10, updated_at:10, last_message_at:10, _lineage_root_id:'root', _lineage_tip_id:'root'}},
-  {{session_id:'tip', title:'NasMusicUI', message_count:20, updated_at:20, last_message_at:20, _lineage_root_id:'root', _lineage_tip_id:'tip'}},
+  {{session_id:'root', title:'NasWebUI', message_count:10, updated_at:10, last_message_at:10, _lineage_root_id:'root', _lineage_tip_id:'root'}},
+  {{session_id:'tip', title:'NasWebUI', message_count:20, updated_at:20, last_message_at:20, _lineage_root_id:'root', _lineage_tip_id:'tip'}},
   {{session_id:'solo', title:'Other', message_count:5, updated_at:15, last_message_at:15}},
 ];
 const collapsed = _collapseSessionLineageForSidebar(sessions);
@@ -115,8 +115,8 @@ eval(extractFunc('_sessionLineageKey'));
 eval(extractFunc('_collapseSessionLineageForSidebar'));
 eval(extractFunc('_sessionLineageContainsSession'));
 const sessions = [
-  {{session_id:'root', title:'NasMusicUI', message_count:10, updated_at:10, last_message_at:10, _lineage_root_id:'root', _lineage_tip_id:'tip'}},
-  {{session_id:'tip', title:'NasMusicUI', message_count:20, updated_at:20, last_message_at:20, _lineage_root_id:'root', _lineage_tip_id:'tip'}},
+  {{session_id:'root', title:'NasWebUI', message_count:10, updated_at:10, last_message_at:10, _lineage_root_id:'root', _lineage_tip_id:'tip'}},
+  {{session_id:'tip', title:'NasWebUI', message_count:20, updated_at:20, last_message_at:20, _lineage_root_id:'root', _lineage_tip_id:'tip'}},
 ];
 const collapsed = _collapseSessionLineageForSidebar(sessions);
 console.log(JSON.stringify({{sid: collapsed[0].session_id, containsRoot: _sessionLineageContainsSession(collapsed[0], 'root')}}));
@@ -728,11 +728,11 @@ eval(extractFunc('_sessionDisplayTitle'));
 eval(extractFunc('_attachChildSessionsToSidebarRows'));
 const parentRow={{
   session_id:'tip',
-  title:'NasMusicUI #8',
+  title:'NasWebUI #8',
   _lineage_root_id:'root',
   _lineage_segments:[
-    {{session_id:'tip', title:'NasMusicUI #8', display_title:'NasMusicUI #177'}},
-    {{session_id:'old-parent', title:'NasMusicUI #8', display_title:'NasMusicUI #176'}},
+    {{session_id:'tip', title:'NasWebUI #8', display_title:'NasWebUI #177'}},
+    {{session_id:'old-parent', title:'NasWebUI #8', display_title:'NasWebUI #176'}},
   ],
 }};
 const child={{
@@ -746,11 +746,11 @@ console.log(JSON.stringify(rows[0]._child_sessions[0]));
 """
     child = json.loads(_run_node(source))
     assert child["_parent_segment_id"] == "old-parent"
-    assert child["_parent_segment_title"] == "NasMusicUI #176"
+    assert child["_parent_segment_title"] == "NasWebUI #176"
 
 
 def test_default_webui_numbered_titles_are_not_treated_as_hash_tags():
-    """The reconciled title 'NasMusicUI #177' must render with its number intact."""
+    """The reconciled title 'NasWebUI #177' must render with its number intact."""
     js = SESSIONS_JS_PATH.read_text(encoding="utf-8")
     source = f"""
 const src = {js!r};
@@ -770,7 +770,7 @@ function extractFunc(name) {{
 eval(extractFunc('_sessionTitleIsDefaultWebUI'));
 eval(extractFunc('_sessionTitleTags'));
 console.log(JSON.stringify({{
-  webui:_sessionTitleTags('NasMusicUI #177'),
+  webui:_sessionTitleTags('NasWebUI #177'),
   custom:_sessionTitleTags('Deploy #prod'),
 }}));
 """

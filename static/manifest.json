@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "NasMusicUI",
-  "short_name": "NasMusicUI",
+  "name": "NasWebUI",
+  "short_name": "NasWebUI",
   "description": "NasTech AI Agent Web UI — by NasTech AI",
   "start_url": "./?source=pwa",
   "scope": "./",
@@ -15,7 +15,7 @@
     {
       "name": "New conversation",
       "short_name": "New chat",
-      "description": "Open NasMusicUI ready for a new chat",
+      "description": "Open NasWebUI ready for a new chat",
       "url": "./?source=pwa&action=new-chat",
       "icons": [
         {

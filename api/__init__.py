@@ -1,1 +1,1 @@
-"""NasMusicUI -- API modules."""
+"""NasWebUI -- API modules."""

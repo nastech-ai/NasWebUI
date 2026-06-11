@@ -76,7 +76,7 @@ class TestGetProviders:
     def test_returns_list_of_known_providers(self, monkeypatch, tmp_path):
         """GET /api/providers should return a list of all known providers."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         old_cfg = dict(config.cfg)
         old_mtime = config._cfg_mtime
@@ -106,7 +106,7 @@ class TestGetProviders:
     def test_provider_entries_have_required_fields(self, monkeypatch, tmp_path):
         """Each provider entry should have id, display_name, has_key, configurable."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         old_cfg = dict(config.cfg)
         old_mtime = config._cfg_mtime
@@ -136,7 +136,7 @@ class TestGetProviders:
     def test_oauth_providers_not_configurable(self, monkeypatch, tmp_path):
         """OAuth providers (copilot, nous, openai-codex) should not be configurable."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         old_cfg = dict(config.cfg)
         old_mtime = config._cfg_mtime
@@ -170,7 +170,7 @@ class TestGetProviders:
         live account catalog excludes them (#1807).
         """
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         fake_models = sys.modules["nastech_cli.models"]
         fake_models.provider_model_ids = lambda pid: (
@@ -218,7 +218,7 @@ class TestSetProviderKey:
     def test_set_key_writes_to_env_file(self, monkeypatch, tmp_path):
         """Setting a key should write the env var to ~/.nastech/.env."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         # Also pin NASTECH_HOME so code that reads it directly gets tmp_path,
         # not the conftest session TEST_STATE_DIR that bleeds into the main process.
         monkeypatch.setenv("NASTECH_HOME", str(tmp_path))
@@ -252,7 +252,7 @@ class TestSetProviderKey:
     def test_remove_key_deletes_from_env_file(self, monkeypatch, tmp_path):
         """Removing a key should delete the env var from .env."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         old_cfg = dict(config.cfg)
         old_mtime = config._cfg_mtime
@@ -284,7 +284,7 @@ class TestSetProviderKey:
     def test_oauth_provider_rejected(self, monkeypatch, tmp_path):
         """Setting a key for an OAuth provider should fail."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         old_cfg = dict(config.cfg)
         old_mtime = config._cfg_mtime
@@ -308,7 +308,7 @@ class TestSetProviderKey:
     def test_short_key_rejected(self, monkeypatch, tmp_path):
         """API keys shorter than 8 chars should be rejected."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         old_cfg = dict(config.cfg)
         old_mtime = config._cfg_mtime
@@ -416,7 +416,7 @@ class TestRemoveProviderKey:
     def test_remove_provider_key_calls_set_with_none(self, monkeypatch, tmp_path):
         """remove_provider_key should delegate to set_provider_key(id, None)."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         old_cfg = dict(config.cfg)
         old_mtime = config._cfg_mtime
@@ -509,7 +509,7 @@ class TestIssue1410OllamaEnvVarBleed:
     ):
         """OLLAMA_API_KEY in env should mark ollama-cloud configured but not bare ollama."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         monkeypatch.setenv("OLLAMA_API_KEY", "sk-cloud-key-xyz")
 
         old_cfg = dict(config.cfg)
@@ -549,7 +549,7 @@ class TestIssue1410OllamaEnvVarBleed:
     ):
         """providers.ollama.api_key in config.yaml should still mark local ollama configured."""
         _install_fake_nastech_cli(monkeypatch)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
         # Important: clear the env var so the only signal is config.yaml.
         monkeypatch.delenv("OLLAMA_API_KEY", raising=False)
 

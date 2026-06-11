@@ -1,5 +1,5 @@
 """
-NasMusicUI -- Optional state.db sync bridge.
+NasWebUI -- Optional state.db sync bridge.
 
 Mirrors WebUI session metadata (token usage, title, model) into the
 NasTech-Agent state.db so that /insights, session lists, and cost

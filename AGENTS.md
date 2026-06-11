@@ -1,4 +1,4 @@
-# Agent instructions for NasMusicUI
+# Agent instructions for NasWebUI
 
 This file is the shared entry point for AI assistants working in this
 repository. Keep it project-specific and safe to publish. Do not put personal
@@ -63,15 +63,15 @@ Follow that checklist's safety rules:
 
 ## Local state and secrets
 
-NasMusicUI can read and write real agent state, sessions, workspaces,
+NasWebUI can read and write real agent state, sessions, workspaces,
 credentials, and cron data. Treat local validation as potentially destructive
 unless you have confirmed the active state directories.
 
 Prefer isolated trial state for experiments:
 
 ```bash
-NASTECH_HOME=/tmp/nasmusicui-agent-home \
-NASMUSICUI_STATE_DIR=/tmp/nasmusicui-agent-state \
+NASTECH_HOME=/tmp/naswebui-agent-home \
+NASMUSICUI_STATE_DIR=/tmp/naswebui-agent-state \
 NASMUSICUI_PORT=8789 \
 python3 bootstrap.py
 ```

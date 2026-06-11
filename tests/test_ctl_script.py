@@ -189,7 +189,7 @@ def assert_process_exits(pid: int, timeout: float = 3.0) -> None:
     raise AssertionError(f"process {pid} did not exit")
 
 
-def test_start_writes_pid_under_nasmusicui_home_runs_foreground_no_browser_and_logs(tmp_path):
+def test_start_writes_pid_under_naswebui_home_runs_foreground_no_browser_and_logs(tmp_path):
     fake_python = tmp_path / "fake-python"
     fake_log = tmp_path / "fake-python.log"
     write_fake_python(fake_python)
@@ -207,9 +207,9 @@ def test_start_writes_pid_under_nasmusicui_home_runs_foreground_no_browser_and_l
     )
 
     assert result.returncode == 0, result.stderr + result.stdout
-    nasmusicui_home = tmp_path / ".nastech"
-    pid_file = nasmusicui_home / "webui.pid"
-    log_file = nasmusicui_home / "webui.log"
+    naswebui_home = tmp_path / ".nastech"
+    pid_file = naswebui_home / "webui.pid"
+    log_file = naswebui_home / "webui.log"
     pid = wait_for_pid_file(pid_file)
     try:
         assert pid > 1
@@ -217,7 +217,7 @@ def test_start_writes_pid_under_nasmusicui_home_runs_foreground_no_browser_and_l
         fake_output = wait_for_file_text(fake_log, contains="host=0.0.0.0 port=18991")
         assert "bootstrap.py --no-browser --foreground" in fake_output
         assert "host=0.0.0.0 port=18991" in fake_output
-        assert_path_in_text(nasmusicui_home / "webui", fake_output)
+        assert_path_in_text(naswebui_home / "webui", fake_output)
         status = run_ctl(tmp_path, "status")
         assert status.returncode == 0
         assert "running" in status.stdout
@@ -316,9 +316,9 @@ def test_start_loads_dotenv_but_inline_overrides_win(tmp_path):
 
 
 def test_stale_pid_file_is_removed_without_killing_unrelated_process(tmp_path):
-    nasmusicui_home = tmp_path / ".nastech"
-    nasmusicui_home.mkdir()
-    pid_file = nasmusicui_home / "webui.pid"
+    naswebui_home = tmp_path / ".nastech"
+    naswebui_home.mkdir()
+    pid_file = naswebui_home / "webui.pid"
     sleeper = subprocess.Popen(
         [sys.executable, "-c", "import time; time.sleep(30)"],
         **({"creationflags": subprocess.CREATE_NO_WINDOW} if sys.platform == "win32" else {}),
@@ -384,12 +384,12 @@ def test_start_refuses_second_instance_when_launchd_job_owns_the_port(tmp_path):
             "start",
             env={
                 "PATH": f"{bash_path(fake_bin)}{os.pathsep}{os.environ.get('PATH', '')}",
-                "NASMUSICUI_LAUNCHD_LABEL": "com.parantoux.nasmusicui",
+                "NASMUSICUI_LAUNCHD_LABEL": "com.parantoux.naswebui",
             },
         )
         assert result.returncode == 2
         combined = result.stdout + result.stderr
-        assert "Refusing to start a second NasMusicUI" in combined
+        assert "Refusing to start a second NasWebUI" in combined
         assert "launchctl kickstart -k" in combined
         assert not (tmp_path / ".nastech" / "webui.pid").exists()
     finally:
@@ -427,13 +427,13 @@ def test_start_allows_alternate_port_while_launchd_job_runs_on_default(tmp_path)
             "start",
             env={
                 "PATH": f"{bash_path(fake_bin)}{os.pathsep}{os.environ.get('PATH', '')}",
-                "NASMUSICUI_LAUNCHD_LABEL": "com.parantoux.nasmusicui",
+                "NASMUSICUI_LAUNCHD_LABEL": "com.parantoux.naswebui",
                 "NASMUSICUI_PORT": "18992",
                 "NASMUSICUI_PYTHON": str(fake_python),
             },
         )
         combined = result.stdout + result.stderr
-        assert "Refusing to start a second NasMusicUI" not in combined, combined
+        assert "Refusing to start a second NasWebUI" not in combined, combined
         assert result.returncode == 0, combined
         pid_file = tmp_path / ".nastech" / "webui.pid"
         if pid_file.exists():
@@ -449,9 +449,9 @@ def test_start_allows_alternate_port_while_launchd_job_runs_on_default(tmp_path)
 
 
 def test_logs_supports_non_following_line_count(tmp_path):
-    nasmusicui_home = tmp_path / ".nastech"
-    nasmusicui_home.mkdir()
-    log_file = nasmusicui_home / "webui.log"
+    naswebui_home = tmp_path / ".nastech"
+    naswebui_home.mkdir()
+    log_file = naswebui_home / "webui.log"
     log_file.write_text("one\ntwo\nthree\n", encoding="utf-8")
 
     result = run_ctl(tmp_path, "logs", "--lines", "2", "--no-follow")

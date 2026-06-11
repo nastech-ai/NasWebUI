@@ -113,7 +113,7 @@ def _make_session(messages=None):
     s = Session(
         session_id=f"compress_test_{time.time_ns()}",
         title="Untitled",
-        workspace="/tmp/nasmusicui-test",
+        workspace="/tmp/naswebui-test",
         model="openai/gpt-5.4-mini",
         messages=messages,
     )
@@ -442,7 +442,7 @@ def test_manual_compress_worker_uses_session_profile_env(monkeypatch, tmp_path, 
     setattr(fake_skill_module, "NASTECH_HOME", "default-home")
     setattr(fake_skill_module, "SKILLS_DIR", "default-home/skills")
     monkeypatch.setitem(sys.modules, "tools.skills_tool", fake_skill_module)
-    monkeypatch.setattr(profiles, "get_nasmusicui_home_for_profile", lambda profile: profile_home)
+    monkeypatch.setattr(profiles, "get_naswebui_home_for_profile", lambda profile: profile_home)
     monkeypatch.setattr(
         profiles,
         "get_profile_runtime_env",

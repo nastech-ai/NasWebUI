@@ -1,7 +1,7 @@
-# NasMusicUI: Developer and Architecture Guide
+# NasWebUI: Developer and Architecture Guide
 
 > This document is the canonical reference for anyone (human or agent) working on the
-> NasMusicUI. It covers the exact current state of the code, every design decision and
+> NasWebUI. It covers the exact current state of the code, every design decision and
 > quirk discovered during development, and a phased architecture improvement roadmap that
 > runs in parallel with the feature roadmap in ROADMAP.md.
 >
@@ -18,7 +18,7 @@
 
 ## 1. Overview and Purpose
 
-The NasMusicUI is a lightweight web application that gives you a browser-based
+The NasWebUI is a lightweight web application that gives you a browser-based
 interface to the NasTech agent that is functionally equivalent to the CLI. It is modeled on
 the Claude-style interface: a sidebar for session management, a central chat area,
 and a demand-driven right panel used for workspace browsing and preview surfaces.
@@ -36,7 +36,7 @@ business logic modules (api/). The frontend is seven vanilla JS modules loaded f
 This makes the code easy to modify from a terminal or by an agent.
 
 NasTech-level chrome is intentionally consolidated: the sidebar has no dedicated brand header.
-Instead, the footer exposes a single "NasMusicUI" launch button that opens one tabbed
+Instead, the footer exposes a single "NasWebUI" launch button that opens one tabbed
 control-center modal for global preferences, conversation import/export, and clear-conversation
 actions. The topbar remains focused on conversation context and the workspace/files toggle.
 
@@ -402,7 +402,7 @@ inherit `currentColor` for consistent theming.
 
 Three-panel layout (in static/index.html):
 
-    <aside class="sidebar">    Left panel: session list, nav tabs, sidebar-footer NasMusicUI trigger
+    <aside class="sidebar">    Left panel: session list, nav tabs, sidebar-footer NasWebUI trigger
     <main class="main">        Center: topbar, messages area, approval card, composer
     <aside class="rightpanel"> Right panel: workspace file tree and file preview
 
@@ -480,7 +480,7 @@ Transcript:
     transcript()          Builds markdown string from S.messages for download
 
 Boot IIFE:
-    localStorage key 'nasmusicui-session' stores last session_id
+    localStorage key 'naswebui-session' stores last session_id
     On load: try to loadSession(saved), fall back to empty state if missing or fails
     NEVER auto-creates a session on boot
 

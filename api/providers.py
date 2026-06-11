@@ -1,4 +1,4 @@
-"""NasMusicUI -- provider management endpoints.
+"""NasWebUI -- provider management endpoints.
 
 Provides CRUD operations for configuring provider API keys post-onboarding.
 Closes #586 (allow provider key update) and part of #604 (model picker
@@ -292,7 +292,7 @@ def _codex_usage_headers(access_token):
     headers = {
         "Authorization": "Bearer " + access_token,
         "Accept": "application/json",
-        "User-Agent": "codex_cli_rs/0.0.0 (NasMusicUI)",
+        "User-Agent": "codex_cli_rs/0.0.0 (NasWebUI)",
         "originator": "codex_cli_rs",
     }
     auth_claim = _jwt_claims(access_token).get("https://api.openai.com/auth")

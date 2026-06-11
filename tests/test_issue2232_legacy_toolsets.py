@@ -3,7 +3,7 @@
 from unittest import mock
 
 
-def test_normalize_cli_toolsets_expands_legacy_nasmusicui_alias():
+def test_normalize_cli_toolsets_expands_legacy_naswebui_alias():
     from api.config import _normalize_cli_toolsets
 
     assert _normalize_cli_toolsets(["nastech", "web"]) == [
@@ -22,7 +22,7 @@ def test_normalize_cli_toolsets_deduplicates_expanded_aliases():
     ]
 
 
-def test_resolve_cli_toolsets_fallback_expands_legacy_nasmusicui_alias():
+def test_resolve_cli_toolsets_fallback_expands_legacy_naswebui_alias():
     import api.config as config
 
     cfg = {"platform_toolsets": {"cli": ["nastech", "web"]}}

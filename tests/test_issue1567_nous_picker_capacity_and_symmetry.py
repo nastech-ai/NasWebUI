@@ -260,7 +260,7 @@ class TestApiModelsLargeCatalog:
         _scrub_provider_env(monkeypatch)
         catalog = _build_big_catalog()
         _install_fake_nastech_cli(monkeypatch, nous_ids=catalog)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -292,7 +292,7 @@ class TestApiModelsLargeCatalog:
         # 20 models — below threshold, should pass through with no extras.
         small_catalog = [f"vendor-{i % 4}/model-{i:02d}" for i in range(20)]
         _install_fake_nastech_cli(monkeypatch, nous_ids=small_catalog)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -328,7 +328,7 @@ class TestNousDetectionSymmetry:
             list_authenticated=False,  # primary detection path says NO
             auth_status_logged_in=True,  # secondary detection path says YES
         )
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -355,7 +355,7 @@ class TestNousDetectionSymmetry:
             list_authenticated=False,
             auth_status_logged_in=False,
         )
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "anthropic"}})
         try:
@@ -389,7 +389,7 @@ class TestNousLiveFetchEmpty:
             nous_ids=[],  # live-fetch returns empty list (no exception)
             auth_status_logged_in=True,  # but user IS authenticated
         )
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -416,7 +416,7 @@ class TestNousLiveFetchEmpty:
             raise_on_lookup=True,
             auth_status_logged_in=True,
         )
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -449,7 +449,7 @@ class TestProvidersCardPickerSymmetry:
         _scrub_provider_env(monkeypatch)
         catalog = _build_big_catalog()
         _install_fake_nastech_cli(monkeypatch, nous_ids=catalog)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:

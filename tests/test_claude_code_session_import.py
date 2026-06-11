@@ -90,9 +90,9 @@ def test_get_cli_sessions_reuses_short_ttl_cache(monkeypatch, tmp_path):
     import api.models as models
     import api.profiles as profiles
 
-    nasmusicui_home = tmp_path / "nastech"
-    nasmusicui_home.mkdir()
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: str(nasmusicui_home))
+    naswebui_home = tmp_path / "nastech"
+    naswebui_home.mkdir()
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: str(naswebui_home))
     monkeypatch.setattr(profiles, "get_active_profile_name", lambda: "default")
     monkeypatch.setattr(models, "_CLI_SESSIONS_CACHE_TTL_SECONDS", 60.0, raising=False)
     models.clear_cli_sessions_cache()
@@ -128,11 +128,11 @@ def test_get_cli_sessions_cache_invalidates_when_sqlite_wal_changes(monkeypatch,
     import api.models as models
     import api.profiles as profiles
 
-    nasmusicui_home = tmp_path / "nastech"
-    nasmusicui_home.mkdir()
-    db_path = nasmusicui_home / "state.db"
+    naswebui_home = tmp_path / "nastech"
+    naswebui_home.mkdir()
+    db_path = naswebui_home / "state.db"
     db_path.write_text("initial", encoding="utf-8")
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: str(nasmusicui_home))
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: str(naswebui_home))
     monkeypatch.setattr(profiles, "get_active_profile_name", lambda: "default")
     monkeypatch.setattr(models, "_CLI_SESSIONS_CACHE_TTL_SECONDS", 60.0, raising=False)
     monkeypatch.setattr(models, "get_claude_code_sessions", lambda: [])

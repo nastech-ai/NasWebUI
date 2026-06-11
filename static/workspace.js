@@ -108,7 +108,7 @@ function recordClientSSEError(source, details={}){
 // Persist/restore expanded directory state per workspace in localStorage
 function _wsExpandKey(){
   const ws=S.session&&S.session.workspace;
-  return ws?'nasmusicui-expanded:'+ws:null;
+  return ws?'naswebui-expanded:'+ws:null;
 }
 function _saveExpandedDirs(){
   const key=_wsExpandKey();if(!key)return;

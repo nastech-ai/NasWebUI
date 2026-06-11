@@ -2450,7 +2450,7 @@
     .topbar-chips{flex-wrap:nowrap;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
     .topbar-chips .chip,.topbar-chips .ws-chip,.topbar-chips button{font-size:11px!important;padding:4px 8px!important;white-space:nowrap;}
     .settings-main{padding:18px 16px;}
-    .nasmusicui-action-grid{grid-template-columns:1fr;}
+    .naswebui-action-grid{grid-template-columns:1fr;}
     .messages-inner{padding:12px 10px 20px;}
     .msg-body{padding-left:0;max-width:100%;}
     .msg-role{font-size:12px;}
@@ -3795,7 +3795,7 @@ main.main > #mainPlugin{display:none;}
 #mainSettings select:disabled{opacity:.6;cursor:not-allowed;}
 
 /* Quick-action grid in Conversation pane — outlined card buttons. */
-.nasmusicui-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px;}
+.naswebui-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px;}
 .settings-action-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--sidebar);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;transition:background .15s,border-color .15s,color .15s;}
 .settings-action-btn:hover{background:var(--accent-bg);border-color:var(--accent-bg-strong);color:var(--accent-text);}
 .settings-action-btn.danger{color:var(--error,#e05);border-color:color-mix(in srgb,var(--error,#e05) 30%,transparent);}
@@ -3905,7 +3905,7 @@ main.main > #mainPlugin{display:none;}
   .settings-section-title{font-size:16px;}
   #checkUpdatesBlock{flex-wrap:wrap;row-gap:6px;width:100%;}
   .settings-version-badge{white-space:nowrap;}
-  .nasmusicui-action-grid{grid-template-columns:1fr;}
+  .naswebui-action-grid{grid-template-columns:1fr;}
   #mainSettings .settings-field{padding:14px;}
 }
 
@@ -5528,7 +5528,7 @@ html[data-conversation-outline="enabled"] #outlineToggleBtn:not([hidden]){displa
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   NasMusicUI Extra: Logo animations, iOS Glass theme, mobile fixes
+   NasWebUI Extra: Logo animations, iOS Glass theme, mobile fixes
    ══════════════════════════════════════════════════════════════════════ */
 
 /* ── Logo animations ── */
@@ -5704,21 +5704,26 @@ html[data-conversation-outline="enabled"] #outlineToggleBtn:not([hidden]){displa
 .rail-btn:hover{transform:scale(1.08);}
 .rail-btn.active{border-radius:12px!important;}
 
-/* ── Composer typing animation: footer chips collapse when typing ── */
-.composer-box.composer-is-typing .composer-footer{
+/* ── Composer typing animation: collapse only the left feature-chips when typing ── */
+/* The send button (.composer-right) always stays visible so users can click to send */
+.composer-box.composer-is-typing .composer-left{
   max-height:0;overflow:hidden;opacity:0;padding:0!important;
   transition:max-height .22s cubic-bezier(.4,0,.2,1),opacity .18s ease,padding .22s ease;
 }
-.composer-box:not(.composer-is-typing) .composer-footer{
+.composer-box:not(.composer-is-typing) .composer-left{
   max-height:120px;opacity:1;
   transition:max-height .28s cubic-bezier(.4,0,.2,1),opacity .2s ease;
+}
+/* Footer itself always visible (send button lives inside .composer-right) */
+.composer-box.composer-is-typing .composer-footer{
+  max-height:none;overflow:visible;opacity:1;
 }
 /* Glass iOS skin: make public button on rail glow when tunnel active */
 #btnMakePublic{transition:color .2s,background .15s;}
 #btnMakePublic:hover{color:var(--accent-text)!important;background:var(--accent-bg);}
 
 /* ══════════════════════════════════════════════════════════════════════
-   NasMusicUI Global Polish — rounded corners, glass surfaces, depth
+   NasWebUI Global Polish — rounded corners, glass surfaces, depth
    ══════════════════════════════════════════════════════════════════════ */
 
 /* ── Global radius bump ── */

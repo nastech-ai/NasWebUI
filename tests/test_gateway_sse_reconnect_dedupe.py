@@ -123,7 +123,7 @@ def test_load_session_persists_only_after_metadata_loads():
     src = _read(SESSIONS_JS)
     load = _block(src, "async function loadSession(sid)", "\n  const activeStreamId=")
     api_pos = load.index("data = await api(`/api/session")
-    persist_pos = load.index("localStorage.setItem('nasmusicui-session',S.session.session_id)")
+    persist_pos = load.index("localStorage.setItem('naswebui-session',S.session.session_id)")
 
     assert "_persistActiveSession" not in src
     assert persist_pos > api_pos

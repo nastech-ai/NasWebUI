@@ -3,7 +3,7 @@ Regression test for #2762 — state_sync writes to wrong profile's state.db
 when profile is switched via WebUI cookie.
 
 Root cause: ``_get_state_db()`` relied on TLS-based
-``get_active_nasmusicui_home()`` to pick the DB path. TLS gets set on the HTTP
+``get_active_naswebui_home()`` to pick the DB path. TLS gets set on the HTTP
 thread by the cookie middleware, but the agent streaming worker thread that
 calls ``sync_session_usage`` does NOT inherit that TLS, so the lookup falls
 through to the process-global active profile and writes to the wrong DB.
@@ -73,7 +73,7 @@ def two_profile_homes(tmp_path, monkeypatch):
 
     monkeypatch.setattr(profiles_mod, '_resolve_profile_home_for_name', fake_resolve)
     # Active profile is hiyuki — the WRONG one for tests that pass profile='maiko'
-    monkeypatch.setattr(profiles_mod, 'get_active_nasmusicui_home', lambda: hiyuki_home)
+    monkeypatch.setattr(profiles_mod, 'get_active_naswebui_home', lambda: hiyuki_home)
 
     return {'hiyuki': hiyuki_home, 'maiko': maiko_home}
 
@@ -150,8 +150,8 @@ def two_profile_message_homes(tmp_path, monkeypatch):
             return hiyuki_home
         raise LookupError(name)
 
-    monkeypatch.setattr(profiles_mod, "get_nasmusicui_home_for_profile", fake_profile_home)
-    monkeypatch.setattr(profiles_mod, "get_active_nasmusicui_home", lambda: hiyuki_home)
+    monkeypatch.setattr(profiles_mod, "get_naswebui_home_for_profile", fake_profile_home)
+    monkeypatch.setattr(profiles_mod, "get_active_naswebui_home", lambda: hiyuki_home)
     monkeypatch.setattr(models_mod, "_active_state_db_path", lambda: hiyuki_home / "state.db")
     monkeypatch.setattr(config, "STATE_DIR", tmp_path / "webui-state", raising=False)
     monkeypatch.setattr(config, "SESSION_DIR", session_dir, raising=False)

@@ -338,7 +338,7 @@ class TestMediaEndpointUnit(unittest.TestCase):
             child.write_bytes(b"png")
             self.assertTrue(routes._path_is_within_root(child.resolve(), root))
 
-    def test_active_workspace_carveout_gated_against_nasmusicui_roots(self):
+    def test_active_workspace_carveout_gated_against_naswebui_roots(self):
         """#3234: the active-workspace carve-out must NOT re-open the disclosure
         when the active workspace is pathologically set to a broad/internal root
         ($HOME, ~/.nastech, a profile root, etc.). A state.db sitting under such a
@@ -362,9 +362,9 @@ class TestMediaEndpointUnit(unittest.TestCase):
             wfile = _W()
 
         with tempfile.TemporaryDirectory() as home:
-            nasmusicui_home = pathlib.Path(home) / ".nastech"
-            nasmusicui_home.mkdir(parents=True)
-            secret = nasmusicui_home / "state.db"
+            naswebui_home = pathlib.Path(home) / ".nastech"
+            naswebui_home.mkdir(parents=True)
+            secret = naswebui_home / "state.db"
             secret.write_bytes(b"secret-state")
             target = secret.resolve()
 
@@ -372,8 +372,8 @@ class TestMediaEndpointUnit(unittest.TestCase):
             parsed = SimpleNamespace(
                 query=f"path={urllib.parse.quote(str(target))}", path="/api/media"
             )
-            with mock.patch.dict(os.environ, {"NASTECH_HOME": str(nasmusicui_home)}), \
-                 mock.patch.object(routes, "get_last_workspace", lambda: str(nasmusicui_home)), \
+            with mock.patch.dict(os.environ, {"NASTECH_HOME": str(naswebui_home)}), \
+                 mock.patch.object(routes, "get_last_workspace", lambda: str(naswebui_home)), \
                  mock.patch("api.auth.is_auth_enabled", lambda: False):
                 routes._handle_media(handler, parsed)
 
@@ -415,8 +415,8 @@ class TestMediaEndpointUnit(unittest.TestCase):
             b'\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82'
         )
         with tempfile.TemporaryDirectory() as home:
-            nasmusicui_home = pathlib.Path(home) / ".nastech"
-            state_dir = nasmusicui_home / "webui-state"
+            naswebui_home = pathlib.Path(home) / ".nastech"
+            state_dir = naswebui_home / "webui-state"
             ws = state_dir / "workspace"
             sessions = state_dir / "sessions"
             ws.mkdir(parents=True)
@@ -427,7 +427,7 @@ class TestMediaEndpointUnit(unittest.TestCase):
             sess_file.write_text('{"messages":[]}', encoding="utf-8")
 
             env = {
-                "NASTECH_HOME": str(nasmusicui_home),
+                "NASTECH_HOME": str(naswebui_home),
                 "NASMUSICUI_STATE_DIR": str(state_dir),
             }
             with mock.patch.dict(os.environ, env), \
@@ -532,7 +532,7 @@ class TestMediaEndpointUnit(unittest.TestCase):
                     h4.status, 403,
                     "profile webui_state/sessions/*.json must be denied")
 
-    def test_media_allowed_roots_env_var_serves_outside_nasmusicui_root(self):
+    def test_media_allowed_roots_env_var_serves_outside_naswebui_root(self):
         """MEDIA_ALLOWED_ROOTS must still allow legitimate outside-root media."""
         from api import routes
 
@@ -559,8 +559,8 @@ class TestMediaEndpointUnit(unittest.TestCase):
             b'\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82'
         )
         with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as extra:
-            nasmusicui_home = pathlib.Path(home) / ".nastech"
-            nasmusicui_home.mkdir(parents=True)
+            naswebui_home = pathlib.Path(home) / ".nastech"
+            naswebui_home.mkdir(parents=True)
             outside_root = pathlib.Path(extra).resolve()
             image = outside_root / "settings_artifact.png"
             image.write_bytes(png_bytes)
@@ -568,11 +568,11 @@ class TestMediaEndpointUnit(unittest.TestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "NASTECH_HOME": str(nasmusicui_home),
+                    "NASTECH_HOME": str(naswebui_home),
                     "MEDIA_ALLOWED_ROOTS": str(outside_root),
                 },
             ), mock.patch.object(
-                routes, "get_last_workspace", lambda: str(nasmusicui_home / "workspace")
+                routes, "get_last_workspace", lambda: str(naswebui_home / "workspace")
             ), mock.patch(
                 "api.auth.is_auth_enabled", lambda: False
             ):
@@ -667,7 +667,7 @@ class TestMediaEndpointIntegration(unittest.TestCase):
         self.assertEqual(status, 400)
 
     def test_nonexistent_file_returns_404(self):
-        missing = _media_fixture_dir() / "__nasmusicui_nonexistent_12345.png"
+        missing = _media_fixture_dir() / "__naswebui_nonexistent_12345.png"
         _, status, _ = self._get(
             "/api/media?path=" + urllib.parse.quote(str(missing))
         )
@@ -687,7 +687,7 @@ class TestMediaEndpointIntegration(unittest.TestCase):
             b'\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82'
         )
         with tempfile.NamedTemporaryFile(
-            suffix=".png", prefix="nasmusicui_test_", dir=_media_fixture_dir(), delete=False
+            suffix=".png", prefix="naswebui_test_", dir=_media_fixture_dir(), delete=False
         ) as f:
             f.write(png_bytes)
             tmp_path = f.name
@@ -706,7 +706,7 @@ class TestMediaEndpointIntegration(unittest.TestCase):
         """MEDIA: audio paths stream inline and support byte ranges for playback."""
         audio_bytes = b"RIFF" + (b"\x00" * 256)
         with tempfile.NamedTemporaryFile(
-            suffix=".wav", prefix="nasmusicui_test_", dir=_media_fixture_dir(), delete=False
+            suffix=".wav", prefix="naswebui_test_", dir=_media_fixture_dir(), delete=False
         ) as f:
             f.write(audio_bytes)
             tmp_path = f.name
@@ -733,7 +733,7 @@ class TestMediaEndpointIntegration(unittest.TestCase):
         """HTML opens inline only when requested and always carries CSP sandbox."""
         html_bytes = b"<!doctype html><title>NasTech</title><script>window.ok=1</script>"
         with tempfile.NamedTemporaryFile(
-            suffix=".html", prefix="nasmusicui_test_", dir=_media_fixture_dir(), delete=False
+            suffix=".html", prefix="naswebui_test_", dir=_media_fixture_dir(), delete=False
         ) as f:
             f.write(html_bytes)
             tmp_path = f.name

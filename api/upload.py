@@ -1,5 +1,5 @@
 """
-NasMusicUI -- File upload: multipart parser and upload handler.
+NasWebUI -- File upload: multipart parser and upload handler.
 """
 import mimetypes
 import os

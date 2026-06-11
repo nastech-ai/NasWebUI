@@ -140,7 +140,7 @@ class TestNousLiveCatalog:
     def test_nous_models_live_fetch_when_nastech_cli_available(self, monkeypatch, tmp_path):
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch, nous_ids=SAMPLE_NOUS_LIVE_IDS)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -162,7 +162,7 @@ class TestNousLiveCatalog:
     def test_nous_model_ids_carry_at_nous_prefix(self, monkeypatch, tmp_path):
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch, nous_ids=SAMPLE_NOUS_LIVE_IDS)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -181,7 +181,7 @@ class TestNousLiveCatalog:
     def test_nous_labels_carry_via_nous_suffix(self, monkeypatch, tmp_path):
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch, nous_ids=SAMPLE_NOUS_LIVE_IDS)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -202,7 +202,7 @@ class TestNousLiveCatalog:
         (Claude Opus 4.7, GPT-5.5, Kimi K2.6) must reach the dropdown."""
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch, nous_ids=SAMPLE_NOUS_LIVE_IDS)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:
@@ -232,7 +232,7 @@ class TestNousStaticFallback:
     def test_static_fallback_when_nastech_cli_raises(self, monkeypatch, tmp_path):
         _scrub_provider_env(monkeypatch)
         _install_fake_nastech_cli(monkeypatch, raise_on_lookup=True)
-        monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: tmp_path)
+        monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
 
         restore = _swap_in_test_config({"model": {"provider": "nous"}})
         try:

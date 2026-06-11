@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - name: Checkout NasMusicUI
+      - name: Checkout NasWebUI
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Set up Python
@@ -95,23 +95,23 @@ jobs:
 
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f  # v3
 
-      - name: Build NasMusicUI Docker image
+      - name: Build NasWebUI Docker image
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8  # v6
         with:
           context: .
           push: false
           load: true
-          tags: ghcr.io/nastech-ai/nasmusicui:ci-${{ github.sha }}
+          tags: ghcr.io/nastech-ai/naswebui:ci-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Smoke test container
         run: |
           docker run --rm -d \
-            --name nasmusicui-ci-smoke \
+            --name naswebui-ci-smoke \
             -p 8787:8787 \
             -e NASMUSICUI_NO_AGENT=1 \
-            ghcr.io/nastech-ai/nasmusicui:ci-${{ github.sha }} || true
+            ghcr.io/nastech-ai/naswebui:ci-${{ github.sha }} || true
           sleep 5
           curl --fail --silent http://127.0.0.1:8787/health && echo "✅ /health OK" || echo "⚠️  health check skipped (agent not present)"
-          docker stop nasmusicui-ci-smoke || true
+          docker stop naswebui-ci-smoke || true

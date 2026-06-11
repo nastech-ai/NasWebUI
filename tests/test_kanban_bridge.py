@@ -4,7 +4,7 @@ The first upstream WebUI Kanban integration is intentionally read-only: it
 surfaces NasTech Agent Kanban data under /api/kanban/* while keeping the Agent
 kanban database as the only source of truth.
 
-CI for nasmusicui does not install NasTech-Agent, so these tests inject a tiny
+CI for naswebui does not install NasTech-Agent, so these tests inject a tiny
 fake ``nastech_cli.kanban_db`` module and verify the bridge contract without
 requiring the external package.
 """

@@ -1179,7 +1179,7 @@ async function send(){
       }
       S.session.model=startData.effective_model;
       S.session.model_provider=startData.effective_model_provider||S.session.model_provider||null;
-      localStorage.setItem('nasmusicui-model', startData.effective_model);
+      localStorage.setItem('naswebui-model', startData.effective_model);
       if(typeof _writePersistedModelState==='function') _writePersistedModelState(startData.effective_model,S.session.model_provider||null);
       if($('modelSelect')) _applyModelToDropdown(startData.effective_model, $('modelSelect'),S.session.model_provider||null);
       if(typeof syncTopbar==='function') syncTopbar();
@@ -1234,7 +1234,7 @@ async function send(){
     // re-inject the dead id via _sessionIdFromLocation(), then reset to the
     // empty state instead of pushing a confusing error bubble into the chat.
     if(e&&e.status===404){
-      try{ localStorage.removeItem('nasmusicui-session'); }catch(_){ }
+      try{ localStorage.removeItem('naswebui-session'); }catch(_){ }
       try{
         if(typeof _appRootPath==='function') history.replaceState(null,'',_appRootPath());
         else history.replaceState(null,'',window.location.pathname.replace(/\/session\/[^/]+/,'')+window.location.search);
@@ -3177,7 +3177,7 @@ function attachLiveStream(activeSid, streamId, uploaded=[], options={}){
           if(typeof _hydrateTodosFromSession==='function') _hydrateTodosFromSession(S.session);
           if(typeof clearVisibleMessageRowCache==='function') clearVisibleMessageRowCache();
           if(S.session&&S.session.session_id){
-            try{localStorage.setItem('nasmusicui-session',S.session.session_id);}catch(_){}
+            try{localStorage.setItem('naswebui-session',S.session.session_id);}catch(_){}
             if(typeof _setActiveSessionUrl==='function') _setActiveSessionUrl(S.session.session_id);
           }
           const _markerOnlyAssistantError=_replaceMarkerOnlyAssistantWithStreamError(S.messages);
@@ -3518,7 +3518,7 @@ function attachLiveStream(activeSid, streamId, uploaded=[], options={}){
             S.session=d.session;
             S.messages=_carryForwardEphemeralTurnFields(S.messages||[], d.session.messages||[]);
             if(S.session&&S.session.session_id){
-              try{localStorage.setItem('nasmusicui-session',S.session.session_id);}catch(_){}
+              try{localStorage.setItem('naswebui-session',S.session.session_id);}catch(_){}
               if(typeof _setActiveSessionUrl==='function') _setActiveSessionUrl(S.session.session_id);
             }
           } else {
@@ -3752,7 +3752,7 @@ function attachLiveStream(activeSid, streamId, uploaded=[], options={}){
         S.messages=_filterRecoveryControlMessages(S.messages || []);
         if(typeof _hydrateTodosFromSession==='function') _hydrateTodosFromSession(S.session);
         if(S.session&&S.session.session_id){
-          try{localStorage.setItem('nasmusicui-session',S.session.session_id);}catch(_){}
+          try{localStorage.setItem('naswebui-session',S.session.session_id);}catch(_){}
           if(typeof _setActiveSessionUrl==='function') _setActiveSessionUrl(S.session.session_id);
         }
         const _markerOnlyAssistantError=_replaceMarkerOnlyAssistantWithStreamError(S.messages);
@@ -4977,7 +4977,7 @@ function playAttentionSound(key){
 function _notificationOptions(body,options={}){
   const sid=(options&&options.sid)||(S&&S.session&&S.session.session_id);
   const url=sid?`${location.origin}${_sessionUrlForSid(sid)}`:location.href;
-  return {body:body||'',tag:sid?`nastech-${sid}`:'nasmusicui',renotify:false,icon:'static/favicon-192.png',badge:'static/favicon-32.png',data:{url}};
+  return {body:body||'',tag:sid?`nastech-${sid}`:'naswebui',renotify:false,icon:'static/favicon-192.png',badge:'static/favicon-32.png',data:{url}};
 }
 function _showPwaNotification(title,body,options={}){
   const botName=assistantDisplayName();

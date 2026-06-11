@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>NasMusicUI</title>
+<title>NasWebUI</title>
 <!-- base href enables subpath mount support; all static paths must stay relative (no leading slash).
      MUST appear before manifest/favicon links so browsers resolve relative URLs against the
      correct base when the page is served from /session/<id> routes. See #2226. -->
@@ -15,17 +15,17 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="NasMusicUI">
+<meta name="apple-mobile-web-app-title" content="NasWebUI">
 <link rel="apple-touch-icon" sizes="512x512" href="static/apple-touch-icon.png">
-<script>(function(){try{var themes={light:1,dark:1,system:1},skins={default:1,ares:1,mono:1,graphite:1,slate:1,poseidon:1,sisyphus:1,charizard:1,sienna:1,catppuccin:1,hepburn:1,nous:1,'geist-contrast':1,neon:1,zeus:1,'verdigris':1,amoled:1},legacy={slate:['dark','slate'],solarized:['dark','poseidon'],monokai:['dark','sisyphus'],nord:['dark','slate'],oled:['dark','default']},t=(localStorage.getItem('nasmusicui-theme')||'dark').toLowerCase(),s=(localStorage.getItem('nasmusicui-skin')||'').toLowerCase(),m=legacy[t],theme=m?m[0]:(themes[t]?t:'dark'),skin=skins[s]?s:(m?m[1]:'default');localStorage.setItem('nasmusicui-theme',theme);localStorage.setItem('nasmusicui-skin',skin);if(theme==='system')theme=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';if(theme==='dark')document.documentElement.classList.add('dark');if(skin!=='default')document.documentElement.dataset.skin=skin;}catch(e){document.documentElement.classList.add('dark');}})()</script>
-<script>(function(){try{var fs=localStorage.getItem('nasmusicui-font-size');if(fs&&fs!=='default')document.documentElement.dataset.fontSize=fs;}catch(e){}})()</script>
+<script>(function(){try{var themes={light:1,dark:1,system:1},skins={default:1,ares:1,mono:1,graphite:1,slate:1,poseidon:1,sisyphus:1,charizard:1,sienna:1,catppuccin:1,hepburn:1,nous:1,'geist-contrast':1,neon:1,zeus:1,'verdigris':1,amoled:1},legacy={slate:['dark','slate'],solarized:['dark','poseidon'],monokai:['dark','sisyphus'],nord:['dark','slate'],oled:['dark','default']},t=(localStorage.getItem('naswebui-theme')||'dark').toLowerCase(),s=(localStorage.getItem('naswebui-skin')||'').toLowerCase(),m=legacy[t],theme=m?m[0]:(themes[t]?t:'dark'),skin=skins[s]?s:(m?m[1]:'default');localStorage.setItem('naswebui-theme',theme);localStorage.setItem('naswebui-skin',skin);if(theme==='system')theme=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';if(theme==='dark')document.documentElement.classList.add('dark');if(skin!=='default')document.documentElement.dataset.skin=skin;}catch(e){document.documentElement.classList.add('dark');}})()</script>
+<script>(function(){try{var fs=localStorage.getItem('naswebui-font-size');if(fs&&fs!=='default')document.documentElement.dataset.fontSize=fs;}catch(e){}})()</script>
 <!-- theme-color: surfaces the active app chrome color to native status bars (Safari status bar, PWA, native WKWebView wrappers). Updated dynamically by boot.js when theme/skin changes. The light/dark default values match style.css :root --sidebar / :root.dark --sidebar. -->
 <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141425" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" id="nasmusicui-theme-color" content="#0D0D1A">
-<script>(function(){try{var t=localStorage.getItem('nasmusicui-theme')||'dark';if(t==='system')t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';var c=t==='dark'?'#141425':'#FAF7F0';document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){m.setAttribute('content',c);m.removeAttribute('media');});}catch(e){}})()</script>
-<script>(function(){try{document.documentElement.dataset.workspacePanel=localStorage.getItem('nasmusicui-workspace-panel')==='open'?'open':'closed';}catch(e){document.documentElement.dataset.workspacePanel='closed';}})()</script>
-<script>(function(){try{if(localStorage.getItem('nasmusicui-sidebar-collapsed')==='1')document.documentElement.dataset.sidebarCollapsed='1';}catch(e){}})()</script>
+<meta name="theme-color" id="naswebui-theme-color" content="#0D0D1A">
+<script>(function(){try{var t=localStorage.getItem('naswebui-theme')||'dark';if(t==='system')t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';var c=t==='dark'?'#141425':'#FAF7F0';document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){m.setAttribute('content',c);m.removeAttribute('media');});}catch(e){}})()</script>
+<script>(function(){try{document.documentElement.dataset.workspacePanel=localStorage.getItem('naswebui-workspace-panel')==='open'?'open':'closed';}catch(e){document.documentElement.dataset.workspacePanel='closed';}})()</script>
+<script>(function(){try{if(localStorage.getItem('naswebui-sidebar-collapsed')==='1')document.documentElement.dataset.sidebarCollapsed='1';}catch(e){}})()</script>
 <link rel="preload" href="static/pwa-startup.js?v=__WEBUI_VERSION__" as="script">
 <script src="static/pwa-startup.js?v=__WEBUI_VERSION__"></script>
 <script>window.__NASMUSICUI_CONFIG__={maxUploadBytes:__MAX_UPLOAD_BYTES__,csrfToken:__CSRF_TOKEN_JSON__};</script>
@@ -47,7 +47,7 @@
     if(sameOriginUnsafe(input,init)){
       var opts=init?Object.assign({},init):{};
       var headers=new Headers(opts.headers!==undefined?opts.headers:((input&&input.headers)||{}));
-      if(!headers.has('X-NasMusicUI-CSRF-Token'))headers.set('X-NasMusicUI-CSRF-Token',token);
+      if(!headers.has('X-NasWebUI-CSRF-Token'))headers.set('X-NasWebUI-CSRF-Token',token);
       opts.headers=headers;
       return originalFetch(input,opts);
     }
@@ -58,7 +58,7 @@
     navigator.sendBeacon=function(url,data){
       try{
         if(sameOriginUnsafe(url,{method:'POST'})){
-          var headers={'X-NasMusicUI-CSRF-Token':token};
+          var headers={'X-NasWebUI-CSRF-Token':token};
           if(data&&data.type)headers['Content-Type']=data.type;
           originalFetch(url,{method:'POST',credentials:'include',headers:headers,body:data,keepalive:true});
           return true;
@@ -109,7 +109,7 @@
     // RTL users don't see an LTR flash on initial load.
     (function(){
       try{
-        if(localStorage.getItem('nasmusicui-rtl')==='true'){
+        if(localStorage.getItem('naswebui-rtl')==='true'){
           document.documentElement.classList.add('chat-content-rtl');
         }
       }catch(_){}
@@ -122,7 +122,7 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <div class="app-titlebar-inner">
-    <span class="app-titlebar-icon" aria-hidden="true"><img src="static/NasBanner.png" alt="NasMusicUI" style="height:34px;width:auto;object-fit:contain;vertical-align:middle;animation:nasLogoFadeIn .6s ease both"></span>
+    <span class="app-titlebar-icon" aria-hidden="true"><img src="static/NasBanner.png" alt="NasWebUI" style="height:34px;width:auto;object-fit:contain;vertical-align:middle;animation:nasLogoFadeIn .6s ease both"></span>
     <span class="app-titlebar-sub" id="appTitlebarSub" hidden></span>
   </div>
   <div class="app-titlebar-spacer" aria-hidden="true"></div>
@@ -150,7 +150,7 @@
     <button class="rail-btn nav-tab has-tooltip" data-panel="profiles" onclick="switchPanel('profiles',{fromRailClick:true})" data-tooltip="Agent profiles" data-i18n-title="tab_profiles" aria-label="Agent profiles"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
     <button class="rail-btn nav-tab has-tooltip" data-panel="todos" onclick="switchPanel('todos',{fromRailClick:true})" data-tooltip="Current task list" data-i18n-title="tab_todos" aria-label="Todos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg></button>
     <button class="rail-btn nav-tab has-tooltip" data-panel="insights" onclick="switchPanel('insights',{fromRailClick:true})" data-tooltip="Insights" data-i18n-title="tab_insights" aria-label="Insights"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></button>
-    <button class="rail-btn nav-tab dashboard-link has-tooltip" id="dashboardRailBtn" data-dashboard-link style="display:none" onclick="openNasMusicUIDashboard(event)" data-tooltip="NasMusicUI Dashboard" data-i18n-title="tab_dashboard" aria-label="NasMusicUI Dashboard"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg><span class="dashboard-external-badge" aria-hidden="true"></span></button>
+    <button class="rail-btn nav-tab dashboard-link has-tooltip" id="dashboardRailBtn" data-dashboard-link style="display:none" onclick="openNasWebUIDashboard(event)" data-tooltip="NasWebUI Dashboard" data-i18n-title="tab_dashboard" aria-label="NasWebUI Dashboard"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg><span class="dashboard-external-badge" aria-hidden="true"></span></button>
     <button class="rail-btn nav-tab has-tooltip" data-panel="logs" onclick="switchPanel('logs',{fromRailClick:true})" data-tooltip="Logs" data-i18n-title="tab_logs" aria-label="Logs"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h2"/></svg></button>
     <div class="rail-spacer"></div>
     <button class="rail-btn has-tooltip" id="btnMakePublic" onclick="openCfTunnel()" data-tooltip="Make Public (Cloudflare Tunnel)" aria-label="Make Public" title="Make Public">
@@ -160,7 +160,7 @@
   </nav>
   <aside class="sidebar">
       <div class="sidebar-mobile-logo" aria-hidden="true">
-        <img src="static/NasBanner.png" alt="NasMusicUI">
+        <img src="static/NasBanner.png" alt="NasWebUI">
       </div>
       <div class="sidebar-nav">
       <button class="nav-tab active has-tooltip has-tooltip--bottom" data-panel="chat" data-label="Chat" onclick="switchPanel('chat',{fromRailClick:true})" data-tooltip="Chat" data-i18n-title="tab_chat"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
@@ -172,7 +172,7 @@
       <button class="nav-tab has-tooltip has-tooltip--bottom" data-panel="profiles" data-label="Profiles" onclick="switchPanel('profiles',{fromRailClick:true})" data-tooltip="Agent profiles" data-i18n-title="tab_profiles"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
       <button class="nav-tab has-tooltip has-tooltip--bottom" data-panel="todos" data-label="Todos" onclick="switchPanel('todos',{fromRailClick:true})" data-tooltip="Current task list" data-i18n-title="tab_todos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg></button>
       <button class="nav-tab has-tooltip has-tooltip--bottom" data-panel="insights" data-label="Insights" onclick="switchPanel('insights',{fromRailClick:true})" data-tooltip="Insights" data-i18n-title="tab_insights"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></button>
-      <button class="nav-tab dashboard-link has-tooltip has-tooltip--bottom" id="dashboardMobileBtn" data-dashboard-link data-label="Dashboard" style="display:none" onclick="openNasMusicUIDashboard(event)" data-tooltip="NasMusicUI Dashboard" data-i18n-title="tab_dashboard"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg><span class="dashboard-external-badge" aria-hidden="true"></span></button>
+      <button class="nav-tab dashboard-link has-tooltip has-tooltip--bottom" id="dashboardMobileBtn" data-dashboard-link data-label="Dashboard" style="display:none" onclick="openNasWebUIDashboard(event)" data-tooltip="NasWebUI Dashboard" data-i18n-title="tab_dashboard"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg><span class="dashboard-external-badge" aria-hidden="true"></span></button>
       <button class="nav-tab has-tooltip has-tooltip--bottom" data-panel="logs" data-label="Logs" onclick="switchPanel('logs',{fromRailClick:true})" data-tooltip="Logs" data-i18n-title="tab_logs"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h2"/></svg></button>
       <!-- Settings button mirrored here for mobile (rail is desktop-only via @media >=768px). Keep in sync with rail entry. -->
       <button class="nav-tab has-tooltip has-tooltip--bottom" data-panel="settings" onclick="switchPanel('settings',{fromRailClick:true})" data-tooltip="Settings" data-i18n-title="tab_settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
@@ -181,7 +181,7 @@
          before any paint. Mirrors the theme/skin/font-size inline scripts in <head>.
          The boot.js _restoreTabVisibility IIFE is a secondary fallback that also
          handles the active-tab switch. -->
-    <script>(function(){try{var fixed=new Set(['chat','settings']);var clean=function(v){var o=[];if(!Array.isArray(v))return o;v.forEach(function(id){if(typeof id!=='string')return;id=id.trim();if(!id||fixed.has(id)||o.indexOf(id)!==-1)return;o.push(id);});return o;};var reorder=function(order){order=clean(order);if(!order.length)return;['.rail','.sidebar-nav'].forEach(function(sel){var c=document.querySelector(sel);if(!c)return;var available=[];c.querySelectorAll('.nav-tab[data-panel]').forEach(function(el){var id=el.dataset.panel;if(!id||fixed.has(id)||el.classList.contains('dashboard-link')||el.hasAttribute('data-dashboard-link'))return;if(available.indexOf(id)===-1)available.push(id);});var final=[];order.forEach(function(id){if(available.indexOf(id)!==-1&&final.indexOf(id)===-1)final.push(id);});available.forEach(function(id){if(final.indexOf(id)===-1)final.push(id);});var anchor=Array.prototype.find.call(c.children,function(el){if(el.classList&&el.classList.contains('rail-spacer'))return true;if(el.classList&&el.classList.contains('dashboard-link'))return true;if(el.hasAttribute&&el.hasAttribute('data-dashboard-link'))return true;return el.dataset&&el.dataset.panel==='settings';});final.forEach(function(id){var el=c.querySelector('.nav-tab[data-panel="'+id+'"]');if(el)c.insertBefore(el,anchor||null);});});};var o=localStorage.getItem('nasmusicui-tab-order');if(o)reorder(JSON.parse(o));var h=localStorage.getItem('nasmusicui-hidden-tabs');if(!h)return;var p=clean(JSON.parse(h));p.forEach(function(id){document.querySelectorAll('[data-panel="'+id+'"]').forEach(function(el){el.classList.add('nav-tab-hidden');});});try{var ac=document.querySelector('.rail .rail-btn.nav-tab.active[data-panel]')||document.querySelector('.sidebar-nav .nav-tab.active[data-panel]');if(ac&&ac.classList.contains('nav-tab-hidden')){ac.classList.remove('active');var c=document.querySelector('.rail .rail-btn.nav-tab[data-panel="chat"]')||document.querySelector('.sidebar-nav .nav-tab[data-panel="chat"]');if(c)c.classList.add('active');}}catch(_){}}catch(e){}})();</script>
+    <script>(function(){try{var fixed=new Set(['chat','settings']);var clean=function(v){var o=[];if(!Array.isArray(v))return o;v.forEach(function(id){if(typeof id!=='string')return;id=id.trim();if(!id||fixed.has(id)||o.indexOf(id)!==-1)return;o.push(id);});return o;};var reorder=function(order){order=clean(order);if(!order.length)return;['.rail','.sidebar-nav'].forEach(function(sel){var c=document.querySelector(sel);if(!c)return;var available=[];c.querySelectorAll('.nav-tab[data-panel]').forEach(function(el){var id=el.dataset.panel;if(!id||fixed.has(id)||el.classList.contains('dashboard-link')||el.hasAttribute('data-dashboard-link'))return;if(available.indexOf(id)===-1)available.push(id);});var final=[];order.forEach(function(id){if(available.indexOf(id)!==-1&&final.indexOf(id)===-1)final.push(id);});available.forEach(function(id){if(final.indexOf(id)===-1)final.push(id);});var anchor=Array.prototype.find.call(c.children,function(el){if(el.classList&&el.classList.contains('rail-spacer'))return true;if(el.classList&&el.classList.contains('dashboard-link'))return true;if(el.hasAttribute&&el.hasAttribute('data-dashboard-link'))return true;return el.dataset&&el.dataset.panel==='settings';});final.forEach(function(id){var el=c.querySelector('.nav-tab[data-panel="'+id+'"]');if(el)c.insertBefore(el,anchor||null);});});};var o=localStorage.getItem('naswebui-tab-order');if(o)reorder(JSON.parse(o));var h=localStorage.getItem('naswebui-hidden-tabs');if(!h)return;var p=clean(JSON.parse(h));p.forEach(function(id){document.querySelectorAll('[data-panel="'+id+'"]').forEach(function(el){el.classList.add('nav-tab-hidden');});});try{var ac=document.querySelector('.rail .rail-btn.nav-tab.active[data-panel]')||document.querySelector('.sidebar-nav .nav-tab.active[data-panel]');if(ac&&ac.classList.contains('nav-tab-hidden')){ac.classList.remove('active');var c=document.querySelector('.rail .rail-btn.nav-tab[data-panel="chat"]')||document.querySelector('.sidebar-nav .nav-tab[data-panel="chat"]');if(c)c.classList.add('active');}}catch(_){}}catch(e){}})();</script>
     <!-- Chat panel -->
     <div class="panel-view active" id="panelChat">
       <div class="panel-head">
@@ -394,7 +394,7 @@
       <button id="scrollToBottomBtn" class="scroll-to-bottom-btn" style="display:none" onclick="scrollToBottom()" aria-label="Scroll to bottom" data-i18n-aria-label="session_jump_end_label" data-i18n-title="session_jump_end_label"><span aria-hidden="true">↓</span><span class="session-jump-btn__text" data-i18n="session_jump_end">End</span></button>
     <div class="messages" id="messages">
       <div class="empty-state" id="emptyState">
-        <div class="empty-logo"><img src="static/NasBanner.png" alt="NasMusicUI" class="nas-hero-logo" style="width:320px;height:auto;object-fit:contain;filter:drop-shadow(0 0 18px rgba(0,0,0,0.5));animation:nasLogoFadeIn .7s ease both,nasLogoPulse 4s ease-in-out 0.7s infinite"></div>
+        <div class="empty-logo"><img src="static/NasBanner.png" alt="NasWebUI" class="nas-hero-logo" style="width:320px;height:auto;object-fit:contain;filter:drop-shadow(0 0 18px rgba(0,0,0,0.5));animation:nasLogoFadeIn .7s ease both,nasLogoPulse 4s ease-in-out 0.7s infinite"></div>
         <h2 data-i18n="empty_title">What can I help with?</h2>
         <p data-i18n="empty_subtitle">Ask anything, run commands, explore files, or manage your scheduled tasks.</p>
         <div class="suggestion-grid">
@@ -420,16 +420,16 @@
       <div class="offline-copy">
         <strong id="offlineTitle" data-i18n="offline_title">Connection lost</strong>
         <span id="offlineDetails" data-i18n="offline_browser_detail">Your browser reports that this device is offline.</span>
-        <span id="offlineAutorefresh" data-i18n="offline_autorefresh">I will refresh this page automatically when NasMusicUI is reachable again.</span>
+        <span id="offlineAutorefresh" data-i18n="offline_autorefresh">I will refresh this page automatically when NasWebUI is reachable again.</span>
       </div>
       <button class="offline-action" id="offlineCheckNow" type="button" onclick="checkOfflineRecoveryNow()" data-i18n="offline_check_now">Check now</button>
     </div>
     <div class="agent-health-banner" id="agentHealthBanner" role="alert" aria-live="assertive" hidden>
       <div class="agent-health-copy">
-        <strong id="agentHealthTitle">NasMusicUI agent is not responding</strong>
+        <strong id="agentHealthTitle">NasWebUI agent is not responding</strong>
         <span id="agentHealthDetails">The gateway heartbeat failed. Messages may not be delivered until it comes back.</span>
       </div>
-      <button class="agent-health-dismiss" id="agentHealthDismiss" type="button" onclick="dismissAgentHealthAlert()" aria-label="Dismiss NasMusicUI agent heartbeat alert">Dismiss</button>
+      <button class="agent-health-dismiss" id="agentHealthDismiss" type="button" onclick="dismissAgentHealthAlert()" aria-label="Dismiss NasWebUI agent heartbeat alert">Dismiss</button>
     </div>
     <div class="composer-wrap" id="composerWrap">
       <div class="composer-flyout">
@@ -541,7 +541,7 @@
           <span class="voice-mode-indicator" id="voiceModeIndicator"></span>
           <span class="voice-mode-label" id="voiceModeLabel"></span>
         </div>
-        <textarea id="msg" rows="1" placeholder="Message NasMusicUI…"></textarea>
+        <textarea id="msg" rows="1" placeholder="Message NasWebUI…"></textarea>
         <div class="composer-footer">
           <div class="composer-left">
             <input type="file" id="fileInput" class="file-input-visually-hidden" multiple accept="image/*,text/*,application/pdf,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.md,.py,.js,.ts,.yaml,.yml,.toml,.csv,.sh,.txt,.log,.env,.xls,.xlsx,.doc,.docx,.zip,.tar,.gz,.tgz,.bz2,.xz">
@@ -880,10 +880,10 @@
             <div class="settings-section-head">
               <div>
                 <div class="settings-section-title" data-i18n="settings_section_conversation_title">Conversation</div>
-                <div class="settings-section-meta" id="nasmusicuiSessionMeta" data-i18n="active_conversation_none">No active conversation selected.</div>
+                <div class="settings-section-meta" id="naswebuiSessionMeta" data-i18n="active_conversation_none">No active conversation selected.</div>
               </div>
             </div>
-            <div class="nasmusicui-action-grid">
+            <div class="naswebui-action-grid">
               <button class="settings-action-btn" id="btnDownload" title="Download as Markdown" data-i18n-title="download_transcript"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="transcript">Transcript</span></button>
               <button class="settings-action-btn" id="btnExportJSON" title="Export full session as JSON" data-i18n-title="export_session_json_tooltip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg> <span data-i18n="export_session_json">JSON</span></button>
               <button class="settings-action-btn" id="btnImportJSON" title="Import session from JSON" data-i18n-title="import_session_json_tooltip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> <span data-i18n="import">Import</span></button>
@@ -997,7 +997,7 @@
             <div class="settings-section-head">
               <div>
                 <div class="settings-section-title" data-i18n="settings_section_preferences_title">Preferences</div>
-                <div class="settings-section-meta" data-i18n="settings_section_preferences_meta">Defaults and UI behavior for NasMusicUI.</div>
+                <div class="settings-section-meta" data-i18n="settings_section_preferences_meta">Defaults and UI behavior for NasWebUI.</div>
               </div>
             </div>
             <div class="settings-field">
@@ -1086,7 +1086,7 @@
             <div class="settings-field" id="settingsElevenLabsKeyField" style="display:none">
               <label for="settingsElevenLabsKey">ElevenLabs API Key</label>
               <input type="password" id="settingsElevenLabsKey" placeholder="sk_..." autocomplete="off" style="width:100%;padding:8px;background:var(--code-bg);color:var(--text);border:1px solid var(--border2);border-radius:6px;font-size:13px">
-              <div style="font-size:11px;color:var(--muted);margin-top:4px">Your key is stored only in this browser (localStorage). It is never sent to the NasMusicUI server — requests go directly to ElevenLabs.</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Your key is stored only in this browser (localStorage). It is never sent to the NasWebUI server — requests go directly to ElevenLabs.</div>
             </div>
             <div class="settings-field">
               <label for="settingsTtsVoice" data-i18n="settings_label_tts_voice">Voice</label>
@@ -1254,7 +1254,7 @@
             <div class="settings-field">
               <label for="settingsBotName" data-i18n="settings_label_bot_name">Default assistant name</label>
               <div style="font-size:11px;color:var(--muted);margin-bottom:6px" data-i18n="settings_desc_bot_name">Used for the default profile only. Other profiles use their own profile names.</div>
-              <input type="text" id="settingsBotName" placeholder="NasMusicUI" maxlength="64" style="width:100%;padding:8px;background:var(--code-bg);color:var(--text);border:1px solid var(--border2);border-radius:6px;font-size:13px">
+              <input type="text" id="settingsBotName" placeholder="NasWebUI" maxlength="64" style="width:100%;padding:8px;background:var(--code-bg);color:var(--text);border:1px solid var(--border2);border-radius:6px;font-size:13px">
             </div>
             <button class="sm-btn" onclick="saveSettings()" style="margin-top:12px;width:100%;padding:8px;font-weight:600" data-i18n="settings_save_btn">Save Settings</button>
             <div id="settingsPreferencesAutosaveStatus" class="settings-autosave-status" aria-live="polite"></div>
@@ -1277,14 +1277,14 @@
             <div class="settings-section-head">
               <div>
                 <div class="settings-section-title" data-i18n="settings_plugins_title">Plugins</div>
-                <div class="settings-section-meta" data-i18n="settings_plugins_meta">View installed NasMusicUI plugins and the lifecycle hooks they register. This panel is read-only.</div>
+                <div class="settings-section-meta" data-i18n="settings_plugins_meta">View installed NasWebUI plugins and the lifecycle hooks they register. This panel is read-only.</div>
               </div>
             </div>
             <div id="pluginsList" style="display:flex;flex-direction:column;margin-top:4px">
               <!-- Populated dynamically by loadPluginsPanel() -->
             </div>
             <div id="pluginsEmpty" style="display:none;text-align:center;padding:32px 0;color:var(--muted);font-size:13px" data-i18n="settings_plugins_empty">
-              No NasTech plugins are currently visible. Install or enable plugins from the NasMusicUI CLI/config to see them here.
+              No NasTech plugins are currently visible. Install or enable plugins from the NasWebUI CLI/config to see them here.
             </div>
           </div>
           <div class="settings-pane" id="settingsPaneSystem">
@@ -1309,7 +1309,7 @@
             <button class="sm-btn" id="btnDisableAuth" onclick="disableAuth()" style="margin-top:6px;width:100%;padding:8px;font-weight:600;color:#e8a030;border-color:rgba(232,160,48,.3);display:none" data-i18n="disable_auth">Disable Auth</button>
             <button class="sm-btn" id="btnSignOut" onclick="signOut()" style="margin-top:6px;width:100%;padding:8px;font-weight:600;color:var(--accent);border-color:rgba(233,69,96,.3);display:none" data-i18n="sign_out">Sign Out</button>
             <div class="settings-field" id="shutdownServerBlock" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border)">
-              <label data-i18n="settings_label_shutdown">Stop the NasMusicUI server</label>
+              <label data-i18n="settings_label_shutdown">Stop the NasWebUI server</label>
               <div style="font-size:11px;color:var(--muted);margin-bottom:8px" data-i18n="settings_desc_shutdown">Gracefully stops the local WebUI server. Useful if you launched via <code>./ctl.sh start</code> and want to stop without switching to a terminal. You'll need to relaunch the server (<code>./ctl.sh start</code> or the native app) before the WebUI is reachable again.</div>
               <button class="sm-btn" id="btnShutdownServer" onclick="shutdownServer()" style="width:100%;padding:8px;font-weight:600;color:#e74c3c;border-color:rgba(231,76,60,.3)" data-i18n="settings_btn_shutdown">Stop server</button>
             </div>
@@ -1343,7 +1343,7 @@
               <label data-i18n="mcp_servers_title">MCP Servers</label>
               <div style="font-size:11px;color:var(--muted);margin-bottom:8px" data-i18n="mcp_servers_desc">View Model Context Protocol servers configured in config.yaml.</div>
               <div id="mcpServerList"></div>
-              <div class="mcp-restart-hint" data-i18n="mcp_restart_hint">Server changes are read-only here for now. Edit config.yaml and restart NasMusicUI for changes to take effect.</div>
+              <div class="mcp-restart-hint" data-i18n="mcp_restart_hint">Server changes are read-only here for now. Edit config.yaml and restart NasWebUI for changes to take effect.</div>
             </div>
             <!-- MCP Tools Section -->
             <div class="settings-field" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border)">
@@ -1361,7 +1361,7 @@
             <div class="settings-section-head">
               <div>
                 <div class="settings-section-title" data-i18n="settings_tab_help">Help</div>
-                <div class="settings-section-meta" data-i18n="settings_help_meta">Resources and support for NasMusicUI.</div>
+                <div class="settings-section-meta" data-i18n="settings_help_meta">Resources and support for NasWebUI.</div>
               </div>
             </div>
             <div class="help-cards">
@@ -1371,7 +1371,7 @@
                 </div>
                 <div class="help-card-body">
                   <div class="help-card-title" data-i18n="settings_help_docs_label">Documentation</div>
-                  <div class="help-card-desc" data-i18n="settings_help_docs_desc">Guides, configuration reference, and the full NasMusicUI README.</div>
+                  <div class="help-card-desc" data-i18n="settings_help_docs_desc">Guides, configuration reference, and the full NasWebUI README.</div>
                   <a href="https://github.com/nastech-ai/NasTech-Agent/" target="_blank" rel="noopener noreferrer" class="help-card-link">
                     <span data-i18n="settings_help_docs_link">Open Documentation</span>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
@@ -1451,8 +1451,8 @@
     <div class="onboarding-shell">
       <div class="onboarding-sidebar">
         <div class="onboarding-badge" data-i18n="onboarding_badge">FIRST RUN</div>
-        <h2 id="onboardingTitle" data-i18n="onboarding_title">Welcome to NasMusicUI</h2>
-        <p id="onboardingLead" data-i18n="onboarding_lead">A quick guided setup will check your NasMusicUI install, choose a workspace and model, and optionally protect the app with a password.</p>
+        <h2 id="onboardingTitle" data-i18n="onboarding_title">Welcome to NasWebUI</h2>
+        <p id="onboardingLead" data-i18n="onboarding_lead">A quick guided setup will check your NasWebUI install, choose a workspace and model, and optionally protect the app with a password.</p>
         <div class="onboarding-steps" id="onboardingSteps"></div>
       </div>
       <div class="onboarding-main">
@@ -1587,7 +1587,7 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       Make Public
     </div>
-    <div class="cf-modal-sub">Creates a free Cloudflare Tunnel so anyone can reach this NasMusicUI from anywhere — no port-forwarding needed. The URL changes each session.</div>
+    <div class="cf-modal-sub">Creates a free Cloudflare Tunnel so anyone can reach this NasWebUI from anywhere — no port-forwarding needed. The URL changes each session.</div>
     <div class="cf-status-row">
       <div class="cf-status-dot" id="cfStatusDot"></div>
       <span id="cfStatusText">Not running</span>

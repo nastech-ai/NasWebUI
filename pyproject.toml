@@ -1,4 +1,4 @@
-# NasMusicUI — Python tooling config.
+# NasWebUI — Python tooling config.
 #
 # This project is NOT a packaged distribution. The app is a plain Python + vanilla
 # JavaScript server with no build step and no bundler (see AGENTS.md / README). This

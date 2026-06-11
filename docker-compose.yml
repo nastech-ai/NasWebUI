@@ -1,4 +1,4 @@
-# NasMusicUI — single-container Docker Compose
+# NasWebUI — single-container Docker Compose
 #
 # QUICK START (most users):
 #   1. (Optional) Copy .env.docker.example to .env and edit values
@@ -12,7 +12,7 @@
 # see docker-compose.two-container.yml or docker-compose.three-container.yml.
 
 services:
-  nasmusicui:
+  naswebui:
     build: .
     ports:
     # select only one; use 127.0.0.1 version to expose to localhost only
@@ -24,7 +24,7 @@ services:
       # and Linux (/home/<you>/.nastech) — no change needed for standard installs.
       # Only set NASTECH_HOME explicitly if your .nastech lives somewhere non-standard.
       # macOS note: set UID and GID below to match your user ID (run `id -u` and `id -g`).
-      - ${NASTECH_HOME:-${HOME}/.nastech}:/home/nasmusicuiwebui/.nastech
+      - ${NASTECH_HOME:-${HOME}/.nastech}:/home/naswebuiwebui/.nastech
       # Your workspace directory shown on first launch (adapt if yours is different, the container will use the mounted /workspace)
       - ${NASTECH_WORKSPACE:-${HOME}/workspace}:/workspace
     environment:
@@ -39,7 +39,7 @@ services:
       - NASMUSICUI_HOST=0.0.0.0
       - NASMUSICUI_PORT=8787
       # Where to store sessions, workspaces, and other state (default: ~/.nastech/webui)
-      - NASMUSICUI_STATE_DIR=/home/nasmusicuiwebui/.nastech/webui
+      - NASMUSICUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
       # Default workspace directory shown on first launch
 #      - NASMUSICUI_DEFAULT_WORKSPACE=/workspace
       # Optional: set a password for remote access

@@ -115,13 +115,13 @@ class TestLoadRepoDotenv:
     def test_preserve_existing_env_keeps_ctl_overrides(self, tmp_path):
         """ctl.sh can ask bootstrap.py to keep wrapper-provided env values."""
         os.environ["NASMUSICUI_PRESERVE_ENV"] = "1"
-        os.environ["NASTECH_HOME"] = "/runtime/nasmusicuiOne"
+        os.environ["NASTECH_HOME"] = "/runtime/naswebuiOne"
         os.environ["NASMUSICUI_PASSWORD"] = ""
         self._run(
             tmp_path,
             "NASTECH_HOME=/repo/default\nNASMUSICUI_PASSWORD=repo-password\n",
         )
-        assert os.environ.get("NASTECH_HOME") == "/runtime/nasmusicuiOne"
+        assert os.environ.get("NASTECH_HOME") == "/runtime/naswebuiOne"
         assert os.environ.get("NASMUSICUI_PASSWORD") == ""
 
     def test_does_not_set_empty_values(self, tmp_path):

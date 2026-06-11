@@ -1023,7 +1023,7 @@ def test_reload_recovery_persists_durable_inflight_state(cleanup_test_sessions):
     messages_src = (REPO_ROOT / "static/messages.js").read_text()
     sessions_src = (REPO_ROOT / "static/sessions.js").read_text()
 
-    assert "const INFLIGHT_STATE_KEY = 'nasmusicui-inflight-state'" in ui_src
+    assert "const INFLIGHT_STATE_KEY = 'naswebui-inflight-state'" in ui_src
     assert "function saveInflightState(sid, state)" in ui_src
     assert "function loadInflightState(sid, streamId)" in ui_src
     assert "function clearInflightState(sid)" in ui_src
@@ -1114,9 +1114,9 @@ def test_status_from_runtime_marks_openai_codex_ready_from_credential_pool(
     from api.onboarding import _status_from_runtime
     import api.onboarding as _ob
 
-    orig_home = _ob._get_active_nasmusicui_home
+    orig_home = _ob._get_active_naswebui_home
     orig_found = _ob._NASTECH_FOUND
-    _ob._get_active_nasmusicui_home = lambda: tmp_path
+    _ob._get_active_naswebui_home = lambda: tmp_path
     _ob._NASTECH_FOUND = True
     try:
         result = _status_from_runtime(
@@ -1124,7 +1124,7 @@ def test_status_from_runtime_marks_openai_codex_ready_from_credential_pool(
             True,
         )
     finally:
-        _ob._get_active_nasmusicui_home = orig_home
+        _ob._get_active_naswebui_home = orig_home
         _ob._NASTECH_FOUND = orig_found
 
     assert result["provider_configured"] is True

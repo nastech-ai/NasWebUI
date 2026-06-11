@@ -15,11 +15,11 @@ def test_home_chown_skips_nastech_agent_subtree():
     setup additionally mounts the whole NasTech-Agent source tree :ro on the
     WebUI side (#2470).  Either failure mode breaks the chown walk under
     `set -e`; pruning the parent path covers both."""
-    assert "chown_home_nasmusicuiwebui()" in INIT_SCRIPT
+    assert "chown_home_naswebuiwebui()" in INIT_SCRIPT
     # The prune target should be the whole NasTech-Agent subtree, not just
     # the inner `.git/objects` directory. The old narrower prune was
     # insufficient once the entire mount became :ro.
-    assert "-path \"/home/nasmusicuiwebui/.nastech/NasTech-Agent\" -prune" in INIT_SCRIPT, (
+    assert "-path \"/home/naswebuiwebui/.nastech/NasTech-Agent\" -prune" in INIT_SCRIPT, (
         "chown walk must prune the entire NasTech-Agent path (not just "
         ".git/objects) so a :ro multi-container mount doesn't EROFS-fail "
         "the chown."
@@ -31,12 +31,12 @@ def test_home_chown_helper_documents_readonly_mount_compat():
     """The prune comment must reference the :ro multi-container scenario so
     future maintainers don't narrow it back to just .git/objects (which would
     re-introduce the EROFS-on-startup failure for the multi-container setup)."""
-    chown_fn_start = INIT_SCRIPT.index("chown_home_nasmusicuiwebui()")
+    chown_fn_start = INIT_SCRIPT.index("chown_home_naswebuiwebui()")
     chown_fn_end = INIT_SCRIPT.index("\n}\n", chown_fn_start)
     fn_block = INIT_SCRIPT[chown_fn_start:chown_fn_end]
 
     assert "read-only" in fn_block.lower() or "ro" in fn_block.lower(), (
-        "chown_home_nasmusicuiwebui must document why the entire NasTech-Agent "
+        "chown_home_naswebuiwebui must document why the entire NasTech-Agent "
         "path is pruned (the :ro mount made the previous narrower prune "
         "insufficient)."
     )
@@ -47,8 +47,8 @@ def test_root_init_uses_git_object_safe_chown_helper():
     root_restart = INIT_SCRIPT.index("exec su", root_start)
     root_section = INIT_SCRIPT[root_start:root_restart]
 
-    assert "chown_home_nasmusicuiwebui || error_exit" in root_section
-    assert 'chown -R "${WANTED_UID}:${WANTED_GID}" /home/nasmusicuiwebui' not in root_section
+    assert "chown_home_naswebuiwebui || error_exit" in root_section
+    assert 'chown -R "${WANTED_UID}:${WANTED_GID}" /home/naswebuiwebui' not in root_section
 
 
 def test_docker_init_bash_syntax_still_valid():

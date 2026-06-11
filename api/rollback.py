@@ -1,5 +1,5 @@
 """
-NasMusicUI -- Filesystem checkpoint (rollback) API.
+NasWebUI -- Filesystem checkpoint (rollback) API.
 
 Provides endpoints to list, diff, and restore filesystem checkpoints
 created by the NasTech agent's CheckpointManager.  Checkpoints live at

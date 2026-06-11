@@ -24,7 +24,7 @@ def _run_available_models_with_cfg(monkeypatch, tmp_path, cfg):
     old_mtime = config._cfg_mtime
     monkeypatch.setattr(config, "_models_cache_path", tmp_path / "models_cache.json")
     monkeypatch.setattr(config, "_get_config_path", lambda: tmp_path / "missing-config.yaml")
-    monkeypatch.setattr("api.profiles.get_active_nasmusicui_home", lambda: tmp_path, raising=False)
+    monkeypatch.setattr("api.profiles.get_active_naswebui_home", lambda: tmp_path, raising=False)
     config.cfg.clear()
     config.cfg.update(cfg)
     config._cfg_mtime = 0.0

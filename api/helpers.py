@@ -1,5 +1,5 @@
 """
-NasMusicUI -- HTTP helper functions.
+NasWebUI -- HTTP helper functions.
 """
 import json as _json
 import logging

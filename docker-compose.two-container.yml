@@ -1,4 +1,4 @@
-# Two-container Docker Compose: NasTech Agent + NasMusicUI
+# Two-container Docker Compose: NasTech Agent + NasWebUI
 #
 # QUICK START:
 #   docker compose -f docker-compose.two-container.yml up -d
@@ -80,21 +80,21 @@ services:
     networks:
       - nastech-net
 
-  nasmusicui:
-    image: ghcr.io/nastech-ai/nasmusicui:latest
-    container_name: nasmusicui
+  naswebui:
+    image: ghcr.io/nastech-ai/naswebui:latest
+    container_name: naswebui
     depends_on:
       - nastech-agent
     ports:
       - "127.0.0.1:8787:8787"
     volumes:
       # Same nastech home as the agent — shares config, sessions, state
-      - nastech-home:/home/nasmusicuiwebui/.nastech
+      - nastech-home:/home/naswebuiwebui/.nastech
       # Agent source mounted where docker_init.bash expects it.
       # Mounted read-only — the WebUI only reads this volume to install
       # the agent's Python dependencies at startup (`uv pip install`).
       # Read-only enforces that defence-in-depth at the kernel layer.
-      - nastech-agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro
+      - nastech-agent-src:/home/naswebuiwebui/.nastech/NasTech-Agent:ro
       # Workspace directory — browse and edit files from the WebUI.
       # Adapt the host path to your project directory.
       # Override with: NASTECH_WORKSPACE=/your/path docker compose up
@@ -104,7 +104,7 @@ services:
     environment:
       - NASMUSICUI_HOST=0.0.0.0
       - NASMUSICUI_PORT=8787
-      - NASMUSICUI_STATE_DIR=/home/nasmusicuiwebui/.nastech/webui
+      - NASMUSICUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
       # Match your host user's UID/GID for correct file permissions.
       # In two-container setups the WebUI auto-detects UID/GID from the shared
       # nastech-home volume, but you can override explicitly if needed (#668):

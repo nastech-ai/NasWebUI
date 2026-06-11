@@ -1,4 +1,4 @@
-# NasMusicUI — Docker setup guide
+# NasWebUI — Docker setup guide
 
 This is the comprehensive Docker reference. For a 5-minute quickstart, see the [README Docker section](../README.md#docker).
 
@@ -24,15 +24,15 @@ If something stops working, **start with the single-container setup** — it's t
 ## Production image security model
 
 The production Docker image is hardened for the normal single-tenant container threat model:
-NasMusicUI assumes one operator controls the container, mounted NasTech home, and workspace.
+NasWebUI assumes one operator controls the container, mounted NasTech home, and workspace.
 The image does **not** install `sudo`, does not add runtime users to a sudo group, and does not
-grant `NOPASSWD` escalation. If an agent/tool process gains a shell as `nasmusicuiwebui`, it should
+grant `NOPASSWD` escalation. If an agent/tool process gains a shell as `naswebuiwebui`, it should
 not be able to become root with a passwordless sudo command.
 
 The entrypoint still starts as `root` for a narrow init phase because Docker bind mounts often need
 UID/GID alignment and ownership preparation before the app can read `~/.nastech`, `/workspace`,
 `/app`, and `/uv_cache`. After that setup, `docker_init.bash` re-execs itself as the unprivileged
-`nasmusicuiwebui` user and starts the server there. Init scratch files under `/tmp/nasmusicuiwebui_init`
+`naswebuiwebui` user and starts the server there. Init scratch files under `/tmp/naswebuiwebui_init`
 are owner-only (`0700` directory, `0600` files), not world-writable.
 
 For multi-tenant or hostile-container environments, rebuild with your own runtime user, mount policy,
@@ -43,7 +43,7 @@ those tools in a dev-only Dockerfile instead of reintroducing passwordless sudo 
 
 ```bash
 git clone https://github.com/nastech-ai/NasWebUI
-cd nasmusicui
+cd naswebui
 cp .env.docker.example .env
 # Edit .env if needed (most users can skip this on Linux)
 docker compose up -d
@@ -76,11 +76,11 @@ isolated NasTech home and follow
 
 ## Optional GPU runtime image
 
-The default NasMusicUI Docker image stays CPU-only. GPU user-space packages
+The default NasWebUI Docker image stays CPU-only. GPU user-space packages
 are installed only when you build a custom image with the opt-in build arg:
 
 ```bash
-docker build --build-arg INSTALL_GPU_LIBS=1 -t nasmusicui:gpu .
+docker build --build-arg INSTALL_GPU_LIBS=1 -t naswebui:gpu .
 ```
 
 That build path installs VA-API basics (`libva2`, `vainfo`), AMD Mesa VA-API
@@ -104,15 +104,15 @@ docker run --rm \
   --device /dev/dri:/dev/dri \
   --group-add video \
   --group-add render \
-  nasmusicui:gpu vainfo
+  naswebui:gpu vainfo
 ```
 
 For Compose, add the same mapping to a custom service definition:
 
 ```yaml
 services:
-  nasmusicui:
-    image: nasmusicui:gpu
+  naswebui:
+    image: naswebui:gpu
     devices:
       - /dev/dri:/dev/dri
     group_add:
@@ -123,7 +123,7 @@ services:
 `vainfo` should list the VA-API driver and supported profiles when the host
 driver stack and container permissions are correct. The container entrypoint
 preserves Docker-provided supplemental groups before it drops privileges to the
-`nasmusicuiwebui` runtime user, so the WebUI process keeps access to `/dev/dri`.
+`naswebuiwebui` runtime user, so the WebUI process keeps access to `/dev/dri`.
 
 ### NVIDIA
 
@@ -131,20 +131,20 @@ Install and configure the NVIDIA Container Toolkit on the host first, then use
 Docker's GPU runtime flag:
 
 ```bash
-docker run --rm --gpus all nasmusicui:gpu nvidia-smi
+docker run --rm --gpus all naswebui:gpu nvidia-smi
 ```
 
 For Compose, use a custom service with GPU access enabled:
 
 ```yaml
 services:
-  nasmusicui:
-    image: nasmusicui:gpu
+  naswebui:
+    image: naswebui:gpu
     gpus: all
 ```
 
 If `nvidia-smi` is unavailable or reports no devices, fix the host NVIDIA driver
-and container toolkit setup before debugging NasMusicUI. The container image
+and container toolkit setup before debugging NasWebUI. The container image
 only supplies the WebUI plus optional user-space media libraries; it cannot
 provide host kernel drivers or the NVIDIA runtime.
 
@@ -196,7 +196,7 @@ The three-service pattern uses two containers:
 | Service | Image | Ports |
 |---|---|---|
 | `NasTech-Agent` | `nousresearch/NasTech-Agent:latest` | 8642 (gateway), 9119 (dashboard) |
-| `nasmusicui` | `ghcr.io/nastech-ai/NasWebUI:latest` | 8787 (chat UI) |
+| `naswebui` | `ghcr.io/nastech-ai/NasWebUI:latest` | 8787 (chat UI) |
 
 Example compose snippet (save as `docker-compose.three-service.yml` or inline into your own file):
 
@@ -222,21 +222,21 @@ services:
     networks:
       - nastech-net
 
-  nasmusicui:
+  naswebui:
     image: ghcr.io/nastech-ai/NasWebUI:latest
-    container_name: nasmusicui
+    container_name: naswebui
     depends_on:
       - NasTech-Agent
     ports:
       - "127.0.0.1:8787:8787"
     volumes:
-      - nastech-home:/home/nasmusicuiwebui/.nastech
-      - NasTech-Agent-src:/home/nasmusicuiwebui/.nastech/NasTech-Agent:ro
+      - nastech-home:/home/naswebuiwebui/.nastech
+      - NasTech-Agent-src:/home/naswebuiwebui/.nastech/NasTech-Agent:ro
       - ${NASTECH_WORKSPACE:-${HOME}/workspace}:/workspace
     environment:
       - NASMUSICUI_HOST=0.0.0.0
       - NASMUSICUI_PORT=8787
-      - NASMUSICUI_STATE_DIR=/home/nasmusicuiwebui/.nastech/webui
+      - NASMUSICUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
       - WANTED_UID=${UID:-1000}
       - WANTED_GID=${GID:-1000}
     restart: unless-stopped
@@ -273,7 +273,7 @@ Until the compatibility boundary work in [#1925](https://github.com/nastech-ai/N
 
 If you use `latest`, use it consistently on both sides and avoid mixing a fixed tag with `latest`:
 - fixed WebUI tag + `NasTech-Agent:latest`
-- `nasmusicui:latest` + fixed `NasTech-Agent` tag
+- `naswebui:latest` + fixed `NasTech-Agent` tag
 
 In multi-container setups, if you must run a pinned pair, prefer the matching tag in `docker-compose.two-container.yml`/`docker-compose.three-container.yml` and perform the agent-volume refresh workflow in [Upgrading the agent container](#upgrading-the-agent-container) whenever you upgrade the agent image.
 
@@ -283,7 +283,7 @@ If you see behavior issues after a mixed-version upgrade, capture both WebUI and
 
 **Symptom**: Container starts but immediately crashes, logs show:
 ```
-PermissionError: [Errno 13] Permission denied: '/home/nasmusicuiwebui/.nastech/...'
+PermissionError: [Errno 13] Permission denied: '/home/naswebuiwebui/.nastech/...'
 ```
 
 **Cause**: The container's user (UID 1000 by default) can't read your bind-mounted directory because your host files are owned by a different UID.
@@ -334,15 +334,15 @@ Both are documented in `api/startup.py::fix_credential_permissions()`.
 **Symptom**: WebUI logs at startup:
 ```
 !! WARNING: NasTech-Agent source not found.
-!!   Looked in: /home/nasmusicuiwebui/.nastech/NasTech-Agent
+!!   Looked in: /home/naswebuiwebui/.nastech/NasTech-Agent
 !!              /opt/nastech
 ```
 
 **Cause**: The agent's source (`/opt/nastech` inside the agent container) needs to be exposed to the WebUI container via a shared volume. The two-container compose file does this via `NasTech-Agent-src` named volume, but if you're using bind mounts incorrectly the path won't resolve.
 
-**Fix**: Use the named volumes that ship with `docker-compose.two-container.yml` — don't replace them with bind mounts unless you know what you're doing. The agent container writes its source to `/opt/nastech`, and the WebUI mounts that volume at `/home/nasmusicuiwebui/.nastech/NasTech-Agent`.
+**Fix**: Use the named volumes that ship with `docker-compose.two-container.yml` — don't replace them with bind mounts unless you know what you're doing. The agent container writes its source to `/opt/nastech`, and the WebUI mounts that volume at `/home/naswebuiwebui/.nastech/NasTech-Agent`.
 
-If you must use a bind mount: pick a host path, then mount it to `/opt/nastech` in the agent container AND `/home/nasmusicuiwebui/.nastech/NasTech-Agent` in the WebUI container.
+If you must use a bind mount: pick a host path, then mount it to `/opt/nastech` in the agent container AND `/home/naswebuiwebui/.nastech/NasTech-Agent` in the WebUI container.
 
 ### 5. "Tools (git, node, etc.) missing in two-container setup" (#681)
 
@@ -362,7 +362,7 @@ If you must use a bind mount: pick a host path, then mount it to `/opt/nastech` 
 **Cause**: Either the file isn't readable (UID/GID issue, see #1) or it's not in the expected path inside the container.
 
 **Fix**:
-- Verify: `docker exec nasmusicui ls -la /home/nasmusicuiwebui/.nastech/config.yaml`
+- Verify: `docker exec naswebui ls -la /home/naswebuiwebui/.nastech/config.yaml`
 - If it doesn't exist: your host bind mount is pointing at the wrong directory.
 - If it exists but is unreadable: see #1 for the UID/GID fix.
 
@@ -376,7 +376,7 @@ If you must use a bind mount: pick a host path, then mount it to `/opt/nastech` 
 
 ### 8. "API base URL set to localhost fails from Docker" (#3012)
 
-**Symptom**: A provider, local model server, webhook, or custom API works on the host at `http://localhost:<port>`, but fails when the same URL is configured in NasMusicUI running in Docker.
+**Symptom**: A provider, local model server, webhook, or custom API works on the host at `http://localhost:<port>`, but fails when the same URL is configured in NasWebUI running in Docker.
 
 **Cause**: Inside a container, `localhost` means *that container*, not your laptop/host. The WebUI process cannot reach host services through `127.0.0.1` unless the service is running inside the same container.
 
@@ -388,7 +388,7 @@ If you must use a bind mount: pick a host path, then mount it to `/opt/nastech` 
 
 ```yaml
 services:
-  nasmusicui:
+  naswebui:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 ```
@@ -408,7 +408,7 @@ The two- and three-container setups use **named Docker volumes** (not bind mount
                           │ rw           │ rw
                           │              │
       ┌──────────────┐    │              │    ┌──────────────┐
-      │ NasTech-Agent │────┘              └────│ nasmusicui │
+      │ NasTech-Agent │────┘              └────│ naswebui │
       │  (port 8642) │                        │  (port 8787) │
       └──────────────┘                        └──────────────┘
               │                                       ↑
@@ -420,7 +420,7 @@ The two- and three-container setups use **named Docker volumes** (not bind mount
       └─────────────────────────┘
 ```
 
-The WebUI container doesn't ship with the agent's Python deps — at startup it runs `uv pip install /home/nasmusicuiwebui/.nastech/NasTech-Agent` to install them from the shared volume. The WebUI mount is read-only; the agent container is the only writer.
+The WebUI container doesn't ship with the agent's Python deps — at startup it runs `uv pip install /home/naswebuiwebui/.nastech/NasTech-Agent` to install them from the shared volume. The WebUI mount is read-only; the agent container is the only writer.
 
 ## Upgrading the agent container
 
@@ -519,6 +519,6 @@ volumes:
 If you hit a new failure mode not covered here, please [open an issue](https://github.com/nastech-ai/NasWebUI/issues/new) with:
 
 1. Which compose file you used
-2. The error from `docker logs nasmusicui`
-3. `docker exec nasmusicui id` output
-4. `docker exec nasmusicui ls -la /home/nasmusicuiwebui/.nastech` output
+2. The error from `docker logs naswebui`
+3. `docker exec naswebui id` output
+4. `docker exec naswebui ls -la /home/naswebuiwebui/.nastech` output

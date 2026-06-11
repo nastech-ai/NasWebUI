@@ -1,4 +1,4 @@
-"""NasMusicUI -- startup helpers."""
+"""NasWebUI -- startup helpers."""
 from __future__ import annotations
 import os, stat, subprocess, sys
 from pathlib import Path

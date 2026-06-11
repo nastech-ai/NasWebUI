@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 LABEL maintainer="nastech-ai"
-LABEL description="NasMusicUI Web UI — browser interface for NasMusicUI Agent"
+LABEL description="NasWebUI Web UI — browser interface for NasWebUI Agent"
 
 # Install system packages
 ENV DEBIAN_FRONTEND=noninteractive
@@ -64,14 +64,14 @@ WORKDIR /apptoo
 
 # Create the unprivileged runtime user. The entrypoint starts as root only for
 # UID/GID alignment and filesystem preparation, then execs the server as this user.
-RUN groupadd -g 1024 nasmusicuiwebui \
-    && useradd -u 1024 -d /home/nasmusicuiwebui -g nasmusicuiwebui -G users -s /bin/bash -m nasmusicuiwebui \
+RUN groupadd -g 1024 naswebuiwebui \
+    && useradd -u 1024 -d /home/naswebuiwebui -g naswebuiwebui -G users -s /bin/bash -m naswebuiwebui \
     && mkdir -p /app /uv_cache /workspace \
-    && chown -R nasmusicuiwebui:nasmusicuiwebui /home/nasmusicuiwebui /app /uv_cache /workspace \
-    && chmod 0755 /home/nasmusicuiwebui \
+    && chown -R naswebuiwebui:naswebuiwebui /home/naswebuiwebui /app /uv_cache /workspace \
+    && chmod 0755 /home/naswebuiwebui \
     && chmod 1777 /app /uv_cache /workspace
 
-COPY --chmod=555 docker_init.bash /nasmusicuiwebui_init.bash
+COPY --chmod=555 docker_init.bash /naswebuiwebui_init.bash
 
 RUN touch /.within_container
 
@@ -104,8 +104,8 @@ EXPOSE 8787
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:8787/health || exit 1
 
-# docker_init.bash performs root-only bind-mount setup, then drops to nasmusicuiwebui
+# docker_init.bash performs root-only bind-mount setup, then drops to naswebuiwebui
 # before starting the WebUI server. The production image does not ship sudo.
 USER root
-CMD ["/nasmusicuiwebui_init.bash"]
+CMD ["/naswebuiwebui_init.bash"]
 

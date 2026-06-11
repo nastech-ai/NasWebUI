@@ -1,7 +1,7 @@
 # Agent-assisted onboarding checklist
 
 This checklist is for an AI assistant helping a human install, reinstall, or
-debug NasMusicUI onboarding. It does not replace the human first-run wizard.
+debug NasWebUI onboarding. It does not replace the human first-run wizard.
 Use it before running bootstrap commands, inspecting logs, or recommending a
 cleanup path.
 
@@ -111,7 +111,7 @@ tail -n 120 ~/nastech-onboarding-test/webui/bootstrap-8789.log
 When summarizing `/api/onboarding/status`, focus on:
 
 - `completed`
-- `system.nasmusicui_found`
+- `system.naswebui_found`
 - `system.imports_ok`
 - `system.config_path`
 - `system.config_exists`
@@ -137,7 +137,7 @@ A local onboarding trial passes when:
 - The wizard appears when `completed` is false.
 - The wizard stays out of the way when `completed` is true or
   `NASMUSICUI_SKIP_ONBOARDING=1` is intentionally set.
-- `system.nasmusicui_found` and `system.imports_ok` match the expected bootstrap
+- `system.naswebui_found` and `system.imports_ok` match the expected bootstrap
   state.
 - `system.provider_ready` and `system.chat_ready` become true after the human
   completes a provider path that should support chat.

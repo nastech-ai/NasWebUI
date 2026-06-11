@@ -522,7 +522,7 @@ def test_chat_start_response_from_run_start_filters_adapter_internal_fields():
 
 def test_rfc_distinguishes_goal_routing_from_queue_route_staging():
     routes = importlib.import_module("api.routes")
-    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "nasmusicui-run-adapter-contract.md").read_text(encoding="utf-8")
+    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "naswebui-run-adapter-contract.md").read_text(encoding="utf-8")
 
     assert "#2544 shipped the first Slice 3c implementation" in rfc
     assert "#2560 shipped the queue-staging clarification" in rfc
@@ -534,13 +534,13 @@ def test_rfc_distinguishes_goal_routing_from_queue_route_staging():
 
 def test_rfc_defines_slice4_runner_contract_before_runner_code():
     routes = importlib.import_module("api.routes")
-    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "nasmusicui-run-adapter-contract.md").read_text(encoding="utf-8")
+    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "naswebui-run-adapter-contract.md").read_text(encoding="utf-8")
 
     assert "#### Slice 4a: Runner contract gate" in rfc
     assert "docs/test contract PR before any\nrunner code lands" in rfc
     assert "feature-flagged, default-off" in rfc
     assert "The runner, not the main WebUI request process, owns" in rfc
-    assert "restart only\n   `nasmusicui.service`" in rfc
+    assert "restart only\n   `naswebui.service`" in rfc
     assert "profile,\n   workspace, attachments, model/provider, toolset, and source metadata" in rfc
     assert "no removal of the legacy in-process backend" in rfc
     assert "no default-on runner mode" in rfc
@@ -552,7 +552,7 @@ def test_rfc_defines_slice4_runner_contract_before_runner_code():
 
 def test_rfc_defines_slice4c_runner_backend_harness_gate():
     routes = importlib.import_module("api.routes")
-    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "nasmusicui-run-adapter-contract.md").read_text(encoding="utf-8")
+    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "naswebui-run-adapter-contract.md").read_text(encoding="utf-8")
 
     assert "#### Slice 4c: Feature-flagged runner backend and restart/reattach harness" in rfc
     assert "Status as of 2026-05-21: shipped in v0.51.105 via #2696" in rfc
@@ -567,7 +567,7 @@ def test_rfc_defines_slice4c_runner_backend_harness_gate():
 
 def test_rfc_defines_slice4d_supervised_runner_route_gate():
     routes = importlib.import_module("api.routes")
-    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "nasmusicui-run-adapter-contract.md").read_text(encoding="utf-8")
+    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "naswebui-run-adapter-contract.md").read_text(encoding="utf-8")
 
     assert "#### Slice 4d: Supervised runner backend route gate" in rfc
     assert "Status as of 2026-05-23: shipped in v0.51.108 via #2744" in rfc
@@ -584,7 +584,7 @@ def test_rfc_defines_slice4d_supervised_runner_route_gate():
 
 def test_rfc_defines_slice4e_runner_chat_start_route_selection_harness():
     routes = importlib.import_module("api.routes")
-    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "nasmusicui-run-adapter-contract.md").read_text(encoding="utf-8")
+    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "naswebui-run-adapter-contract.md").read_text(encoding="utf-8")
 
     assert "#### Slice 4e: Default-off runner chat-start route-selection harness" in rfc
     assert "Status as of 2026-05-24: shipped in v0.51.129 via #2794" in rfc
@@ -599,7 +599,7 @@ def test_rfc_defines_slice4e_runner_chat_start_route_selection_harness():
 
 def test_rfc_defines_slice4f_supervised_local_runner_client_gate():
     routes = importlib.import_module("api.routes")
-    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "nasmusicui-run-adapter-contract.md").read_text(encoding="utf-8")
+    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "naswebui-run-adapter-contract.md").read_text(encoding="utf-8")
 
     assert "#### Slice 4f: Supervised local runner client backend gate" in rfc
     assert "Status as of 2026-05-31: shipped in v0.51.188 via #3073 / #3274" in rfc
@@ -621,7 +621,7 @@ def test_rfc_defines_slice4f_supervised_local_runner_client_gate():
 
 def test_rfc_defines_slice4g_supervised_local_runner_process_gate():
     routes = importlib.import_module("api.routes")
-    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "nasmusicui-run-adapter-contract.md").read_text(encoding="utf-8")
+    rfc = (routes.Path(__file__).parent.parent / "docs" / "rfcs" / "naswebui-run-adapter-contract.md").read_text(encoding="utf-8")
 
     assert "#### Slice 4g: Supervised local runner process harness gate" in rfc
     assert "After #3073 / #3274, WebUI has an explicit configured-runner HTTP client" in rfc

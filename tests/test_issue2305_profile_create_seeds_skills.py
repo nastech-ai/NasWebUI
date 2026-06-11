@@ -246,7 +246,7 @@ class TestNasTechCliUnavailableFallbackDoesNotCrash:
         try:
             with caplog.at_level(std_logging.DEBUG):
                 with patch.object(profiles_mod, 'list_profiles_api', return_value=[]):
-                    result = profiles_mod.create_profile_api('nonasmusicuiprofile')
+                    result = profiles_mod.create_profile_api('nonaswebuiprofile')
         finally:
             # Restore the real modules so subsequent tests can use them.
             _remove_nastech_cli()
@@ -254,7 +254,7 @@ class TestNasTechCliUnavailableFallbackDoesNotCrash:
             sys.modules['nastech_cli.profiles'] = real_mod
 
         # Profile is still created.
-        assert result['name'] == 'nonasmusicuiprofile'
+        assert result['name'] == 'nonaswebuiprofile'
         # Debug log about unavailable seed_profile_skills.
         debug_messages = [rec.message for rec in caplog.records if rec.levelno == std_logging.DEBUG]
         assert any('seed_profile_skills' in msg for msg in debug_messages), (

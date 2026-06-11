@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-shot bootstrap launcher for NasMusicUI."""
+"""One-shot bootstrap launcher for NasWebUI."""
 
 from __future__ import annotations
 
@@ -304,7 +304,7 @@ def open_browser(url: str) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Bootstrap NasMusicUI onboarding.")
+    parser = argparse.ArgumentParser(description="Bootstrap NasWebUI onboarding.")
     parser.add_argument("port", nargs="?", type=int, default=DEFAULT_PORT)
     parser.add_argument("--host", default=DEFAULT_HOST)
     parser.add_argument(
@@ -432,7 +432,7 @@ def main() -> int:
     foreground_reason = "--foreground" if args.foreground else _detect_supervisor()
     if foreground_reason:
         info(
-            f"Starting NasMusicUI on http://{args.host}:{args.port} "
+            f"Starting NasWebUI on http://{args.host}:{args.port} "
             f"(foreground mode: {foreground_reason})"
         )
         try:
@@ -472,7 +472,7 @@ def main() -> int:
     # /health, then return. Suitable for an interactive `bash start.sh` run.
     log_path = state_dir / f"bootstrap-{args.port}.log"
 
-    info(f"Starting NasMusicUI on http://{args.host}:{args.port}")
+    info(f"Starting NasWebUI on http://{args.host}:{args.port}")
     with log_path.open("ab") as log_file:
         proc = subprocess.Popen(
             [python_exe, server_path],
@@ -510,4 +510,4 @@ if __name__ == "__main__":
         raise SystemExit(1)
 
 # Branding alias
-nasmusicui_command_exists = nastech_command_exists
+naswebui_command_exists = nastech_command_exists

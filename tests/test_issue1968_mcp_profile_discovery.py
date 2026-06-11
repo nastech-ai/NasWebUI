@@ -28,7 +28,7 @@ def _line_of(pattern: str) -> int:
     raise AssertionError(f"pattern not found in api/streaming.py: {pattern!r}")
 
 
-def test_discover_mcp_tools_called_after_nasmusicui_home_mutation():
+def test_discover_mcp_tools_called_after_naswebui_home_mutation():
     """The fix for #1968: `discover_mcp_tools()` must execute AFTER the
     `NASTECH_HOME = _profile_home` assignment, otherwise non-default profile
     MCP servers are never discovered.

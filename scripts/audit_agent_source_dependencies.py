@@ -442,7 +442,7 @@ def main(argv: list[str] | None = None) -> int:
         nargs="?",
         type=Path,
         default=_repo_root_from_script(),
-        help="Path to the nasmusicui checkout; defaults to this script's repo.",
+        help="Path to the naswebui checkout; defaults to this script's repo.",
     )
     parser.add_argument(
         "--format",

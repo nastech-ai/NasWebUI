@@ -44,7 +44,7 @@ def _init_repo(path):
     if init.returncode != 0:
         _git(path, "init")
         _git(path, "checkout", "-B", "master")
-    _git(path, "config", "user.email", "nasmusicui-tests@example.invalid")
+    _git(path, "config", "user.email", "naswebui-tests@example.invalid")
     _git(path, "config", "user.name", "NasTech Tests")
     return path
 
@@ -567,7 +567,7 @@ def test_git_fetch_pull_and_push_with_upstream(tmp_path):
 
     clone = tmp_path / "clone"
     _git(tmp_path, "clone", str(remote), str(clone))
-    _git(clone, "config", "user.email", "nasmusicui-tests@example.invalid")
+    _git(clone, "config", "user.email", "naswebui-tests@example.invalid")
     _git(clone, "config", "user.name", "NasTech Tests")
 
     (origin / "tracked.txt").write_text("one\ntwo\n", encoding="utf-8")
@@ -632,7 +632,7 @@ def test_git_checkout_local_new_remote_dirty_and_invalid_refs(tmp_path):
 
     clone = tmp_path / "clone"
     _git(tmp_path, "clone", str(remote), str(clone))
-    _git(clone, "config", "user.email", "nasmusicui-tests@example.invalid")
+    _git(clone, "config", "user.email", "naswebui-tests@example.invalid")
     _git(clone, "config", "user.name", "NasTech Tests")
 
     created = git_checkout(clone, "main", "new", new_branch="local-work")
@@ -685,10 +685,10 @@ def test_git_stash_and_checkout_is_explicit(tmp_path):
     result = git_stash_and_checkout(repo, "target", "local")
     assert result["ok"] is True
     assert result["stashed"] is True
-    assert result["stash_name"].startswith("nasmusicui branch switch")
+    assert result["stash_name"].startswith("naswebui branch switch")
     assert result["current_branch"] == "target"
     assert git_status(repo)["totals"]["changed"] == 0
-    assert "nasmusicui branch switch to target" in _git(repo, "stash", "list")
+    assert "naswebui branch switch to target" in _git(repo, "stash", "list")
 
 
 def test_git_stash_and_checkout_restores_branch_changes_when_returning(tmp_path):
@@ -722,8 +722,8 @@ def test_git_stash_and_checkout_restores_branch_changes_when_returning(tmp_path)
     assert (repo / "main-only.txt").read_text(encoding="utf-8") == "untracked on main\n"
     assert not (repo / "feature-only.txt").exists()
     stash_list = _git(repo, "stash", "list")
-    assert "On main: nasmusicui branch switch" not in stash_list
-    assert "On feature: nasmusicui branch switch" in stash_list
+    assert "On main: naswebui branch switch" not in stash_list
+    assert "On feature: naswebui branch switch" in stash_list
 
 
 def test_git_stash_and_checkout_reports_restore_conflicts_without_dropping_stash(tmp_path):
@@ -749,7 +749,7 @@ def test_git_stash_and_checkout_reports_restore_conflicts_without_dropping_stash
     assert result["current_branch"] == "main"
     assert result["restore_failed"] is True
     assert result["restore_stash"]["branch"] == "main"
-    assert "On main: nasmusicui branch switch" in _git(repo, "stash", "list")
+    assert "On main: naswebui branch switch" in _git(repo, "stash", "list")
 
 
 def test_git_stash_checkout_validates_before_stashing(tmp_path):
@@ -974,7 +974,7 @@ def test_git_fetch_blocks_repo_local_credential_helper_execution(tmp_path):
     class AuthRequiredHandler(BaseHTTPRequestHandler):
         def do_GET(self):
             self.send_response(401)
-            self.send_header("WWW-Authenticate", 'Basic realm="nasmusicui-test"')
+            self.send_header("WWW-Authenticate", 'Basic realm="naswebui-test"')
             self.end_headers()
 
         def log_message(self, format, *args):
@@ -1024,7 +1024,7 @@ def test_git_fetch_blocks_repo_local_askpass_execution(tmp_path):
     class AuthRequiredHandler(BaseHTTPRequestHandler):
         def do_GET(self):
             self.send_response(401)
-            self.send_header("WWW-Authenticate", 'Basic realm="nasmusicui-test"')
+            self.send_header("WWW-Authenticate", 'Basic realm="naswebui-test"')
             self.end_headers()
 
         def log_message(self, format, *args):
@@ -1080,7 +1080,7 @@ def test_git_env_scrub_removes_redirecting_vars_and_preserves_temp_index(monkeyp
     monkeypatch.setenv("GIT_SSH_COMMAND", "ssh -i /tmp/evil-key")
     monkeypatch.setenv("GIT_TERMINAL_PROMPT", "1")
 
-    env = _clean_git_env({"GIT_INDEX_FILE": "/tmp/nasmusicui-index"})
+    env = _clean_git_env({"GIT_INDEX_FILE": "/tmp/naswebui-index"})
 
     assert "GIT_DIR" not in env
     assert "GIT_WORK_TREE" not in env
@@ -1095,7 +1095,7 @@ def test_git_env_scrub_removes_redirecting_vars_and_preserves_temp_index(monkeyp
     assert "GIT_SSH" not in env
     assert "GIT_SSH_COMMAND" not in env
     assert env["GIT_TERMINAL_PROMPT"] == "0"
-    assert env["GIT_INDEX_FILE"] == "/tmp/nasmusicui-index"
+    assert env["GIT_INDEX_FILE"] == "/tmp/naswebui-index"
 
 
 def test_git_error_classifier_identifies_non_fast_forward_push():

@@ -16,8 +16,8 @@ def _skill_module(name, home):
     return module
 
 
-def test_set_nasmusicui_home_patches_both_skill_tool_module_caches(monkeypatch, tmp_path):
-    from api.profiles import _set_nasmusicui_home
+def test_set_naswebui_home_patches_both_skill_tool_module_caches(monkeypatch, tmp_path):
+    from api.profiles import _set_naswebui_home
 
     old_home = tmp_path / "old-home"
     new_home = tmp_path / "new-home"
@@ -27,7 +27,7 @@ def test_set_nasmusicui_home_patches_both_skill_tool_module_caches(monkeypatch, 
     monkeypatch.setitem(sys.modules, "tools.skills_tool", skills_tool)
     monkeypatch.setitem(sys.modules, "tools.skill_manager_tool", skill_manager_tool)
 
-    _set_nasmusicui_home(new_home)
+    _set_naswebui_home(new_home)
 
     assert skills_tool.NASTECH_HOME == new_home
     assert skills_tool.SKILLS_DIR == new_home / "skills"

@@ -1,5 +1,5 @@
 """
-NasMusicUI -- SSE streaming engine and agent thread runner.
+NasWebUI -- SSE streaming engine and agent thread runner.
 Includes Sprint 10 cancel support via CANCEL_FLAGS.
 """
 import base64

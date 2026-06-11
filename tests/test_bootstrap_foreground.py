@@ -196,7 +196,7 @@ class TestXPCServiceNameNoiseFilter:
         )
 
     @pytest.mark.parametrize("real_value", [
-        "com.example.nasmusicui",
+        "com.example.naswebui",
         "com.acme.production-server",
         "io.github.user.my-service",
     ])
@@ -233,7 +233,7 @@ class TestMainForegroundRouting:
         import bootstrap as bs
         monkeypatch.setattr(bs, "ensure_supported_platform", lambda: None)
         monkeypatch.setattr(bs, "discover_agent_dir", lambda: tmp_path / "agent")
-        monkeypatch.setattr(bs, "nasmusicui_command_exists", lambda: True)
+        monkeypatch.setattr(bs, "naswebui_command_exists", lambda: True)
         monkeypatch.setattr(bs, "discover_launcher_python", lambda *a: "/usr/bin/python3")
         monkeypatch.setattr(bs, "ensure_python_has_webui_deps", lambda *a, **kw: a[0])
         monkeypatch.setattr(bs, "wait_for_health", lambda *a, **kw: True)
@@ -352,7 +352,7 @@ class TestForegroundEnvAndCwd:
         agent_dir = tmp_path / "agent"
         agent_dir.mkdir()
         monkeypatch.setattr(bs, "discover_agent_dir", lambda: agent_dir)
-        monkeypatch.setattr(bs, "nasmusicui_command_exists", lambda: True)
+        monkeypatch.setattr(bs, "naswebui_command_exists", lambda: True)
         monkeypatch.setattr(bs, "discover_launcher_python", lambda *a: "/usr/bin/python3")
         monkeypatch.setattr(bs, "ensure_python_has_webui_deps", lambda *a, **kw: a[0])
         monkeypatch.setattr(bs, "wait_for_health", lambda *a, **kw: True)
@@ -435,7 +435,7 @@ class TestForegroundExecutabilityGuard:
         bad_python.chmod(0o644)  # NOT executable
         monkeypatch.setattr(bs, "ensure_supported_platform", lambda: None)
         monkeypatch.setattr(bs, "discover_agent_dir", lambda: agent_dir)
-        monkeypatch.setattr(bs, "nasmusicui_command_exists", lambda: True)
+        monkeypatch.setattr(bs, "naswebui_command_exists", lambda: True)
         monkeypatch.setattr(bs, "discover_launcher_python", lambda *a: str(bad_python))
         monkeypatch.setattr(bs, "ensure_python_has_webui_deps", lambda *a, **kw: a[0])
         monkeypatch.setenv("NASMUSICUI_STATE_DIR", str(tmp_path / "state"))

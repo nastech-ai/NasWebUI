@@ -1,8 +1,8 @@
-# Contributing to NasMusicUI
+# Contributing to NasWebUI
 
 Thanks for contributing.
 
-NasMusicUI is intentionally simple to work on: Python on the server, vanilla JS in the browser, no build step, no bundler, no frontend framework. The best pull requests preserve that simplicity while solving a real problem cleanly.
+NasWebUI is intentionally simple to work on: Python on the server, vanilla JS in the browser, no build step, no bundler, no frontend framework. The best pull requests preserve that simplicity while solving a real problem cleanly.
 
 ## Before You Start
 
@@ -124,7 +124,7 @@ Common files:
 
 ### Preserve the Design Constraints
 
-NasMusicUI is deliberately:
+NasWebUI is deliberately:
 
 - No build step
 - No bundler
@@ -161,7 +161,7 @@ Start with a short Thinking Path that explains the chain from project goal to th
 
 Example:
 
-> - NasMusicUI aims for near 1:1 parity with the NasTech CLI in a browser
+> - NasWebUI aims for near 1:1 parity with the NasTech CLI in a browser
 > - Long-running chat turns rely on SSE streaming and session recovery
 > - Reloading during an in-flight turn can leave the UI in an inconsistent state
 > - The bug was that recovered sessions restored messages but not the live stream state
@@ -170,7 +170,7 @@ Example:
 
 Another example:
 
-> - NasMusicUI is intentionally a simple Python + vanilla JS application
+> - NasWebUI is intentionally a simple Python + vanilla JS application
 > - The right panel is used for workspace browsing and previews
 > - On mobile, panel state changes need to be obvious and touch-friendly
 > - The existing close affordance was inconsistent with the bottom-nav flow

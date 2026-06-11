@@ -41,7 +41,7 @@ def test_569_autodetect_before_usermod():
     assert usermod_pos != -1, "usermod not found"
     assert detect_pos < usermod_pos, (
         "UID auto-detect must occur before 'usermod' so the correct UID "
-        "is used when remapping the nasmusicuiwebui user"
+        "is used when remapping the naswebuiwebui user"
     )
 
 
@@ -70,13 +70,13 @@ def test_569_fallback_preserved():
 def test_668_uid_autodetect_checks_nastech_home():
     """docker_init.bash must probe nastech-home dirs for UID in two-container setups.
 
-    When NasTech-Agent and nasmusicui run in separate containers sharing a
+    When NasTech-Agent and naswebui run in separate containers sharing a
     named volume, /workspace may not exist but ~/.nastech will be owned by the
     agent's UID. The init script must probe it so the webui user is remapped
     to match (#668).
     """
-    assert "/home/nasmusicuiwebui/.nastech" in INIT_SH, (
-        "docker_init.bash must probe /home/nasmusicuiwebui/.nastech for UID detection "
+    assert "/home/naswebuiwebui/.nastech" in INIT_SH, (
+        "docker_init.bash must probe /home/naswebuiwebui/.nastech for UID detection "
         "to support two-container setups where /workspace may not exist (#668)"
     )
 
@@ -89,7 +89,7 @@ def test_668_gid_autodetect_checks_nastech_home():
         "GID auto-detect comment must be updated to mention shared volumes (#668)"
     )
     gid_block = INIT_SH[gid_detect_start:gid_detect_start + 600]
-    assert "/home/nasmusicuiwebui/.nastech" in gid_block or "NASTECH_HOME" in gid_block, (
+    assert "/home/naswebuiwebui/.nastech" in gid_block or "NASTECH_HOME" in gid_block, (
         "GID auto-detect block must probe nastech-home dirs (#668)"
     )
 
@@ -107,9 +107,9 @@ def test_668_uid_probe_loop_uses_break():
 
 def test_668_nastech_home_probe_before_workspace():
     """NasTech-home probe must appear before /workspace probe in docker_init.bash (#668)."""
-    nastech_home_pos = INIT_SH.find("/home/nasmusicuiwebui/.nastech")
+    nastech_home_pos = INIT_SH.find("/home/naswebuiwebui/.nastech")
     workspace_pos = INIT_SH.find('if [ -d "/workspace" ]')
-    assert nastech_home_pos != -1, "/home/nasmusicuiwebui/.nastech probe not found"
+    assert nastech_home_pos != -1, "/home/naswebuiwebui/.nastech probe not found"
     assert workspace_pos != -1, "/workspace probe not found"
     assert nastech_home_pos < workspace_pos, (
         "NasTech-home probe must come before /workspace probe — "

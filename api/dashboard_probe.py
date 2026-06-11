@@ -131,7 +131,7 @@ def probe_official_dashboard(
         base = _base_url(normalized_host, port, scheme)
         request = urllib.request.Request(
             f"{base}/api/status",
-            headers={"Accept": "application/json", "User-Agent": "nasmusicui-dashboard-probe"},
+            headers={"Accept": "application/json", "User-Agent": "naswebui-dashboard-probe"},
         )
         with urllib.request.urlopen(request, timeout=timeout) as response:
             if getattr(response, "status", None) != 200:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Forward-looking ruff lint gate for nasmusicui.
+"""Forward-looking ruff lint gate for naswebui.
 
 The Python twin of the ESLint runtime guard (``npm run lint:runtime``). It runs the
 curated ``[tool.ruff]`` ruleset from ``pyproject.toml`` (E9 + F + B) but enforces it

@@ -42,7 +42,7 @@ def test_start_payload_does_not_leak_provider_device_secrets(monkeypatch, tmp_pa
     import api.oauth as oauth
 
     oauth._OAUTH_FLOWS.clear()
-    monkeypatch.setattr(oauth, "_get_active_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(oauth, "_get_active_naswebui_home", lambda: tmp_path)
     monkeypatch.setattr(oauth, "_request_codex_user_code", lambda: {
         "device_auth_id": "device-secret",
         "user_code": "ABCD-EFGH",
@@ -83,7 +83,7 @@ def test_poll_returns_high_level_status_only(monkeypatch, tmp_path):
         "authorization_code": "auth-secret",
         "expires_at": time.time() + 60,
         "poll_interval_seconds": 3,
-        "nasmusicui_home": tmp_path,
+        "naswebui_home": tmp_path,
     }
 
     payload = oauth.poll_onboarding_oauth_flow(flow_id)
@@ -103,7 +103,7 @@ def test_cancel_marks_flow_cancelled_and_poll_stops(tmp_path):
         "provider": "openai-codex",
         "status": "pending",
         "expires_at": time.time() + 60,
-        "nasmusicui_home": tmp_path,
+        "naswebui_home": tmp_path,
     }
 
     cancelled = oauth.cancel_onboarding_oauth_flow({"flow_id": flow_id})
@@ -147,7 +147,7 @@ def test_cancel_during_token_exchange_does_not_persist_credentials(monkeypatch, 
         "user_code": "ABCD-EFGH",
         "expires_at": time.time() + 600,
         "poll_interval_seconds": 1,
-        "nasmusicui_home": str(tmp_path),
+        "naswebui_home": str(tmp_path),
         "created_at": time.time(),
         "updated_at": time.time(),
     }
@@ -177,7 +177,7 @@ def test_expired_flow_reports_expired_and_drops_sensitive_lifecycle(tmp_path):
         "status": "pending",
         "device_auth_id": "device-secret",
         "expires_at": time.time() - 1,
-        "nasmusicui_home": tmp_path,
+        "naswebui_home": tmp_path,
     }
 
     payload = oauth.poll_onboarding_oauth_flow(flow_id)
@@ -244,7 +244,7 @@ def test_claude_provider_aliases_normalize_to_anthropic(monkeypatch, tmp_path):
     import api.oauth as oauth
 
     oauth._OAUTH_FLOWS.clear()
-    monkeypatch.setattr(oauth, "_get_active_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(oauth, "_get_active_naswebui_home", lambda: tmp_path)
     monkeypatch.setattr(oauth, "_read_claude_code_credentials", lambda: None)
     monkeypatch.setattr(oauth, "_spawn_anthropic_credential_worker", lambda fid: None)
 
@@ -259,7 +259,7 @@ def test_anthropic_immediate_success_when_credentials_exist(monkeypatch, tmp_pat
     import api.oauth as oauth
 
     oauth._OAUTH_FLOWS.clear()
-    monkeypatch.setattr(oauth, "_get_active_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(oauth, "_get_active_naswebui_home", lambda: tmp_path)
     monkeypatch.setattr(oauth, "_read_claude_code_credentials", lambda: {
         "accessToken": "cc-access-secret",
         "refreshToken": "cc-refresh-secret",
@@ -282,7 +282,7 @@ def test_anthropic_pending_payload_is_action_only_and_secret_free(monkeypatch, t
     import api.oauth as oauth
 
     oauth._OAUTH_FLOWS.clear()
-    monkeypatch.setattr(oauth, "_get_active_nasmusicui_home", lambda: tmp_path)
+    monkeypatch.setattr(oauth, "_get_active_naswebui_home", lambda: tmp_path)
     monkeypatch.setattr(oauth, "_read_claude_code_credentials", lambda: None)
     monkeypatch.setattr(oauth, "_spawn_anthropic_credential_worker", lambda fid: None)
 
@@ -296,7 +296,7 @@ def test_anthropic_pending_payload_is_action_only_and_secret_free(monkeypatch, t
     serialized = json.dumps(payload)
     for forbidden in (
         "access_token", "refresh_token", "accessToken", "refreshToken",
-        ".credentials.json", ".claude", "nasmusicui_home", str(tmp_path),
+        ".credentials.json", ".claude", "naswebui_home", str(tmp_path),
         "ANTHROPIC_API_KEY", "ANTHROPIC_TOKEN",
     ):
         assert forbidden not in serialized
@@ -312,7 +312,7 @@ def test_anthropic_poll_and_cancel_return_high_level_status(tmp_path):
         "status": "pending",
         "expires_at": time.time() + 60,
         "poll_interval_seconds": 5,
-        "nasmusicui_home": str(tmp_path),
+        "naswebui_home": str(tmp_path),
     }
 
     assert oauth.poll_onboarding_oauth_flow(flow_id) == {
@@ -352,7 +352,7 @@ def test_anthropic_worker_detects_credentials_and_cancel_wins(monkeypatch, tmp_p
         "status": "pending",
         "expires_at": time.time() + 600,
         "poll_interval_seconds": 1,
-        "nasmusicui_home": str(tmp_path),
+        "naswebui_home": str(tmp_path),
         "created_at": time.time(),
         "updated_at": time.time(),
     }
@@ -389,7 +389,7 @@ def test_anthropic_cancel_during_link_keeps_flow_cancelled(monkeypatch, tmp_path
         "status": "pending",
         "expires_at": time.time() + 60,
         "poll_interval_seconds": 1,
-        "nasmusicui_home": str(tmp_path),
+        "naswebui_home": str(tmp_path),
         "created_at": time.time(),
         "updated_at": time.time(),
     }
@@ -429,7 +429,7 @@ def test_anthropic_worker_expires_flow(tmp_path):
         "status": "pending",
         "expires_at": time.time() - 1,
         "poll_interval_seconds": 1,
-        "nasmusicui_home": str(tmp_path),
+        "naswebui_home": str(tmp_path),
         "created_at": time.time(),
         "updated_at": time.time(),
     }
@@ -456,7 +456,7 @@ def test_anthropic_worker_reports_link_errors(monkeypatch, tmp_path):
         "status": "pending",
         "expires_at": time.time() + 60,
         "poll_interval_seconds": 1,
-        "nasmusicui_home": str(tmp_path),
+        "naswebui_home": str(tmp_path),
         "created_at": time.time(),
         "updated_at": time.time(),
     }
@@ -568,7 +568,7 @@ def test_anthropic_onboarding_setup_allows_linked_oauth_without_api_key(monkeypa
         "credential_pool": {"anthropic": [{"auth_type": "oauth", "source": "claude_code_linked"}]}
     }), encoding="utf-8")
     monkeypatch.setattr(onboarding, "_get_config_path", lambda: cfg_path)
-    monkeypatch.setattr(onboarding, "_get_active_nasmusicui_home", lambda: home)
+    monkeypatch.setattr(onboarding, "_get_active_naswebui_home", lambda: home)
     monkeypatch.setattr(onboarding, "get_onboarding_status", lambda: {"ok": True})
     monkeypatch.setattr(onboarding, "reload_config", lambda: None)
 

@@ -1,5 +1,5 @@
 """
-NasMusicUI -- optional authentication.
+NasWebUI -- optional authentication.
 Off by default. Enable by setting NASMUSICUI_PASSWORD, configuring a
 password in Settings, or registering passkeys and then going passwordless.
 """
@@ -55,7 +55,7 @@ PUBLIC_PATHS = frozenset({
 })
 
 COOKIE_NAME = 'nastech_session'
-CSRF_HEADER_NAME = 'X-NasMusicUI-CSRF-Token'
+CSRF_HEADER_NAME = 'X-NasWebUI-CSRF-Token'
 
 _SESSIONS_FILE = STATE_DIR / '.sessions.json'
 
@@ -443,7 +443,7 @@ def csrf_token_for_session(cookie_value: str) -> str | None:
     """Return the CSRF token bound to an authenticated WebUI session.
 
     The browser can read this token from the authenticated shell and echoes it
-    in ``X-NasMusicUI-CSRF-Token`` on unsafe API requests. The token is derived
+    in ``X-NasWebUI-CSRF-Token`` on unsafe API requests. The token is derived
     from the HttpOnly session cookie's server-side token, so it automatically
     rotates on login and is invalidated when the auth session expires or logs
     out. Callers must still verify the auth session before trusting it.

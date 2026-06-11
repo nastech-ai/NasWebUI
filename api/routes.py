@@ -1,5 +1,5 @@
 """
-NasMusicUI -- Route handlers for GET and POST endpoints.
+NasWebUI -- Route handlers for GET and POST endpoints.
 Extracted from server.py (Sprint 11) so server.py is a thin shell.
 """
 
@@ -528,10 +528,10 @@ def _skill_view_from_file(skill_dir: Path | None, skill_md: Path) -> dict:
         return {"success": False, "error": "Skill is not available on this platform."}
 
     metadata = frontmatter.get("metadata")
-    nasmusicui_meta = metadata.get("nastech", {}) if isinstance(metadata, dict) else {}
-    tags = _parse_tags(nasmusicui_meta.get("tags") or frontmatter.get("tags", ""))
+    naswebui_meta = metadata.get("nastech", {}) if isinstance(metadata, dict) else {}
+    tags = _parse_tags(naswebui_meta.get("tags") or frontmatter.get("tags", ""))
     related_skills = _parse_tags(
-        nasmusicui_meta.get("related_skills") or frontmatter.get("related_skills", "")
+        naswebui_meta.get("related_skills") or frontmatter.get("related_skills", "")
     )
     try:
         path = str(skill_md.relative_to((skill_dir or skill_md.parent).parent))
@@ -1680,7 +1680,7 @@ def _csrf_exempt_path(path: str) -> bool:
     }
 
 
-_CSRF_FAILURE_ATTR = "_nasmusicui_csrf_failure_reason"
+_CSRF_FAILURE_ATTR = "_naswebui_csrf_failure_reason"
 
 
 def _set_csrf_failure_reason(handler, reason: str) -> bool:
@@ -5300,13 +5300,13 @@ def _webui_plugin_payload() -> list[dict]:
 
 def _handle_plugins(handler, parsed) -> bool:
     try:
-        nasmusicui_plugins = _plugin_visibility_payload()
+        naswebui_plugins = _plugin_visibility_payload()
         webui = _webui_plugin_payload()
-        all_plugins = nasmusicui_plugins["plugins"] + webui
+        all_plugins = naswebui_plugins["plugins"] + webui
         return j(handler, {
             "plugins": all_plugins,
             "empty": not bool(all_plugins),
-            "supported_hooks": nasmusicui_plugins["supported_hooks"],
+            "supported_hooks": naswebui_plugins["supported_hooks"],
             "read_only": True,
         })
     except Exception as exc:
@@ -10309,7 +10309,7 @@ def _handle_link_preview(handler, parsed):
         return _bad(handler, "private URLs not allowed", 403)
     try:
         import re as _re
-        req = _req.Request(url, headers={"User-Agent": "Mozilla/5.0 NasMusicUI link-preview/1.0", "Accept": "text/html"})
+        req = _req.Request(url, headers={"User-Agent": "Mozilla/5.0 NasWebUI link-preview/1.0", "Accept": "text/html"})
         with _req.urlopen(req, timeout=6) as resp:
             ct = resp.headers.get("Content-Type", "")
             if "text/html" not in ct.split(";")[0]:
@@ -10701,33 +10701,33 @@ def _handle_media(handler, parsed):
         _base_nastech_home = Path(_BASE_HH).resolve()
     except Exception:
         _base_nastech_home = None
-    _nasmusicui_roots = []
+    _naswebui_roots = []
     for _r in (
         _NASTECH_HOME.resolve(),
         (_HOME / ".nastech").resolve(),
         _base_nastech_home,
         _state_dir,
     ):
-        if _r is not None and _r not in _nasmusicui_roots:
-            _nasmusicui_roots.append(_r)
+        if _r is not None and _r not in _naswebui_roots:
+            _naswebui_roots.append(_r)
     # Enumerate named-profile roots (<root>/profiles/<name>) and treat each as a
     # NasTech root in its own right, so a sibling/other profile's sensitive subdirs
     # + secret files are denied — WITHOUT denying the whole `profiles` container
     # (which would block a legit named-profile workspace at
     # <root>/profiles/<name>/workspace/). (Codex review #3234.)
     _profile_roots = []
-    for _root in list(_nasmusicui_roots):
+    for _root in list(_naswebui_roots):
         _profiles_dir = (_root / "profiles")
         try:
             if _profiles_dir.is_dir():
                 for _pchild in _profiles_dir.iterdir():
                     if _pchild.is_dir():
                         _pr = _pchild.resolve()
-                        if _pr not in _nasmusicui_roots and _pr not in _profile_roots:
+                        if _pr not in _naswebui_roots and _pr not in _profile_roots:
                             _profile_roots.append(_pr)
         except OSError:
             pass
-    _nasmusicui_roots.extend(_profile_roots)
+    _naswebui_roots.extend(_profile_roots)
 
     # Case-insensitive path helpers so STATE.DB / Sessions/ casing variants
     # cannot bypass the deny on macOS/Windows filesystems (Codex review #3234).
@@ -10754,7 +10754,7 @@ def _handle_media(handler, parsed):
     # legitimate user media — direct sensitive files there are still caught by
     # the filename denies below. (Codex review #3234.)
     _deny_dirs = []
-    for _root in _nasmusicui_roots:
+    for _root in _naswebui_roots:
         for _sub in _DENY_SUBDIRS:
             _deny_dirs.append((_root / _sub).resolve())
         # Per-profile WebUI state lives at <root>/webui_state (api/workspace.py),
@@ -10787,7 +10787,7 @@ def _handle_media(handler, parsed):
             return False
         if _equal_ci(ws, _HOME):
             return False
-        for _root in _nasmusicui_roots:
+        for _root in _naswebui_roots:
             # ws IS a root, or ws is an ANCESTOR of a root → unsafe. (A proper
             # descendant of a root is fine — that's a normal project workspace.)
             if _equal_ci(ws, _root) or _within_ci(_root, ws):
@@ -10810,7 +10810,7 @@ def _handle_media(handler, parsed):
     # Filename-based denies fire for files under a NasTech root, UNLESS the file
     # is inside a genuine project workspace (carve-out).
     if not _in_active_workspace:
-        _under_nasmusicui_root = any(_within_ci(target, _root) for _root in _nasmusicui_roots)
+        _under_naswebui_root = any(_within_ci(target, _root) for _root in _naswebui_roots)
         _name_cf = target.name.casefold()
         # Exact secret/state basenames, plus atomic-write temp files for those
         # (api/auth.py and api/passkeys.py write via a `tmp*.<name>.tmp` / `tmp*.tmp`
@@ -10818,7 +10818,7 @@ def _handle_media(handler, parsed):
         # cannot be fetched. (Codex review #3234.)
         _deny_tmp_suffixes = (".sessions.tmp", ".login_attempts.tmp",
                               ".passkeys.tmp", ".passkey_challenges.tmp")
-        if _under_nasmusicui_root and (
+        if _under_naswebui_root and (
             _name_cf in _deny_names_ci
             or _name_cf.endswith(_deny_tmp_suffixes)
         ):
@@ -14249,7 +14249,7 @@ def _handle_file_open_vscode(handler, body):
     If ``host_path_prefix`` and ``container_path_prefix`` are both set,
     paths that begin with ``container_path_prefix`` are translated to the
     host prefix before being handed to VS Code.  This lets users running
-    NasMusicUI inside Docker still open files in their local editor.
+    NasWebUI inside Docker still open files in their local editor.
     """
     try:
         require(body, "session_id", "path")

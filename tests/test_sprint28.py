@@ -38,7 +38,7 @@ def _personalities_dir():
 
     conftest sets NASTECH_HOME=TEST_STATE_DIR in the server's environment.
     The server's api/profiles._DEFAULT_NASTECH_HOME resolves to TEST_STATE_DIR,
-    so get_active_nasmusicui_home() returns TEST_STATE_DIR, and personalities
+    so get_active_naswebui_home() returns TEST_STATE_DIR, and personalities
     live at TEST_STATE_DIR/personalities.
     """
     p = TEST_STATE_DIR / 'personalities'

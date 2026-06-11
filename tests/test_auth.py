@@ -164,7 +164,7 @@ def test_forwarded_proto_ignored_without_opt_in(monkeypatch):
     assert _is_secure_context(handler) is False
 
 
-def test_nasmusicui_secure_override_on(monkeypatch):
+def test_naswebui_secure_override_on(monkeypatch):
     """NASMUSICUI_SECURE=1 forces secure True regardless of other conditions."""
     monkeypatch.setenv('NASMUSICUI_SECURE', '1')
     # Loopback, no TLS, no forwarded-proto opt-in; override must win
@@ -172,7 +172,7 @@ def test_nasmusicui_secure_override_on(monkeypatch):
     assert _is_secure_context(handler) is True
 
 
-def test_nasmusicui_secure_override_off(monkeypatch):
+def test_naswebui_secure_override_off(monkeypatch):
     """NASMUSICUI_SECURE=0 forces secure False regardless of other conditions."""
     monkeypatch.setenv('NASMUSICUI_SECURE', '0')
     # Explicit override must win even for non-loopback addresses

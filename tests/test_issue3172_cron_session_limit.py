@@ -51,13 +51,13 @@ def _make_state_db(db_path, sessions, messages=None):
 
 
 @pytest.fixture
-def fake_nasmusicui_home(tmp_path, monkeypatch):
+def fake_naswebui_home(tmp_path, monkeypatch):
     """Point get_cli_sessions() at a temporary NASTECH_HOME."""
     home = tmp_path / "nastech"
     home.mkdir()
 
     import api.profiles as profiles
-    monkeypatch.setattr(profiles, "get_active_nasmusicui_home", lambda: home)
+    monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: home)
     monkeypatch.setattr(profiles, "get_active_profile_name", lambda: None)
 
     # Pre-create a cron project so _cron_pid() returns a stable ID.
@@ -71,7 +71,7 @@ def fake_nasmusicui_home(tmp_path, monkeypatch):
     return home
 
 
-def test_cron_sessions_survive_when_outnumbered_by_recent_sessions(fake_nasmusicui_home, monkeypatch):
+def test_cron_sessions_survive_when_outnumbered_by_recent_sessions(fake_naswebui_home, monkeypatch):
     """Cron sessions must appear even when 25+ newer non-cron sessions fill
     the default sidebar window (#3172)."""
     # Patch CLI_VISIBLE_SESSION_LIMIT to a small value to make the test
@@ -79,7 +79,7 @@ def test_cron_sessions_survive_when_outnumbered_by_recent_sessions(fake_nasmusic
     monkeypatch.setattr(models, "CLI_VISIBLE_SESSION_LIMIT", 5)
     monkeypatch.setattr(models, "CRON_PROJECT_CHIP_LIMIT", 200)
 
-    db_path = fake_nasmusicui_home / "state.db"
+    db_path = fake_naswebui_home / "state.db"
 
     # 25 non-cron sessions, all more recent than the cron session.
     non_cron = [
@@ -105,13 +105,13 @@ def test_cron_sessions_survive_when_outnumbered_by_recent_sessions(fake_nasmusic
     assert cron_s["project_id"] is not None, "Cron session should have project_id set"
 
 
-def test_cron_sessions_deduplicated_across_passes(fake_nasmusicui_home, monkeypatch):
+def test_cron_sessions_deduplicated_across_passes(fake_naswebui_home, monkeypatch):
     """Sessions returned by both the default and cron-only pass must not
     appear twice."""
     monkeypatch.setattr(models, "CLI_VISIBLE_SESSION_LIMIT", 50)
     monkeypatch.setattr(models, "CRON_PROJECT_CHIP_LIMIT", 200)
 
-    db_path = fake_nasmusicui_home / "state.db"
+    db_path = fake_naswebui_home / "state.db"
 
     # Only 3 sessions total — all fit within CLI_VISIBLE_SESSION_LIMIT.
     sessions_data = [
@@ -132,13 +132,13 @@ def test_cron_sessions_deduplicated_across_passes(fake_nasmusicui_home, monkeypa
     assert ids.count("cron_old") == 1, "cron_old should appear exactly once"
 
 
-def test_cron_session_with_no_messages_excluded_from_second_pass(fake_nasmusicui_home, monkeypatch):
+def test_cron_session_with_no_messages_excluded_from_second_pass(fake_naswebui_home, monkeypatch):
     """The second pass should only pick up cron sessions that have messages;
     empty cron runs should not appear."""
     monkeypatch.setattr(models, "CLI_VISIBLE_SESSION_LIMIT", 5)
     monkeypatch.setattr(models, "CRON_PROJECT_CHIP_LIMIT", 200)
 
-    db_path = fake_nasmusicui_home / "state.db"
+    db_path = fake_naswebui_home / "state.db"
 
     non_cron = [
         (f"cli-{i:02d}", f"Session {i}", "cli", 1700000100.0 + i)

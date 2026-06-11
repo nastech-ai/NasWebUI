@@ -77,7 +77,7 @@ def test_first_password_enablement_returns_cookie_and_keeps_browser_logged_in():
         assert saved["auth_just_enabled"] is True
 
         set_cookie = headers.get("Set-Cookie", "")
-        assert "nasmusicui_session=" in set_cookie
+        assert "naswebui_session=" in set_cookie
         cookie_header = set_cookie.split(";", 1)[0]
 
         auth, auth_status, _ = get("/api/auth/status", headers={"Cookie": cookie_header})

@@ -36,9 +36,9 @@ def test_service_worker_keeps_activate_cleanup_safety_net():
 
 
 def test_deleted_sessions_prune_all_session_tracking_maps():
-    assert "const SESSION_VIEWED_COUNTS_KEY = 'nasmusicui-session-viewed-counts';" in SESSIONS_SRC
-    assert "const SESSION_COMPLETION_UNREAD_KEY = 'nasmusicui-session-completion-unread';" in SESSIONS_SRC
-    assert "const SESSION_OBSERVED_STREAMING_KEY = 'nasmusicui-session-observed-streaming';" in SESSIONS_SRC
+    assert "const SESSION_VIEWED_COUNTS_KEY = 'naswebui-session-viewed-counts';" in SESSIONS_SRC
+    assert "const SESSION_COMPLETION_UNREAD_KEY = 'naswebui-session-completion-unread';" in SESSIONS_SRC
+    assert "const SESSION_OBSERVED_STREAMING_KEY = 'naswebui-session-observed-streaming';" in SESSIONS_SRC
     assert "function _clearSessionViewedCount(sid)" in SESSIONS_SRC
 
     clear_block = _function_block(SESSIONS_SRC, "_clearHandoffStorageForSession")

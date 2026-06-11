@@ -45,7 +45,7 @@ def test_new_chat_button_restores_remembered_draft_before_creating_session():
 
 
 def test_restore_helper_validates_candidate_with_session_metadata():
-    assert "const NEW_CHAT_DRAFT_SESSION_KEY = 'nasmusicui-new-chat-draft';" in SESSIONS_JS
+    assert "const NEW_CHAT_DRAFT_SESSION_KEY = 'naswebui-new-chat-draft';" in SESSIONS_JS
     assert "async function _restoreRememberedNewChatDraftSession()" in SESSIONS_JS
     assert "messages=0&resolve_model=0" in SESSIONS_JS, (
         "helper should validate the hidden zero-message candidate through /api/session metadata"

@@ -1,4 +1,4 @@
-"""HTTP client boundary for a supervised NasMusicUI runner backend.
+"""HTTP client boundary for a supervised NasWebUI runner backend.
 
 This module intentionally contains no process-local run maps, stream queues,
 cancellation registries, approval/clarify queues, or cached agent instances. It
