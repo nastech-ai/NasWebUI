@@ -1,0 +1,1 @@
+- [NixOS runner lib-shim](nixos-runner-lib-shim.md) — GitHub Actions runner on NixOS needs a lib-shim dir to avoid vdso crash
