@@ -165,6 +165,13 @@ jobs:
           echo "  NASTECH_HOME      = $STATE_DIR"
           echo "  NASTECH_WORKSPACE = $WORK_DIR"
 
+
+      - name: Build stub nastech-agent image (multi-container only)
+        if: matrix.variant != 'single'
+        run: |
+          printf 'FROM alpine:3.20\nENTRYPOINT ["sh","-c","sleep infinity"]\n' | \
+            docker build --tag nastech-ai/nastech-agent:latest -
+
       - name: Smoke (up + health + log scan + down)
         env:
           COMPOSE_FILE: ${{ steps.vars.outputs.compose_file }}

@@ -2854,6 +2854,8 @@ AUX_TASK_SLOTS: tuple[str, ...] = (
 )
 
 
+set_naswebui_default_model = set_nastech_default_model
+
 def get_auxiliary_models() -> dict:
     """Return current auxiliary task assignments from config.yaml.
 

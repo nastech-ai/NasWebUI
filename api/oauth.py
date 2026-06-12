@@ -110,6 +110,8 @@ def _get_active_nastech_home() -> Path:
 
 # ── legacy auth.json helpers ────────────────────────────────────────────────
 
+_get_active_naswebui_home = _get_active_nastech_home
+
 def _read_auth_json(auth_path: Path | None = None) -> dict[str, Any]:
     """Read auth.json and return parsed dict, or an empty compatible store."""
     path = auth_path or AUTH_JSON_PATH

@@ -1809,3 +1809,7 @@ def delete_profile_api(name: str) -> dict:
 # Branding aliases — tests and external callers may use either name
 get_active_naswebui_home = get_active_nastech_home
 get_naswebui_home_for_profile = get_nastech_home_for_profile
+
+_resolve_base_naswebui_home = _resolve_base_nastech_home
+
+_set_naswebui_home = _set_nastech_home

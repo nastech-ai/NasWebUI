@@ -760,6 +760,8 @@ def _get_nastech_home() -> Path:
         return Path.home() / ".nastech"
 
 
+_get_naswebui_home = _get_nastech_home
+
 def _load_env_file(env_path: Path) -> dict[str, str]:
     """Read key=value pairs from a .env file."""
     values: dict[str, str] = {}
