@@ -99,15 +99,15 @@ def main():
         if k.endswith("_API_KEY"):
             env.pop(k, None)
     env.update({
-        "NASMUSICUI_PORT": str(PORT),
-        "NASMUSICUI_HOST": "127.0.0.1",
-        "NASMUSICUI_STATE_DIR": state_dir,
+        "NASWEBUI_PORT": str(PORT),
+        "NASWEBUI_HOST": "127.0.0.1",
+        "NASWEBUI_STATE_DIR": state_dir,
         "NASTECH_HOME": state_dir,
         "NASTECH_BASE_HOME": state_dir,
-        "NASMUSICUI_SKIP_ONBOARDING": "1",
+        "NASWEBUI_SKIP_ONBOARDING": "1",
         # Point agent discovery at a path that doesn't exist — the server is
         # designed to boot and serve the UI even when the agent is absent.
-        "NASMUSICUI_AGENT_DIR": os.path.join(state_dir, "no-agent"),
+        "NASWEBUI_AGENT_DIR": os.path.join(state_dir, "no-agent"),
     })
 
     log = open(os.path.join(state_dir, "server.log"), "w")

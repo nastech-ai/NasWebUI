@@ -128,25 +128,25 @@ Log file:
 
 Environment variables controlling behavior:
 
-    NASMUSICUI_HOST              Bind address (default: 127.0.0.1)
-    NASMUSICUI_PORT              Port (default: 8787)
-    NASMUSICUI_DEFAULT_WORKSPACE Default workspace path for new sessions
-    NASMUSICUI_STATE_DIR         Where sessions/ folder lives
+    NASWEBUI_HOST              Bind address (default: 127.0.0.1)
+    NASWEBUI_PORT              Port (default: 8787)
+    NASWEBUI_DEFAULT_WORKSPACE Default workspace path for new sessions
+    NASWEBUI_STATE_DIR         Where sessions/ folder lives
     NASTECH_CONFIG_PATH             Path to ~/.nastech/config.yaml
-    NASMUSICUI_DEFAULT_MODEL     Optional model override; unset means provider default
-    NASMUSICUI_PASSWORD          Optional: enable password auth (off by default)
-    NASMUSICUI_SKIP_ONBOARDING   Optional: bypass the first-run onboarding wizard
-    NASMUSICUI_PREFILL_MESSAGES_FILE   Optional JSON message list for browser-turn prefill context
-    NASMUSICUI_PREFILL_MESSAGES_SCRIPT Optional command that prints JSON messages or plain-text user prefill context
-    NASMUSICUI_PREFILL_MESSAGES_SCRIPT_TIMEOUT Optional script timeout in seconds (default 5, max 30)
-    NASMUSICUI_PREFILL_CONTEXT_MAX_CHARS Optional parsed prefill budget in characters (default 12000, 0 disables)
+    NASWEBUI_DEFAULT_MODEL     Optional model override; unset means provider default
+    NASWEBUI_PASSWORD          Optional: enable password auth (off by default)
+    NASWEBUI_SKIP_ONBOARDING   Optional: bypass the first-run onboarding wizard
+    NASWEBUI_PREFILL_MESSAGES_FILE   Optional JSON message list for browser-turn prefill context
+    NASWEBUI_PREFILL_MESSAGES_SCRIPT Optional command that prints JSON messages or plain-text user prefill context
+    NASWEBUI_PREFILL_MESSAGES_SCRIPT_TIMEOUT Optional script timeout in seconds (default 5, max 30)
+    NASWEBUI_PREFILL_CONTEXT_MAX_CHARS Optional parsed prefill budget in characters (default 12000, 0 disables)
     NASTECH_HOME                    Base directory for NasTech state (~/.nastech by default)
 
 Test isolation environment variables (set by conftest.py):
 
-    NASMUSICUI_TEST_PORT=...                         Optional pinned test port
-    NASMUSICUI_TEST_STATE_DIR=~/.nastech/webui-test-* Optional pinned test state
-    NASMUSICUI_DEFAULT_WORKSPACE=.../test-workspace  Isolated test workspace
+    NASWEBUI_TEST_PORT=...                         Optional pinned test port
+    NASWEBUI_TEST_STATE_DIR=~/.nastech/webui-test-* Optional pinned test state
+    NASWEBUI_DEFAULT_WORKSPACE=.../test-workspace  Isolated test workspace
 
 Tests NEVER talk to the production server (port 8787).
 The test state dir is wiped before each test session and deleted after.
@@ -156,8 +156,8 @@ Per-request environment variables (set by chat handler, restored after):
 
     TERMINAL_CWD         Set to session.workspace before running agent.
                          The terminal tool reads this to default cwd.
-    NASMUSICUI_EXEC_ASK      Set to "1" to enable approval gate for dangerous commands.
-    NASMUSICUI_SESSION_KEY   Set to session_id. The approval tool keys pending entries
+    NASWEBUI_EXEC_ASK      Set to "1" to enable approval gate for dangerous commands.
+    NASWEBUI_SESSION_KEY   Set to session_id. The approval tool keys pending entries
                          by this value, enabling per-session approval state.
     NASTECH_HOME          Set to the active profile's directory before running agent.
                          Saved and restored around each agent run.
@@ -281,7 +281,7 @@ the agent finishes. The frontend never uses it but it can be useful for debuggin
     def _run_agent_streaming(session_id, msg_text, model, workspace, stream_id):
 
 1. Fetches session from SESSIONS (not from disk -- session was just updated by /api/chat/start)
-2. Sets TERMINAL_CWD, NASMUSICUI_EXEC_ASK, NASMUSICUI_SESSION_KEY env vars
+2. Sets TERMINAL_CWD, NASWEBUI_EXEC_ASK, NASWEBUI_SESSION_KEY env vars
 3. Creates AIAgent with:
    - model=model, platform='cli', quiet_mode=True
    - enabled_toolsets=CLI_TOOLSETS (from config.yaml or hardcoded default)
@@ -340,7 +340,7 @@ POST /api/approval/respond:
 ### 4.6 File Upload Parser
 
 parse_multipart(rfile, content_type, content_length):
-    - Reads all content_length bytes from rfile into memory (up to MAX_UPLOAD_BYTES, default 20MB, env-overridable via NASMUSICUI_MAX_UPLOAD_MB)
+    - Reads all content_length bytes from rfile into memory (up to MAX_UPLOAD_BYTES, default 20MB, env-overridable via NASWEBUI_MAX_UPLOAD_MB)
     - Extracts boundary from Content-Type header
     - Splits raw bytes on b'--' + boundary
     - For each part: parses MIME headers via email.parser.HeaderParser
@@ -729,7 +729,7 @@ structured logging, dispatch to routes, TLS wrapping, and main().
 
 Replace process-global env vars with thread-local or explicit parameter passing.
 
-Root cause: TERMINAL_CWD, NASMUSICUI_EXEC_ASK, NASMUSICUI_SESSION_KEY are set via os.environ
+Root cause: TERMINAL_CWD, NASWEBUI_EXEC_ASK, NASWEBUI_SESSION_KEY are set via os.environ
 in _run_agent_streaming(). Two concurrent sessions clobber each other.
 
 Fix options (in order of preference):
@@ -810,17 +810,17 @@ Replacing with marked.js + DOMPurify is a future improvement (not blocking).
 
 Optional password gate for non-SSH-tunnel deployments.
 
-1. NASMUSICUI_PASSWORD env var enables auth
+1. NASWEBUI_PASSWORD env var enables auth
 2. Login page: minimal dark form, POST /api/auth/login
 3. Server sets HttpOnly + SameSite=Strict cookie on successful login
-4. All API endpoints check cookie if NASMUSICUI_PASSWORD is set
+4. All API endpoints check cookie if NASWEBUI_PASSWORD is set
 5. Cookie validity: 30 days from last activity
 
 ### Phase I: Test Infrastructure -- COMPLETE
 
 5303 tests across 488 test files + regression gates. The pytest fixture derives
 an isolated port and state directory from the repo path unless
-`NASMUSICUI_TEST_PORT` / `NASMUSICUI_TEST_STATE_DIR` pin them explicitly.
+`NASWEBUI_TEST_PORT` / `NASWEBUI_TEST_STATE_DIR` pin them explicitly.
 Production data never touched.
 
 Fixtures in `conftest.py`: auto-cleanup, profile/config isolation, cron
@@ -993,7 +993,7 @@ Trade-off: Anyone on the VPS with localhost access can use the server.
 Resolution: Phase H adds optional password gate for direct-access deployments.
 
 ### ADR-007: Approval State via Environment Variables
-Decision: NASMUSICUI_EXEC_ASK and NASMUSICUI_SESSION_KEY passed via os.environ.
+Decision: NASWEBUI_EXEC_ASK and NASWEBUI_SESSION_KEY passed via os.environ.
 Rationale: tools/approval.py and terminal_tool.py already read these env vars.
 Trade-off: Process-global. Two concurrent chat requests clobber each other.
 Resolution: Phase B replaces with thread-local or explicit parameter passing.

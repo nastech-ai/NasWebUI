@@ -8,7 +8,7 @@ TEST ISOLATION:
 
 PATH DISCOVERY:
   No hardcoded paths. Discovery order:
-    1. Environment variables (NASMUSICUI_AGENT_DIR, NASMUSICUI_PYTHON, etc.)
+    1. Environment variables (NASWEBUI_AGENT_DIR, NASWEBUI_PYTHON, etc.)
     2. Sibling checkout heuristics relative to this repo
     3. Common install paths (~/.nastech/NasTech-Agent)
     4. System python3 as a last resort
@@ -34,12 +34,12 @@ NASTECH_HOME = pathlib.Path(os.getenv('NASTECH_HOME', str(HOME / '.nastech')))
 # ── Test server config ────────────────────────────────────────────────────
 # Port and state dir auto-derive from the repo path when no env var is set,
 # giving every worktree its own isolated port (20000-29999) and state directory.
-# Override with NASMUSICUI_TEST_PORT / NASMUSICUI_TEST_STATE_DIR to pin.
+# Override with NASWEBUI_TEST_PORT / NASWEBUI_TEST_STATE_DIR to pin.
 
 def _auto_test_port(repo_root) -> int:
     """Map repo path to a unique port in 20000-29999 (10k range = near-zero collisions).
     Far from system port ranges and Linux ephemeral ports (32768+).
-    Override with NASMUSICUI_TEST_PORT to use a specific port."""
+    Override with NASWEBUI_TEST_PORT to use a specific port."""
     import hashlib
     h = int(hashlib.md5(str(repo_root).encode()).hexdigest(), 16)
     return 20000 + (h % 10000)
@@ -49,11 +49,11 @@ def _auto_state_dir_name(repo_root) -> str:
     h = hashlib.md5(str(repo_root).encode()).hexdigest()[:8]
     return f"webui-test-{h}"
 
-TEST_PORT      = int(os.getenv('NASMUSICUI_TEST_PORT',
+TEST_PORT      = int(os.getenv('NASWEBUI_TEST_PORT',
                                str(_auto_test_port(REPO_ROOT))))
 TEST_BASE      = f"http://127.0.0.1:{TEST_PORT}"
 TEST_STATE_DIR = pathlib.Path(os.getenv(
-    'NASMUSICUI_TEST_STATE_DIR',
+    'NASWEBUI_TEST_STATE_DIR',
     str(NASTECH_HOME / _auto_state_dir_name(REPO_ROOT))
 ))
 TEST_WORKSPACE = TEST_STATE_DIR / 'test-workspace'
@@ -64,10 +64,10 @@ TEST_WORKSPACE = TEST_STATE_DIR / 'test-workspace'
 # Direct assignment is intentional for production-risk paths: tests that import
 # api.config/api.models in the pytest process must never inherit the real
 # ~/.nastech state tree before the server subprocess fixture starts.
-os.environ['NASMUSICUI_TEST_PORT'] = str(TEST_PORT)
-os.environ['NASMUSICUI_TEST_STATE_DIR'] = str(TEST_STATE_DIR)
-os.environ['NASMUSICUI_STATE_DIR'] = str(TEST_STATE_DIR)
-os.environ['NASMUSICUI_DEFAULT_WORKSPACE'] = str(TEST_WORKSPACE)
+os.environ['NASWEBUI_TEST_PORT'] = str(TEST_PORT)
+os.environ['NASWEBUI_TEST_STATE_DIR'] = str(TEST_STATE_DIR)
+os.environ['NASWEBUI_STATE_DIR'] = str(TEST_STATE_DIR)
+os.environ['NASWEBUI_DEFAULT_WORKSPACE'] = str(TEST_WORKSPACE)
 os.environ['NASTECH_HOME'] = str(TEST_STATE_DIR)
 os.environ['NASTECH_BASE_HOME'] = str(TEST_STATE_DIR)
 # NasTech Agent sessions may inherit NASTECH_CONFIG_PATH pointing at the live
@@ -167,7 +167,7 @@ if not SERVER_SCRIPT.exists():
 # ── NasTech agent discovery (mirrors api/config._discover_agent_dir) ───────
 def _discover_agent_dir() -> pathlib.Path:
     candidates = [
-        os.getenv('NASMUSICUI_AGENT_DIR', ''),
+        os.getenv('NASWEBUI_AGENT_DIR', ''),
         str(NASTECH_HOME / 'NasTech-Agent'),
         str(REPO_ROOT.parent / 'NasTech-Agent'),
         str(HOME / '.nastech' / 'NasTech-Agent'),
@@ -183,8 +183,8 @@ def _discover_agent_dir() -> pathlib.Path:
 
 # ── Python discovery (mirrors api/config._discover_python) ────────────────
 def _discover_python(agent_dir) -> str:
-    if os.getenv('NASMUSICUI_PYTHON'):
-        return os.getenv('NASMUSICUI_PYTHON')
+    if os.getenv('NASWEBUI_PYTHON'):
+        return os.getenv('NASWEBUI_PYTHON')
     if agent_dir:
         for venv_dir in ('venv', '.venv'):
             for subdir, binary in (('bin', 'python'), ('Scripts', 'python.exe')):
@@ -422,7 +422,7 @@ def allow_outbound_network(monkeypatch):
 
 
 # ── Environment isolation for tests ────────────────────────────────────────
-# NASMUSICUI_SKIP_ONBOARDING is set by hosting providers (e.g. Agent37) and
+# NASWEBUI_SKIP_ONBOARDING is set by hosting providers (e.g. Agent37) and
 # by some isolated test harnesses to short-circuit the onboarding wizard.
 # When it leaks into the pytest environment, tests that exercise the wizard
 # code paths (apply_onboarding_setup, etc.) fail because the function returns
@@ -430,13 +430,13 @@ def allow_outbound_network(monkeypatch):
 #
 # This autouse fixture removes the variable for the test session. Tests that
 # specifically need to validate the SKIP_ONBOARDING short-circuit can opt back
-# in with `monkeypatch.setenv("NASMUSICUI_SKIP_ONBOARDING", "1")`.
+# in with `monkeypatch.setenv("NASWEBUI_SKIP_ONBOARDING", "1")`.
 @pytest.fixture(autouse=True, scope="session")
 def _strip_skip_onboarding_env():
-    prior = os.environ.pop("NASMUSICUI_SKIP_ONBOARDING", None)
+    prior = os.environ.pop("NASWEBUI_SKIP_ONBOARDING", None)
     yield
     if prior is not None:
-        os.environ["NASMUSICUI_SKIP_ONBOARDING"] = prior
+        os.environ["NASWEBUI_SKIP_ONBOARDING"] = prior
 
 def pytest_collection_modifyitems(config, items):
     """Auto-skip agent-dependent tests when NasTech-Agent is not available.
@@ -619,11 +619,11 @@ def test_server():
     # Expose TEST_STATE_DIR to the test process itself so that tests which write
     # directly to state.db (e.g. test_gateway_sync.py) always use the same path
     # as the server.  Other test files (test_auth_sessions.py) may override
-    # NASMUSICUI_STATE_DIR for their own purposes, but NASMUSICUI_TEST_STATE_DIR
+    # NASWEBUI_STATE_DIR for their own purposes, but NASWEBUI_TEST_STATE_DIR
     # is reserved for this mapping and is never overridden by individual test files.
     # Export both port and state-dir as env vars so individual test files
     # can read them without importing conftest (avoids circular imports).
-    os.environ.setdefault('NASMUSICUI_TEST_PORT', str(TEST_PORT))
+    os.environ.setdefault('NASWEBUI_TEST_PORT', str(TEST_PORT))
     # os.environ already set at module level above; no-op here.
 
     env = os.environ.copy()
@@ -674,19 +674,19 @@ def test_server():
     # env var at import time and installs an identical socket-block guard.
     # Without this, the subprocess can make outbound requests that the
     # pytest-side block can't see.
-    env["NASMUSICUI_TEST_NETWORK_BLOCK"] = "1"
+    env["NASWEBUI_TEST_NETWORK_BLOCK"] = "1"
     env.update({
-        "NASMUSICUI_WORKSPACE_GIT_DESTRUCTIVE": "1",
+        "NASWEBUI_WORKSPACE_GIT_DESTRUCTIVE": "1",
         # Small archive-extraction cap so the zip-bomb guard is exercisable
         # against the out-of-process test server (the real 10x-upload default is
         # ~200MB — impractical to exceed in a test). 5MB is far above any other
         # test's archive payload, so only the bomb test trips it.
-        "NASMUSICUI_MAX_EXTRACTED_MB":  "5",
-        "NASMUSICUI_PORT":              str(TEST_PORT),
-        "NASMUSICUI_HOST":              "127.0.0.1",
-        "NASMUSICUI_STATE_DIR":         str(TEST_STATE_DIR),
-        "NASMUSICUI_DEFAULT_WORKSPACE": str(TEST_WORKSPACE),
-        "NASMUSICUI_DEFAULT_MODEL":     "openai/gpt-5.4-mini",
+        "NASWEBUI_MAX_EXTRACTED_MB":  "5",
+        "NASWEBUI_PORT":              str(TEST_PORT),
+        "NASWEBUI_HOST":              "127.0.0.1",
+        "NASWEBUI_STATE_DIR":         str(TEST_STATE_DIR),
+        "NASWEBUI_DEFAULT_WORKSPACE": str(TEST_WORKSPACE),
+        "NASWEBUI_DEFAULT_MODEL":     "openai/gpt-5.4-mini",
         "NASTECH_HOME":                    str(TEST_STATE_DIR),
         "NASTECH_CONFIG_PATH":             str(TEST_STATE_DIR / 'config.yaml'),
         # Belt-and-suspenders: NASTECH_BASE_HOME hard-locks _DEFAULT_NASTECH_HOME
@@ -697,12 +697,12 @@ def test_server():
         # causing onboarding writes (config.yaml, .env) to land in the production
         # ~/.nastech/profiles/webui/ and overwrite real API keys.
         "NASTECH_BASE_HOME":               str(TEST_STATE_DIR),
-        "NASMUSICUI_PASSWORD":          "",
+        "NASWEBUI_PASSWORD":          "",
     })
 
     # Pass agent dir if discovered so server.py doesn't have to re-discover
     if NASTECH_AGENT:
-        env["NASMUSICUI_AGENT_DIR"] = str(NASTECH_AGENT)
+        env["NASWEBUI_AGENT_DIR"] = str(NASTECH_AGENT)
 
     # Capture server stdout/stderr to a temp log instead of DEVNULL so a boot
     # failure (import error, port-bind race, traceback) is diagnosable. Without

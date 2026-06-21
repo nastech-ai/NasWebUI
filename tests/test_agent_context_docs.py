@@ -4,7 +4,7 @@ from pathlib import Path
 def test_root_does_not_shadow_agents_md_with_naswebui_context_file():
     repo_root = Path(__file__).resolve().parents[1]
 
-    for name in ("NASMUSICUI.md", ".nastech.md"):
+    for name in ("NASWEBUI.md", ".nastech.md"):
         assert not (repo_root / name).exists(), (
             f"{name} at the repository root is auto-loaded by NasTech Agent as "
             "project context before AGENTS.md; long human-facing NasTech overview "
@@ -18,4 +18,4 @@ def test_why_naswebui_doc_remains_linked_from_readme():
 
     assert (repo_root / "docs" / "why-nastech.md").exists()
     assert "docs/why-nastech.md" in readme
-    assert "[NASMUSICUI.md](NASMUSICUI.md)" not in readme
+    assert "[NASWEBUI.md](NASWEBUI.md)" not in readme

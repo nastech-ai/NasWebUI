@@ -245,8 +245,8 @@ def test_login_page_has_default_hidden_passkey_button_and_script_wiring():
 
 def test_passwordless_mode_keeps_auth_enabled_with_passkeys(monkeypatch, tmp_path):
     import api.auth as auth
-    # Stage-batch14: passkey support is opt-in default-off behind NASMUSICUI_PASSKEY=1
-    monkeypatch.setenv("NASMUSICUI_PASSKEY", "1")
+    # Stage-batch14: passkey support is opt-in default-off behind NASWEBUI_PASSKEY=1
+    monkeypatch.setenv("NASWEBUI_PASSKEY", "1")
     passkeys = _set_paths(monkeypatch, tmp_path)
     passkeys._save_credentials([{"id": "cred-1", "label": "This device"}])
     monkeypatch.setattr(auth, "get_password_hash", lambda: None)
@@ -256,11 +256,11 @@ def test_passwordless_mode_keeps_auth_enabled_with_passkeys(monkeypatch, tmp_pat
 
 
 def test_passkey_feature_flag_off_disables_passkeys_even_with_credentials(monkeypatch, tmp_path):
-    """When NASMUSICUI_PASSKEY is unset/0, are_passkeys_enabled() returns False."""
+    """When NASWEBUI_PASSKEY is unset/0, are_passkeys_enabled() returns False."""
     import api.auth as auth
     passkeys = _set_paths(monkeypatch, tmp_path)
     passkeys._save_credentials([{"id": "cred-1", "label": "This device"}])
-    monkeypatch.delenv("NASMUSICUI_PASSKEY", raising=False)
+    monkeypatch.delenv("NASWEBUI_PASSKEY", raising=False)
     monkeypatch.setattr(auth, "get_config", lambda: {}, raising=False)
     assert auth.are_passkeys_enabled() is False
 
@@ -270,7 +270,7 @@ def test_passkey_feature_flag_via_config(monkeypatch, tmp_path):
     import api.auth as auth
     passkeys = _set_paths(monkeypatch, tmp_path)
     passkeys._save_credentials([{"id": "cred-1", "label": "This device"}])
-    monkeypatch.delenv("NASMUSICUI_PASSKEY", raising=False)
+    monkeypatch.delenv("NASWEBUI_PASSKEY", raising=False)
     # Patch the config import inside _passkey_feature_flag_enabled
     import api.config
     monkeypatch.setattr(api.config, "get_config", lambda: {"webui_passkey_enabled": True})

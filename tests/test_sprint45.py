@@ -16,12 +16,12 @@ import os
 
 from tests._pytest_port import BASE
 REPO = pathlib.Path(__file__).parent.parent
-# Use NASMUSICUI_TEST_STATE_DIR if available (set by conftest for the test process),
+# Use NASWEBUI_TEST_STATE_DIR if available (set by conftest for the test process),
 # falling back to the conventional webui-mvp-test path.
 def _get_settings_file() -> pathlib.Path:
     """Resolve SETTINGS_FILE at call time (env var set by conftest after module import)."""
     state_dir = pathlib.Path(
-        os.environ.get("NASMUSICUI_TEST_STATE_DIR",
+        os.environ.get("NASWEBUI_TEST_STATE_DIR",
                        str(pathlib.Path.home() / ".nastech" / "webui-mvp-test"))
     )
     return state_dir / "settings.json"

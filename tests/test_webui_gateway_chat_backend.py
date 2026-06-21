@@ -26,15 +26,15 @@ def test_gateway_chat_backend_is_default_off_for_truthy_values():
     for value in (None, "", "1", "true", "yes", "on", "enabled", "runner-local"):
         env = {}
         if value is not None:
-            env["NASMUSICUI_CHAT_BACKEND"] = value
+            env["NASWEBUI_CHAT_BACKEND"] = value
         assert webui_chat_backend_mode({}, env) == "legacy"
         assert webui_gateway_chat_enabled({}, env) is False
 
 
 def test_gateway_chat_backend_only_accepts_explicit_gateway_aliases():
     for value in ("gateway", "api_server", "api-server", " Gateway "):
-        assert webui_chat_backend_mode({}, {"NASMUSICUI_CHAT_BACKEND": value}) == "gateway"
-        assert webui_gateway_chat_enabled({}, {"NASMUSICUI_CHAT_BACKEND": value}) is True
+        assert webui_chat_backend_mode({}, {"NASWEBUI_CHAT_BACKEND": value}) == "gateway"
+        assert webui_gateway_chat_enabled({}, {"NASWEBUI_CHAT_BACKEND": value}) is True
 
 
 def test_gateway_chat_backend_can_be_enabled_from_config_without_env():
@@ -45,8 +45,8 @@ def test_gateway_chat_config_status_is_redacted_and_reports_missing_key():
     status = gateway_chat_config_status(
         {},
         {
-            "NASMUSICUI_CHAT_BACKEND": "gateway",
-            "NASMUSICUI_GATEWAY_BASE_URL": "http://gateway.local",
+            "NASWEBUI_CHAT_BACKEND": "gateway",
+            "NASWEBUI_GATEWAY_BASE_URL": "http://gateway.local",
         },
     )
 
@@ -62,7 +62,7 @@ def test_gateway_chat_config_status_reports_fallback_api_server_key_without_expo
     status = gateway_chat_config_status(
         {},
         {
-            "NASMUSICUI_CHAT_BACKEND": "gateway",
+            "NASWEBUI_CHAT_BACKEND": "gateway",
             "API_SERVER_KEY": "secret-token",
         },
     )
@@ -74,7 +74,7 @@ def test_gateway_chat_config_status_reports_fallback_api_server_key_without_expo
 def test_gateway_chat_backend_env_wins_over_config_and_stays_safe():
     assert webui_chat_backend_mode(
         {"webui_chat_backend": "gateway"},
-        {"NASMUSICUI_CHAT_BACKEND": "legacy-direct"},
+        {"NASWEBUI_CHAT_BACKEND": "legacy-direct"},
     ) == "legacy"
 
 
@@ -151,7 +151,7 @@ def test_gateway_http_401_reports_gateway_auth_not_provider_key():
     assert event["label"] == "Gateway authentication failed"
     assert event["type"] == "gateway_auth_error"
     assert "HTTP 401" in event["message"]
-    assert "NASMUSICUI_GATEWAY_API_KEY" in event["hint"]
+    assert "NASWEBUI_GATEWAY_API_KEY" in event["hint"]
     assert "API_SERVER_KEY" in event["hint"]
     assert "Invalid API key" not in event["hint"]
 
@@ -168,7 +168,7 @@ def test_gateway_http_401_with_key_suggests_key_mismatch():
     event = _gateway_http_error_event(exc, "", api_key_configured=True)
 
     assert event["type"] == "gateway_auth_error"
-    assert event["hint"] == "Check that NASMUSICUI_GATEWAY_API_KEY matches the NasTech Gateway API_SERVER_KEY."
+    assert event["hint"] == "Check that NASWEBUI_GATEWAY_API_KEY matches the NasTech Gateway API_SERVER_KEY."
 
 
 def test_frontend_renders_gateway_auth_error_with_specific_label():
@@ -245,8 +245,8 @@ def test_gateway_chat_worker_translates_sse_and_persists_session(tmp_path, monke
         captured["body"] = req.data.decode("utf-8")
         return FakeResponse()
 
-    monkeypatch.setenv("NASMUSICUI_GATEWAY_BASE_URL", "http://gateway.local")
-    monkeypatch.setenv("NASMUSICUI_GATEWAY_API_KEY", "secret-token")
+    monkeypatch.setenv("NASWEBUI_GATEWAY_BASE_URL", "http://gateway.local")
+    monkeypatch.setenv("NASWEBUI_GATEWAY_API_KEY", "secret-token")
     monkeypatch.setattr(streaming, "_load_webui_prefill_context", lambda cfg: {
         "status": "loaded",
         "source": "test",
@@ -371,7 +371,7 @@ def test_gateway_chat_worker_normalizes_prefill_slice_before_system_prefix(tmp_p
         captured["normalizer_input"] = list(messages)
         return original_normalizer(messages)
 
-    monkeypatch.setenv("NASMUSICUI_GATEWAY_BASE_URL", "http://gateway.local")
+    monkeypatch.setenv("NASWEBUI_GATEWAY_BASE_URL", "http://gateway.local")
     monkeypatch.setattr(streaming, "_load_webui_prefill_context", lambda cfg: {
         "status": "loaded",
         "source": "test",
@@ -424,7 +424,7 @@ def test_gateway_chat_worker_backfills_context_only_turns_into_display(tmp_path,
             yield b'data: {"choices":[{"delta":{"content":"done"}}]}\n\n'
             yield b'data: [DONE]\n\n'
 
-    monkeypatch.setenv("NASMUSICUI_GATEWAY_BASE_URL", "http://gateway.local")
+    monkeypatch.setenv("NASWEBUI_GATEWAY_BASE_URL", "http://gateway.local")
     monkeypatch.setattr(streaming, "_load_webui_prefill_context", lambda cfg: {"status": "not_configured", "source": "none", "label": "", "message_count": 0, "messages": []})
     monkeypatch.setattr(streaming, "_prefill_messages_with_webui_context", lambda ctx, cfg: [])
     monkeypatch.setattr(gateway_chat.urllib.request, "urlopen", lambda req, timeout=0: FakeResponse())
@@ -487,7 +487,7 @@ def test_gateway_chat_worker_preserves_old_visible_turns_when_context_is_compact
             yield b'data: {"choices":[{"delta":{"content":"new answer"}}]}\n\n'
             yield b'data: [DONE]\n\n'
 
-    monkeypatch.setenv("NASMUSICUI_GATEWAY_BASE_URL", "http://gateway.local")
+    monkeypatch.setenv("NASWEBUI_GATEWAY_BASE_URL", "http://gateway.local")
     monkeypatch.setattr(streaming, "_load_webui_prefill_context", lambda cfg: {"status": "not_configured", "source": "none", "label": "", "message_count": 0, "messages": []})
     monkeypatch.setattr(streaming, "_prefill_messages_with_webui_context", lambda ctx, cfg: [])
     monkeypatch.setattr(gateway_chat.urllib.request, "urlopen", lambda req, timeout=0: FakeResponse())
@@ -565,7 +565,7 @@ def test_gateway_chat_worker_keeps_repeated_identical_visible_turns(tmp_path, mo
             yield b'data: {"choices":[{"delta":{"content":"answer"}}]}\n\n'
             yield b'data: [DONE]\n\n'
 
-    monkeypatch.setenv("NASMUSICUI_GATEWAY_BASE_URL", "http://gateway.local")
+    monkeypatch.setenv("NASWEBUI_GATEWAY_BASE_URL", "http://gateway.local")
     monkeypatch.setattr(streaming, "_load_webui_prefill_context", lambda cfg: {"status": "not_configured", "source": "none", "label": "", "message_count": 0, "messages": []})
     monkeypatch.setattr(streaming, "_prefill_messages_with_webui_context", lambda ctx, cfg: [])
     monkeypatch.setattr(gateway_chat.urllib.request, "urlopen", lambda req, timeout=0: FakeResponse())
@@ -643,7 +643,7 @@ def test_gateway_chat_worker_forwards_image_attachments_as_multimodal_parts(tmp_
         captured["body"] = json.loads(req.data.decode("utf-8"))
         return FakeResponse()
 
-    monkeypatch.setenv("NASMUSICUI_GATEWAY_BASE_URL", "http://gateway.local")
+    monkeypatch.setenv("NASWEBUI_GATEWAY_BASE_URL", "http://gateway.local")
     monkeypatch.setattr(streaming, "_load_webui_prefill_context", lambda cfg: {"status": "not_configured", "source": "none", "label": "", "message_count": 0, "messages": []})
     monkeypatch.setattr(streaming, "_prefill_messages_with_webui_context", lambda ctx, cfg: [{"role": "user", "content": "webui session context"}])
     monkeypatch.setattr(gateway_chat.urllib.request, "urlopen", fake_urlopen)

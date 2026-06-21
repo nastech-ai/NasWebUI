@@ -1,7 +1,7 @@
 """Tests for `discover_agent_dir` shebang-based fallback.
 
 When the standard candidate paths (`~/.nastech/NasTech-Agent`, `~/NasTech-Agent`,
-`<webui-parent>/NasTech-Agent`, `NASMUSICUI_AGENT_DIR`) don't match, bootstrap
+`<webui-parent>/NasTech-Agent`, `NASWEBUI_AGENT_DIR`) don't match, bootstrap
 should fall back to introspecting the `nastech` console-script's shebang —
 that's a reliable pointer to the install root because the installer writes the
 venv-relative interpreter path there.
@@ -50,7 +50,7 @@ def _isolate_discover_agent_dir(monkeypatch, tmp_path, nastech_path):
     """Point `which("nastech")` at our fake CLI and clear all standard candidates."""
     monkeypatch.setattr(bootstrap.shutil, "which", lambda name: str(nastech_path) if name == "nastech" else None)
     monkeypatch.setenv("NASTECH_HOME", str(tmp_path / "no-such-nastech-home"))
-    monkeypatch.delenv("NASMUSICUI_AGENT_DIR", raising=False)
+    monkeypatch.delenv("NASWEBUI_AGENT_DIR", raising=False)
     # Force REPO_ROOT.parent to a dir that won't accidentally contain a
     # `NasTech-Agent` sibling on the dev machine running these tests.
     monkeypatch.setattr(bootstrap, "REPO_ROOT", tmp_path / "isolated-repo-root")
@@ -99,7 +99,7 @@ def test_returns_none_when_shebang_interpreter_does_not_walk_to_run_agent(monkey
 
 
 def test_explicit_candidate_takes_precedence_over_shebang(monkeypatch, tmp_path):
-    """NASMUSICUI_AGENT_DIR and the standard layout still win when present."""
+    """NASWEBUI_AGENT_DIR and the standard layout still win when present."""
     explicit_install = tmp_path / "explicit"
     (explicit_install).mkdir()
     (explicit_install / "run_agent.py").write_text("", encoding="utf-8")
@@ -108,6 +108,6 @@ def test_explicit_candidate_takes_precedence_over_shebang(monkeypatch, tmp_path)
     other_install, venv_python = _make_agent_install(tmp_path)
     nastech = _make_nastech_cli(tmp_path, str(venv_python))
     _isolate_discover_agent_dir(monkeypatch, tmp_path, nastech)
-    monkeypatch.setenv("NASMUSICUI_AGENT_DIR", str(explicit_install))
+    monkeypatch.setenv("NASWEBUI_AGENT_DIR", str(explicit_install))
 
     assert bootstrap.discover_agent_dir() == explicit_install.resolve()

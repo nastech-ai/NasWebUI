@@ -107,7 +107,7 @@ def test_system_health_route_registered_and_auth_gated(monkeypatch):
     assert "build_system_health_payload()" in ROUTES_PY
     assert '"/api/system/health"' not in AUTH_PY, "system metrics must not be public"
 
-    monkeypatch.setenv("NASMUSICUI_PASSWORD", "test-password")
+    monkeypatch.setenv("NASWEBUI_PASSWORD", "test-password")
     from api import auth as _auth
     from api.auth import check_auth
 
@@ -123,7 +123,7 @@ def test_system_health_route_registered_and_auth_gated(monkeypatch):
         assert check_auth(handler, SimpleNamespace(path="/api/system/health", query="")) is False
         assert handler.status in (302, 401)
     finally:
-        monkeypatch.delenv("NASMUSICUI_PASSWORD", raising=False)
+        monkeypatch.delenv("NASWEBUI_PASSWORD", raising=False)
         _auth._invalidate_password_hash_cache()
 
 

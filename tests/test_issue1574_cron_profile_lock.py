@@ -58,7 +58,7 @@ def _write_spawn_fake_agent(root: Path, *, run_job_body: str):
 
 def _activate_spawn_fake_agent(fake_agent_root: Path):
     fake_path = str(fake_agent_root)
-    os.environ["NASMUSICUI_AGENT_DIR"] = fake_path
+    os.environ["NASWEBUI_AGENT_DIR"] = fake_path
     existing = os.environ.get("PYTHONPATH", "")
     parts = [
         p
@@ -88,7 +88,7 @@ def _real_nastech_agent_editable_install_present() -> bool:
     """Detect a developer-machine editable install of NasTech-Agent.
 
     The two tests that spawn a real subprocess + import the fake `cron.scheduler`
-    from ``NASMUSICUI_AGENT_DIR`` only work when the spawn child does NOT have
+    from ``NASWEBUI_AGENT_DIR`` only work when the spawn child does NOT have
     a competing real `cron.scheduler` reachable via the venv's editable finder.
     On CI runners (and most production installs) there's no editable install,
     so the fake at ``fake_agent_root`` is the only `cron.scheduler` Python can
@@ -251,7 +251,7 @@ def test_manual_cron_subprocess_drains_large_result_before_join(tmp_path):
         _pytest.skip(
             "skipped on dev machines with an editable NasTech-Agent install — "
             "the spawn child resolves the real cron.scheduler first instead of "
-            "the fake one written under NASMUSICUI_AGENT_DIR. Runs cleanly on CI."
+            "the fake one written under NASWEBUI_AGENT_DIR. Runs cleanly on CI."
         )
     # Use fork only for the outer test harness so this pytest module does not
     # need to be importable as a package. The product helper under test owns its
@@ -355,7 +355,7 @@ def test_cron_job_subprocess_executes_under_selected_profile_home(tmp_path, monk
         _pytest.skip(
             "skipped on dev machines with an editable NasTech-Agent install — "
             "the spawn child resolves the real cron.scheduler first instead of "
-            "the fake one written under NASMUSICUI_AGENT_DIR. Runs cleanly on CI."
+            "the fake one written under NASWEBUI_AGENT_DIR. Runs cleanly on CI."
         )
     exec_home = tmp_path / "exec-profile"
     ctx = multiprocessing.get_context("fork")

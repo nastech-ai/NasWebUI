@@ -185,8 +185,8 @@ def _gateway_root_pid_path() -> Path | None:
     active profile's directory so the gateway is detected correctly.
     """
     try:
-        from nastech_constants import get_default_nasmusicui_root
-        root_pid = get_default_nasmusicui_root() / _GATEWAY_PID_FILE
+        from nastech_constants import get_default_naswebui_root
+        root_pid = get_default_naswebui_root() / _GATEWAY_PID_FILE
         if root_pid.exists():
             return root_pid
         try:
@@ -320,7 +320,7 @@ def _remote_gateway_base_url() -> str | None:
     """Return an explicit remote gateway base URL, or None for local-only setups.
 
     Priority: GATEWAY_HEALTH_URL > NASTECH_GATEWAY_HEALTH_URL > NASTECH_API_URL
-    > NASMUSICUI_GATEWAY_BASE_URL.
+    > NASWEBUI_GATEWAY_BASE_URL.
     Returns ``None`` when no env var is set so the caller falls through to
     local PID/state checks.
 
@@ -334,7 +334,7 @@ def _remote_gateway_base_url() -> str | None:
         "GATEWAY_HEALTH_URL",
         "NASTECH_GATEWAY_HEALTH_URL",
         "NASTECH_API_URL",
-        "NASMUSICUI_GATEWAY_BASE_URL",
+        "NASWEBUI_GATEWAY_BASE_URL",
     ):
         val = os.environ.get(var, "").strip()
         if val:

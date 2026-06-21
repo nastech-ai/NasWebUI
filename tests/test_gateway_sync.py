@@ -44,7 +44,7 @@ def post(path, body=None):
 def _get_test_state_dir():
     """Return the test state directory (matches conftest.py TEST_STATE_DIR).
 
-    conftest.py sets NASMUSICUI_TEST_STATE_DIR in the test-process environment
+    conftest.py sets NASWEBUI_TEST_STATE_DIR in the test-process environment
     (via os.environ.setdefault) so that tests writing directly to state.db always
     use the same path the test server was started with.  If the env var is not
     set (e.g. when running this file standalone), fall back to the conftest

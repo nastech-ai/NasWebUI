@@ -10,7 +10,7 @@ JavaScript into the app shell without editing the WebUI source tree.
 > and triggering tool actions. **Only enable extensions you wrote yourself or
 > from sources you trust as much as the WebUI source itself.** If your WebUI is
 > shared with users you do not fully trust, do not enable extensions.
-> Do not point `NASMUSICUI_EXTENSION_DIR` at a user-writable directory.
+> Do not point `NASWEBUI_EXTENSION_DIR` at a user-writable directory.
 
 This is intentionally not a plugin marketplace or dependency system. It is a
 safe escape hatch for local dashboards, internal tooling, and workflow-specific
@@ -36,21 +36,21 @@ Extensions cannot, by themselves:
 ## Configuration
 
 Extensions are disabled by default. Configure them with environment variables
-before starting the WebUI server. `NASMUSICUI_EXTENSION_DIR` must point to an
+before starting the WebUI server. `NASWEBUI_EXTENSION_DIR` must point to an
 existing directory before any script or stylesheet URLs are injected:
 
 ```bash
-export NASMUSICUI_EXTENSION_DIR=/path/to/my-extension/static
-export NASMUSICUI_EXTENSION_SCRIPT_URLS=/extensions/app.js
-export NASMUSICUI_EXTENSION_STYLESHEET_URLS=/extensions/app.css
+export NASWEBUI_EXTENSION_DIR=/path/to/my-extension/static
+export NASWEBUI_EXTENSION_SCRIPT_URLS=/extensions/app.js
+export NASWEBUI_EXTENSION_STYLESHEET_URLS=/extensions/app.css
 ./start.sh
 ```
 
 Multiple URLs may be comma-separated:
 
 ```bash
-export NASMUSICUI_EXTENSION_SCRIPT_URLS=/extensions/runtime.js,/extensions/app.js
-export NASMUSICUI_EXTENSION_STYLESHEET_URLS=/extensions/base.css,/extensions/theme.css
+export NASWEBUI_EXTENSION_SCRIPT_URLS=/extensions/runtime.js,/extensions/app.js
+export NASWEBUI_EXTENSION_STYLESHEET_URLS=/extensions/base.css,/extensions/theme.css
 ```
 
 ## URL rules
@@ -87,7 +87,7 @@ URLs are ignored rather than injected.
 
 ## Static file serving
 
-When `NASMUSICUI_EXTENSION_DIR` points at an existing directory, files under
+When `NASWEBUI_EXTENSION_DIR` points at an existing directory, files under
 that directory are available below `/extensions/`:
 
 ```text
@@ -111,7 +111,7 @@ browser session.
 
 For shared or remotely exposed installations:
 
-- keep `NASMUSICUI_PASSWORD` enabled
+- keep `NASWEBUI_PASSWORD` enabled
 - bind to loopback unless you intentionally expose the service
 - review extension code before enabling it
 - prefer small, auditable extension files
@@ -203,9 +203,9 @@ JS
 Start WebUI with the extension enabled:
 
 ```bash
-NASMUSICUI_EXTENSION_DIR=~/.nastech/webui-extension \
-NASMUSICUI_EXTENSION_STYLESHEET_URLS=/extensions/app.css \
-NASMUSICUI_EXTENSION_SCRIPT_URLS=/extensions/app.js \
+NASWEBUI_EXTENSION_DIR=~/.nastech/webui-extension \
+NASWEBUI_EXTENSION_STYLESHEET_URLS=/extensions/app.css \
+NASWEBUI_EXTENSION_SCRIPT_URLS=/extensions/app.js \
 ./start.sh
 ```
 

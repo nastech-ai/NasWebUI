@@ -69,7 +69,7 @@ def test_notes_sources_shows_configured_third_party_note_servers_without_tool_in
 def test_external_notes_sources_drawer_is_default_off(monkeypatch):
     from api import routes
 
-    monkeypatch.delenv("NASMUSICUI_EXTERNAL_NOTES_SOURCES", raising=False)
+    monkeypatch.delenv("NASWEBUI_EXTERNAL_NOTES_SOURCES", raising=False)
 
     assert routes._external_notes_sources_enabled({}) is False
     assert routes._external_notes_sources_enabled({"webui_external_notes_sources": False}) is False
@@ -78,11 +78,11 @@ def test_external_notes_sources_drawer_is_default_off(monkeypatch):
 def test_external_notes_sources_drawer_can_be_enabled_by_config_or_env(monkeypatch):
     from api import routes
 
-    monkeypatch.delenv("NASMUSICUI_EXTERNAL_NOTES_SOURCES", raising=False)
+    monkeypatch.delenv("NASWEBUI_EXTERNAL_NOTES_SOURCES", raising=False)
     assert routes._external_notes_sources_enabled({"webui_external_notes_sources": True}) is True
     assert routes._external_notes_sources_enabled({"external_notes_sources": "yes"}) is True
 
-    monkeypatch.setenv("NASMUSICUI_EXTERNAL_NOTES_SOURCES", "1")
+    monkeypatch.setenv("NASWEBUI_EXTERNAL_NOTES_SOURCES", "1")
     assert routes._external_notes_sources_enabled({}) is True
 
 
@@ -300,7 +300,7 @@ def test_joplin_recent_ai_notes_mirrors_webui_prefill_env_hook(monkeypatch, tmp_
     env_script = tmp_path / "env context.py"
     env_script.write_text('CURRENT_CONTEXT_ID = "5ba9ab822c344115939205ca4e8eaec0"\n', encoding="utf-8")
     monkeypatch.setattr(routes, "get_config", lambda: {"prefill_messages_script": str(legacy_script)})
-    monkeypatch.setenv("NASMUSICUI_PREFILL_MESSAGES_SCRIPT", f'python3 "{env_script}"')
+    monkeypatch.setenv("NASWEBUI_PREFILL_MESSAGES_SCRIPT", f'python3 "{env_script}"')
 
     def fake_get(path, params=None):
         note_id = path.rsplit("/", 1)[-1]

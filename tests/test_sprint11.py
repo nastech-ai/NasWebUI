@@ -59,11 +59,11 @@ def test_models_model_structure():
             assert len(model['label']) > 0
 
 def test_models_default_model_not_empty():
-    """When NASMUSICUI_DEFAULT_MODEL env var is set (as in conftest), the
+    """When NASWEBUI_DEFAULT_MODEL env var is set (as in conftest), the
     /api/models response includes a non-empty default_model string."""
     d, _ = get("/api/models")
     assert isinstance(d['default_model'], str)
-    # conftest sets NASMUSICUI_DEFAULT_MODEL to "openai/gpt-5.4-mini", so
+    # conftest sets NASWEBUI_DEFAULT_MODEL to "openai/gpt-5.4-mini", so
     # this value should be non-empty in the test environment.
     # When no env var is set (production with empty default), default_model
     # can be "" — that is intentional (see PR #649).

@@ -26,8 +26,8 @@ def test_default_claude_code_scan_is_disabled_inside_test_state(monkeypatch, tmp
     """Test runs must not accidentally scan Michael's real ~/.claude/projects."""
     import api.models as models
 
-    monkeypatch.delenv("NASMUSICUI_CLAUDE_PROJECTS_DIR", raising=False)
-    monkeypatch.setenv("NASMUSICUI_TEST_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.delenv("NASWEBUI_CLAUDE_PROJECTS_DIR", raising=False)
+    monkeypatch.setenv("NASWEBUI_TEST_STATE_DIR", str(tmp_path / "state"))
 
     assert models._default_claude_code_projects_dir() is None
     assert models.get_claude_code_sessions() == []

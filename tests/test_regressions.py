@@ -116,7 +116,7 @@ def test_session_with_tool_calls_in_json_loads_ok(cleanup_test_sessions):
     sid = make_session(cleanup_test_sessions)
 
     # Manually inject tool_calls into the session's JSON file
-    sessions_dir = pathlib.Path(os.environ.get("NASMUSICUI_TEST_STATE_DIR", str(pathlib.Path.home() / ".nastech" / "webui-mvp-test"))) / "sessions"
+    sessions_dir = pathlib.Path(os.environ.get("NASWEBUI_TEST_STATE_DIR", str(pathlib.Path.home() / ".nastech" / "webui-mvp-test"))) / "sessions"
     session_file = sessions_dir / f"{sid}.json"
     if session_file.exists():
         d = json.loads(session_file.read_text())

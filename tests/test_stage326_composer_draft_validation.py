@@ -26,9 +26,9 @@ import pytest
 @pytest.fixture
 def isolated_state_dir(tmp_path, monkeypatch):
     """Point STATE_DIR at a tmpdir so saved sessions don't pollute reality."""
-    monkeypatch.setenv("NASMUSICUI_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("NASWEBUI_STATE_DIR", str(tmp_path))
     monkeypatch.setenv("NASTECH_HOME", str(tmp_path))
-    monkeypatch.setenv("NASMUSICUI_BASE_HOME", str(tmp_path))
+    monkeypatch.setenv("NASWEBUI_BASE_HOME", str(tmp_path))
     yield tmp_path
 
 

@@ -16,7 +16,7 @@ MCP config for NasTech Agent (add to config.yaml):
         command: /path/to/venv/bin/python3
         args: [/path/to/naswebui/mcp_server.py]
         env:
-          NASMUSICUI_PASSWORD: your_password
+          NASWEBUI_PASSWORD: your_password
 
 Profile override (optional):
         args: [/path/to/naswebui/mcp_server.py, --profile, myprofile]
@@ -67,8 +67,8 @@ if _profile_arg is not None:
 # Mirror the env-var contract used by api/config.py:32-33 so a non-default
 # WebUI port/host (e.g. when 8787 is held by another service on the host)
 # Just Works without configuration drift between the WebUI process and MCP.
-WEBUI_HOST = os.environ.get("NASMUSICUI_HOST", "127.0.0.1")
-WEBUI_PORT = os.environ.get("NASMUSICUI_PORT", "8787")
+WEBUI_HOST = os.environ.get("NASWEBUI_HOST", "127.0.0.1")
+WEBUI_PORT = os.environ.get("NASWEBUI_PORT", "8787")
 WEBUI_URL = f"http://{WEBUI_HOST}:{WEBUI_PORT}"
 _auth_cookie: str | None = None
 _auth_expires: float = 0  # unix timestamp after which we re-auth
@@ -122,7 +122,7 @@ def _session_compact(row: dict) -> dict:
 # ═══════════════════════════════════════════════════════════════════════════
 
 def _api_password() -> str | None:
-    """Return the plaintext webui password from NASMUSICUI_PASSWORD, or None.
+    """Return the plaintext webui password from NASWEBUI_PASSWORD, or None.
 
     settings.json stores only the bcrypt hash, which the login endpoint cannot
     accept — it calls verify_password(plaintext) against the stored hash. So
@@ -130,7 +130,7 @@ def _api_password() -> str | None:
     in unauthenticated mode and any auth-protected mutation will fail clearly
     with the server's 401 instead of silently sending an unusable hash.
     """
-    pw = os.environ.get("NASMUSICUI_PASSWORD", "").strip()
+    pw = os.environ.get("NASWEBUI_PASSWORD", "").strip()
     return pw or None
 
 
@@ -356,7 +356,7 @@ async def handle_delete_project(arguments: dict) -> list[TextContent]:
             "ok": True,
             "deleted": proj["name"],
             "unassigned_sessions": 0,
-            "warning": "Set NASMUSICUI_PASSWORD to unassign sessions; "
+            "warning": "Set NASWEBUI_PASSWORD to unassign sessions; "
                        "without auth the session index cannot be safely "
                        "updated and direct filesystem writes would cause "
                        "index drift in a running WebUI.",

@@ -53,7 +53,7 @@ python3 --version
 Check whether repo-local environment overrides will affect bootstrap:
 
 ```bash
-test -f .env && grep -n 'NASTECH_HOME\|NASMUSICUI_STATE_DIR\|NASMUSICUI_PORT\|NASMUSICUI_HOST' .env
+test -f .env && grep -n 'NASTECH_HOME\|NASWEBUI_STATE_DIR\|NASWEBUI_PORT\|NASWEBUI_HOST' .env
 ```
 
 If `.env` exists, do not print the full file. Inspect only the specific
@@ -69,8 +69,8 @@ profiles, credentials, and cron state.
 ```bash
 mkdir -p ~/nastech-onboarding-test
 NASTECH_HOME=~/nastech-onboarding-test/.nastech \
-NASMUSICUI_STATE_DIR=~/nastech-onboarding-test/webui \
-NASMUSICUI_PORT=8789 \
+NASWEBUI_STATE_DIR=~/nastech-onboarding-test/webui \
+NASWEBUI_PORT=8789 \
 python3 bootstrap.py
 ```
 
@@ -136,14 +136,14 @@ A local onboarding trial passes when:
 - `/api/onboarding/status` returns JSON.
 - The wizard appears when `completed` is false.
 - The wizard stays out of the way when `completed` is true or
-  `NASMUSICUI_SKIP_ONBOARDING=1` is intentionally set.
+  `NASWEBUI_SKIP_ONBOARDING=1` is intentionally set.
 - `system.naswebui_found` and `system.imports_ok` match the expected bootstrap
   state.
 - `system.provider_ready` and `system.chat_ready` become true after the human
   completes a provider path that should support chat.
 - `system.config_path` and `system.env_path` point inside the intended isolated
   `NASTECH_HOME` during a trial.
-- WebUI files are written under the intended `NASMUSICUI_STATE_DIR`.
+- WebUI files are written under the intended `NASWEBUI_STATE_DIR`.
 
 If the human chooses a provider that must be completed in the CLI, passing can
 mean the wizard correctly points them to `nastech model` or `nastech auth` rather

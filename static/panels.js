@@ -454,7 +454,7 @@ function _cronGatewayNoticeHtml(status) {
     : isStaleMetadata
       ? 'The gateway is marked as configured, but its health metadata has gone stale. In Docker, scheduled jobs require a live gateway daemon that refreshes runtime metadata while ticking cron.'
       : isRemoteUnreachable
-        ? 'The gateway health endpoint is not reachable from WebUI. Verify the configured gateway URL env var (`GATEWAY_HEALTH_URL`, `NASTECH_GATEWAY_HEALTH_URL`, `NASTECH_API_URL`, or `NASMUSICUI_GATEWAY_BASE_URL`) points to a reachable gateway service and network path before relying on cron ticking.'
+        ? 'The gateway health endpoint is not reachable from WebUI. Verify the configured gateway URL env var (`GATEWAY_HEALTH_URL`, `NASTECH_GATEWAY_HEALTH_URL`, `NASTECH_API_URL`, or `NASWEBUI_GATEWAY_BASE_URL`) points to a reachable gateway service and network path before relying on cron ticking.'
         : 'In NasWebUI, scheduled jobs require the NasTech gateway daemon to be running. Start the gateway container or `nastech gateway` before relying on offline scheduled runs.';
   const docsHref = 'https://github.com/nastech-ai/NasWebUI/blob/main/docs/docker.md#scheduled-jobs-and-the-gateway-daemon';
   const helpLink = notConfigured || isRemoteUnreachable || isStaleMetadata
@@ -6939,7 +6939,7 @@ async function loadSettingsPanel(){
     // Password field: always blank (we don't send hash back)
     const pwField=$('settingsPassword');
     if(pwField){pwField.value='';pwField.addEventListener('input',_markSettingsDirty,{once:false});}
-    // #1560: when NASMUSICUI_PASSWORD env var is set, the settings password
+    // #1560: when NASWEBUI_PASSWORD env var is set, the settings password
     // field silently no-ops. Disable it + reveal the lock banner so the UI
     // tells the truth before a user tries (and the backend now also returns
     // 409 as defense-in-depth).
@@ -7813,7 +7813,7 @@ async function loadPasskeys(){
   const list=$('passkeyList');
   const block=$('passkeysSettingsBlock');
   if(!list) return;
-  // Stage-batch14: respect the NASMUSICUI_PASSKEY feature flag — hide the
+  // Stage-batch14: respect the NASWEBUI_PASSKEY feature flag — hide the
   // whole block when passkey support is disabled at the server level so users
   // don't see a non-functional "Add passkey" button (clicking it would 404).
   try{

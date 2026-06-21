@@ -6,7 +6,7 @@ from __future__ import annotations
 def test_csp_connect_src_default_header_unchanged(monkeypatch):
     from server import Handler
 
-    monkeypatch.delenv("NASMUSICUI_CSP_CONNECT_EXTRA", raising=False)
+    monkeypatch.delenv("NASWEBUI_CSP_CONNECT_EXTRA", raising=False)
 
     policy = Handler.csp_report_only_policy()
 
@@ -20,7 +20,7 @@ def test_csp_connect_src_includes_valid_extra_origins(monkeypatch):
     from server import Handler
 
     monkeypatch.setenv(
-        "NASMUSICUI_CSP_CONNECT_EXTRA",
+        "NASWEBUI_CSP_CONNECT_EXTRA",
         "https://metrics.example.com wss://events.example.com:443",
     )
 
@@ -37,7 +37,7 @@ def test_csp_connect_src_rejects_directive_injection(monkeypatch, caplog):
     from server import Handler
 
     monkeypatch.setenv(
-        "NASMUSICUI_CSP_CONNECT_EXTRA",
+        "NASWEBUI_CSP_CONNECT_EXTRA",
         "https://metrics.example.com; script-src *",
     )
 
@@ -45,14 +45,14 @@ def test_csp_connect_src_rejects_directive_injection(monkeypatch, caplog):
 
     assert "https://metrics.example.com" not in policy
     assert "script-src *" not in policy
-    assert "Ignoring invalid NASMUSICUI_CSP_CONNECT_EXTRA" in caplog.text
+    assert "Ignoring invalid NASWEBUI_CSP_CONNECT_EXTRA" in caplog.text
 
 
 def test_csp_connect_src_rejects_paths(monkeypatch):
     from server import Handler
 
     monkeypatch.setenv(
-        "NASMUSICUI_CSP_CONNECT_EXTRA",
+        "NASWEBUI_CSP_CONNECT_EXTRA",
         "https://metrics.example.com/api",
     )
 
@@ -65,7 +65,7 @@ def test_csp_connect_src_rejects_invalid_ports(monkeypatch):
     from server import Handler
 
     monkeypatch.setenv(
-        "NASMUSICUI_CSP_CONNECT_EXTRA",
+        "NASWEBUI_CSP_CONNECT_EXTRA",
         "https://metrics.example.com:99999",
     )
 

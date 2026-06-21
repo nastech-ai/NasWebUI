@@ -144,7 +144,7 @@ class TestWorkspacePermissions:
             INIT_SCRIPT.find('if [ "A${whoami}" == "Aroot" ]; then'):
             INIT_SCRIPT.find('exec su')
         ]
-        assert 'mkdir -p "$NASMUSICUI_DEFAULT_WORKSPACE"' in root_section, (
+        assert 'mkdir -p "$NASWEBUI_DEFAULT_WORKSPACE"' in root_section, (
             "docker_init.bash must mkdir the workspace during root init "
             "to handle Docker-created bind-mount dirs (#357)"
         )
@@ -159,32 +159,32 @@ class TestWorkspacePermissions:
             INIT_SCRIPT.find('if [ "A${whoami}" == "Aroot" ]; then'):
             INIT_SCRIPT.find('exec su')
         ]
-        assert 'chown naswebuiwebui:naswebuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE"' in root_section, (
+        assert 'chown naswebuiwebui:naswebuiwebui "$NASWEBUI_DEFAULT_WORKSPACE"' in root_section, (
             "docker_init.bash must chown the workspace during root init "
             "so the app user can write to it when possible (#357)"
         )
 
     def test_workspace_mkdir_before_chown(self):
         """Root init mkdir must come before root init chown in docker_init.bash."""
-        mkdir_pos = INIT_SCRIPT.find('mkdir -p "$NASMUSICUI_DEFAULT_WORKSPACE"')
-        chown_pos = INIT_SCRIPT.find('chown naswebuiwebui:naswebuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE"')
+        mkdir_pos = INIT_SCRIPT.find('mkdir -p "$NASWEBUI_DEFAULT_WORKSPACE"')
+        chown_pos = INIT_SCRIPT.find('chown naswebuiwebui:naswebuiwebui "$NASWEBUI_DEFAULT_WORKSPACE"')
         assert mkdir_pos != -1, "root init mkdir for workspace not found"
         assert chown_pos != -1, "root init chown for workspace not found"
         assert mkdir_pos < chown_pos, "root init mkdir must come before root init chown"
 
     def test_workspace_error_exit_on_mkdir_failure(self):
         """Root init mkdir must call error_exit on failure."""
-        assert 'mkdir -p "$NASMUSICUI_DEFAULT_WORKSPACE" || error_exit' in INIT_SCRIPT, (
+        assert 'mkdir -p "$NASWEBUI_DEFAULT_WORKSPACE" || error_exit' in INIT_SCRIPT, (
             "workspace mkdir must call error_exit on failure"
         )
 
     def test_workspace_write_test_is_conditional_on_writable(self):
         """Write-test must be skipped for read-only workspace mounts (#670).
 
-        The runtime phase must check [ -w "$NASMUSICUI_DEFAULT_WORKSPACE" ] before
+        The runtime phase must check [ -w "$NASWEBUI_DEFAULT_WORKSPACE" ] before
         attempting a write test, so :ro bind-mounts don't crash startup.
         """
-        assert '[ -w "$NASMUSICUI_DEFAULT_WORKSPACE" ]' in INIT_SCRIPT, (
+        assert '[ -w "$NASWEBUI_DEFAULT_WORKSPACE" ]' in INIT_SCRIPT, (
             "docker_init.bash must guard the workspace write-test with [ -w ] "
             "to support read-only workspace mounts (:ro) without crashing (#670)"
         )

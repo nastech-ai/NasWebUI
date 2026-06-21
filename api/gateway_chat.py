@@ -29,9 +29,9 @@ from api.run_journal import RunJournalWriter
 
 logger = logging.getLogger(__name__)
 
-_WEBUI_CHAT_BACKEND_ENV = "NASMUSICUI_CHAT_BACKEND"
-_WEBUI_GATEWAY_BASE_URL_ENV = "NASMUSICUI_GATEWAY_BASE_URL"
-_WEBUI_GATEWAY_API_KEY_ENV = "NASMUSICUI_GATEWAY_API_KEY"
+_WEBUI_CHAT_BACKEND_ENV = "NASWEBUI_CHAT_BACKEND"
+_WEBUI_GATEWAY_BASE_URL_ENV = "NASWEBUI_GATEWAY_BASE_URL"
+_WEBUI_GATEWAY_API_KEY_ENV = "NASWEBUI_GATEWAY_API_KEY"
 _GATEWAY_CHAT_BACKENDS = {"gateway", "api_server", "api-server"}
 
 
@@ -99,10 +99,10 @@ def _gateway_http_error_event(exc: urllib.error.HTTPError, err_body: str, *, api
             "type": "gateway_auth_error",
             "message": "Gateway rejected the WebUI API key (HTTP 401).",
             "hint": (
-                "Set NASMUSICUI_GATEWAY_API_KEY to the same value as the NasTech Gateway "
-                "API_SERVER_KEY, or disable NASMUSICUI_CHAT_BACKEND=gateway."
+                "Set NASWEBUI_GATEWAY_API_KEY to the same value as the NasTech Gateway "
+                "API_SERVER_KEY, or disable NASWEBUI_CHAT_BACKEND=gateway."
                 if not api_key_configured
-                else "Check that NASMUSICUI_GATEWAY_API_KEY matches the NasTech Gateway API_SERVER_KEY."
+                else "Check that NASWEBUI_GATEWAY_API_KEY matches the NasTech Gateway API_SERVER_KEY."
             ),
         }
     return {
@@ -470,7 +470,7 @@ def _run_gateway_chat_streaming(
             "label": "Gateway request failed",
             "type": "gateway_error",
             "message": safe or "Gateway request failed.",
-            "hint": "Check NASMUSICUI_GATEWAY_BASE_URL and Gateway API server health.",
+            "hint": "Check NASWEBUI_GATEWAY_BASE_URL and Gateway API server health.",
         })
     finally:
         if s is not None:

@@ -53,8 +53,8 @@ For a clean local trial, use an isolated NasTech home and WebUI state directory:
 ```bash
 mkdir -p ~/nastech-onboarding-test
 NASTECH_HOME=~/nastech-onboarding-test/.nastech \
-NASMUSICUI_STATE_DIR=~/nastech-onboarding-test/webui \
-NASMUSICUI_PORT=8789 \
+NASWEBUI_STATE_DIR=~/nastech-onboarding-test/webui \
+NASWEBUI_PORT=8789 \
 python3 bootstrap.py
 ```
 
@@ -65,11 +65,11 @@ pass/fail criteria in
 [`docs/onboarding-agent-checklist.md`](onboarding-agent-checklist.md).
 
 If your repo has a `.env` file, remember that the bootstrap loads it. Remove or
-adjust any `NASTECH_HOME`, `NASMUSICUI_STATE_DIR`, or `NASMUSICUI_PORT`
+adjust any `NASTECH_HOME`, `NASWEBUI_STATE_DIR`, or `NASWEBUI_PORT`
 entries there before using the isolated command above.
 
 For managed hosting or fully preconfigured images, set
-`NASMUSICUI_SKIP_ONBOARDING=1` to bypass the wizard.
+`NASWEBUI_SKIP_ONBOARDING=1` to bypass the wizard.
 
 ## What the wizard checks
 
@@ -177,7 +177,7 @@ State normally lives outside the repository. By default:
 - NasTech Agent state: Windows `%LOCALAPPDATA%\nastech`; POSIX `~/.nastech`
 - WebUI state: `$NASTECH_HOME/webui` (Windows default `%LOCALAPPDATA%\nastech\webui`, POSIX default `~/.nastech/webui`)
 
-Override these with `NASTECH_HOME` and `NASMUSICUI_STATE_DIR` when you need an
+Override these with `NASTECH_HOME` and `NASWEBUI_STATE_DIR` when you need an
 isolated test install.
 
 ## When to file an issue

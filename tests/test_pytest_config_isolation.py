@@ -11,5 +11,5 @@ def test_pytest_overrides_inherited_naswebui_config_path():
     test home before product modules are imported, otherwise provider/onboarding
     tests can mutate the user's real config.
     """
-    test_state_dir = Path(os.environ["NASMUSICUI_TEST_STATE_DIR"])
+    test_state_dir = Path(os.environ["NASWEBUI_TEST_STATE_DIR"])
     assert Path(os.environ["NASTECH_CONFIG_PATH"]) == test_state_dir / "config.yaml"

@@ -26,9 +26,9 @@ Coverage
 3.  ``_detect_supervisor()`` returns the env-var name on each known supervisor
     (``INVOCATION_ID`` / ``JOURNAL_STREAM`` / ``NOTIFY_SOCKET`` /
     ``XPC_SERVICE_NAME`` / ``SUPERVISOR_ENABLED``)
-4.  ``_detect_supervisor()`` returns ``NASMUSICUI_FOREGROUND`` for the
+4.  ``_detect_supervisor()`` returns ``NASWEBUI_FOREGROUND`` for the
     explicit opt-in, accepting ``1``/``true``/``yes``/``on`` (case-insensitive)
-5.  ``_detect_supervisor()`` ignores ``NASMUSICUI_FOREGROUND=0`` /
+5.  ``_detect_supervisor()`` ignores ``NASWEBUI_FOREGROUND=0`` /
     ``=false`` / ``=`` and falls through to env-var probing
 6.  ``XPC_SERVICE_NAME`` noise filter: bare ``"0"`` and ``application.<id>``
     values do NOT trigger foreground (the macOS Terminal default state),
@@ -40,8 +40,8 @@ Coverage
 9.  Default ``main()`` path (no flag, clean env) still uses ``Popen``
 10. Foreground path chdir's to ``agent_dir or REPO_ROOT`` before execv (matches
     the cwd the legacy Popen uses)
-11. Foreground path exports ``NASMUSICUI_HOST`` / ``NASMUSICUI_PORT`` /
-    ``NASMUSICUI_AGENT_DIR`` / ``NASMUSICUI_STATE_DIR`` to ``os.environ``
+11. Foreground path exports ``NASWEBUI_HOST`` / ``NASWEBUI_PORT`` /
+    ``NASWEBUI_AGENT_DIR`` / ``NASWEBUI_STATE_DIR`` to ``os.environ``
     so the post-exec server picks them up
 12. Foreground path skips ``wait_for_health`` (no client to retry from)
 13. ``--foreground`` help text mentions launchd / systemd / supervisord
@@ -74,7 +74,7 @@ def clean_env(monkeypatch):
     """Strip all known supervisor env vars + resolved bootstrap vars so each
     test starts from a known-clean state.
 
-    The resolved-vars stripping (NASMUSICUI_HOST etc.) prevents leakage
+    The resolved-vars stripping (NASWEBUI_HOST etc.) prevents leakage
     where a previous test's ``main()`` mutated ``os.environ`` and a later
     test re-imports ``bootstrap``, picking up the polluted defaults. With
     these stripped, ``DEFAULT_HOST`` / ``DEFAULT_PORT`` fall back to their
@@ -87,11 +87,11 @@ def clean_env(monkeypatch):
         "NOTIFY_SOCKET",
         "XPC_SERVICE_NAME",
         "SUPERVISOR_ENABLED",
-        "NASMUSICUI_FOREGROUND",
+        "NASWEBUI_FOREGROUND",
         # Bootstrap-resolved env vars (mutated by main(), can leak across tests)
-        "NASMUSICUI_HOST",
-        "NASMUSICUI_PORT",
-        "NASMUSICUI_AGENT_DIR",
+        "NASWEBUI_HOST",
+        "NASWEBUI_PORT",
+        "NASWEBUI_AGENT_DIR",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -156,21 +156,21 @@ class TestDetectSupervisor:
 
     @pytest.mark.parametrize("value", ["1", "true", "TRUE", "yes", "Yes", "on", "ON"])
     def test_explicit_opt_in_truthy_values(self, import_bootstrap, clean_env, monkeypatch, value):
-        monkeypatch.setenv("NASMUSICUI_FOREGROUND", value)
-        assert import_bootstrap._detect_supervisor() == "NASMUSICUI_FOREGROUND"
+        monkeypatch.setenv("NASWEBUI_FOREGROUND", value)
+        assert import_bootstrap._detect_supervisor() == "NASWEBUI_FOREGROUND"
 
     @pytest.mark.parametrize("value", ["0", "false", "FALSE", "no", "off", "", "  "])
     def test_explicit_opt_in_falsy_values_fall_through(self, import_bootstrap, clean_env, monkeypatch, value):
-        # When NASMUSICUI_FOREGROUND is falsy, we should NOT short-circuit on it.
+        # When NASWEBUI_FOREGROUND is falsy, we should NOT short-circuit on it.
         # If no other supervisor var is set, returns None.
-        monkeypatch.setenv("NASMUSICUI_FOREGROUND", value)
+        monkeypatch.setenv("NASWEBUI_FOREGROUND", value)
         assert import_bootstrap._detect_supervisor() is None
 
     def test_explicit_opt_in_takes_precedence_over_supervisor_var(self, import_bootstrap, clean_env, monkeypatch):
         # Both set → explicit flag wins (returned name reflects user intent).
-        monkeypatch.setenv("NASMUSICUI_FOREGROUND", "1")
+        monkeypatch.setenv("NASWEBUI_FOREGROUND", "1")
         monkeypatch.setenv("INVOCATION_ID", "deadbeef")
-        assert import_bootstrap._detect_supervisor() == "NASMUSICUI_FOREGROUND"
+        assert import_bootstrap._detect_supervisor() == "NASWEBUI_FOREGROUND"
 
 
 class TestXPCServiceNameNoiseFilter:
@@ -238,7 +238,7 @@ class TestMainForegroundRouting:
         monkeypatch.setattr(bs, "ensure_python_has_webui_deps", lambda *a, **kw: a[0])
         monkeypatch.setattr(bs, "wait_for_health", lambda *a, **kw: True)
         monkeypatch.setattr(bs, "open_browser", lambda *a, **kw: None)
-        monkeypatch.setenv("NASMUSICUI_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("NASWEBUI_STATE_DIR", str(tmp_path / "state"))
         # Make agent_dir exist so chdir doesn't fail.
         (tmp_path / "agent").mkdir(parents=True, exist_ok=True)
         return bs
@@ -327,7 +327,7 @@ class TestMainForegroundRouting:
     def test_explicit_opt_in_env_auto_promotes_to_execv(self, stub_main_dependencies, clean_env, monkeypatch):
         bs = stub_main_dependencies
         monkeypatch.setattr(sys, "argv", ["bootstrap.py"])  # no --foreground flag
-        monkeypatch.setenv("NASMUSICUI_FOREGROUND", "1")
+        monkeypatch.setenv("NASWEBUI_FOREGROUND", "1")
 
         execv_calls = []
         def fake_execv(path, argv):
@@ -358,7 +358,7 @@ class TestForegroundEnvAndCwd:
         monkeypatch.setattr(bs, "wait_for_health", lambda *a, **kw: True)
         monkeypatch.setattr(bs, "open_browser", lambda *a, **kw: None)
         # State-dir + every var we care about is captured.
-        monkeypatch.setenv("NASMUSICUI_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("NASWEBUI_STATE_DIR", str(tmp_path / "state"))
         return bs, agent_dir
 
     def test_foreground_chdirs_to_agent_dir_before_exec(self, setup, monkeypatch, clean_env):
@@ -393,11 +393,11 @@ class TestForegroundEnvAndCwd:
 
         # Post-execv server.py inherits these — verify we set them on os.environ
         # (not just a local copy).
-        assert os.environ["NASMUSICUI_HOST"] == "0.0.0.0"
-        assert os.environ["NASMUSICUI_PORT"] == "9119"
-        assert os.environ["NASMUSICUI_AGENT_DIR"] == str(agent_dir)
+        assert os.environ["NASWEBUI_HOST"] == "0.0.0.0"
+        assert os.environ["NASWEBUI_PORT"] == "9119"
+        assert os.environ["NASWEBUI_AGENT_DIR"] == str(agent_dir)
         # state-dir was already set by the fixture; verify it survived.
-        assert "NASMUSICUI_STATE_DIR" in os.environ
+        assert "NASWEBUI_STATE_DIR" in os.environ
 
     def test_foreground_does_not_call_wait_for_health(self, setup, monkeypatch, clean_env):
         bs, _ = setup
@@ -438,7 +438,7 @@ class TestForegroundExecutabilityGuard:
         monkeypatch.setattr(bs, "naswebui_command_exists", lambda: True)
         monkeypatch.setattr(bs, "discover_launcher_python", lambda *a: str(bad_python))
         monkeypatch.setattr(bs, "ensure_python_has_webui_deps", lambda *a, **kw: a[0])
-        monkeypatch.setenv("NASMUSICUI_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("NASWEBUI_STATE_DIR", str(tmp_path / "state"))
         return bs
 
     def test_non_executable_python_raises_runtime_error(self, setup_with_bad_python, monkeypatch, clean_env):

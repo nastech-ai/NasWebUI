@@ -235,12 +235,12 @@ if [ "A${whoami}" == "Aroot" ]; then
   chown naswebuiwebui:naswebuiwebui /app || error_exit "Failed to set owner of /app to naswebuiwebui user"
   rsync -av --chown=naswebuiwebui:naswebuiwebui /apptoo/ /app/ || error_exit "Failed to sync /apptoo to /app with correct ownership"
 
-  if [ -z "${NASMUSICUI_DEFAULT_WORKSPACE+x}" ]; then export NASMUSICUI_DEFAULT_WORKSPACE="/workspace"; fi
-  if [ ! -d "$NASMUSICUI_DEFAULT_WORKSPACE" ]; then
-    mkdir -p "$NASMUSICUI_DEFAULT_WORKSPACE" || error_exit "Failed to create default workspace at $NASMUSICUI_DEFAULT_WORKSPACE"
+  if [ -z "${NASWEBUI_DEFAULT_WORKSPACE+x}" ]; then export NASWEBUI_DEFAULT_WORKSPACE="/workspace"; fi
+  if [ ! -d "$NASWEBUI_DEFAULT_WORKSPACE" ]; then
+    mkdir -p "$NASWEBUI_DEFAULT_WORKSPACE" || error_exit "Failed to create default workspace at $NASWEBUI_DEFAULT_WORKSPACE"
   fi
-  if [ ! -d "$NASMUSICUI_DEFAULT_WORKSPACE" ]; then error_exit "NASMUSICUI_DEFAULT_WORKSPACE directory does not exist at $NASMUSICUI_DEFAULT_WORKSPACE"; fi
-  chown naswebuiwebui:naswebuiwebui "$NASMUSICUI_DEFAULT_WORKSPACE" 2>/dev/null || echo "!! WARNING: Could not chown $NASMUSICUI_DEFAULT_WORKSPACE (continuing)"
+  if [ ! -d "$NASWEBUI_DEFAULT_WORKSPACE" ]; then error_exit "NASWEBUI_DEFAULT_WORKSPACE directory does not exist at $NASWEBUI_DEFAULT_WORKSPACE"; fi
+  chown naswebuiwebui:naswebuiwebui "$NASWEBUI_DEFAULT_WORKSPACE" 2>/dev/null || echo "!! WARNING: Could not chown $NASWEBUI_DEFAULT_WORKSPACE (continuing)"
 
   export UV_CACHE_DIR=${UV_CACHE_DIR:-/uv_cache}
   mkdir -p "${UV_CACHE_DIR}" || error_exit "Failed to create ${UV_CACHE_DIR} directory"
@@ -325,29 +325,29 @@ rm -f $it || error_exit "Failed to delete test file in /app"
 
 echo ""; echo "== Checking required environment variables for naswebui"
 
-echo ""; echo "-- NASMUSICUI_STATE_DIR: Where to store sessions, workspaces, and other state (default: ~/.nastech/webui)"
-if [ -z "${NASMUSICUI_STATE_DIR+x}" ]; then error_exit "NASMUSICUI_STATE_DIR not set"; fi; 
-echo "-- NASMUSICUI_STATE_DIR: $NASMUSICUI_STATE_DIR"
-if [ ! -d "$NASMUSICUI_STATE_DIR" ]; then mkdir -p $NASMUSICUI_STATE_DIR || error_exit "Failed to create state directory at $NASMUSICUI_STATE_DIR"; fi
-if [ ! -d "$NASMUSICUI_STATE_DIR" ]; then error_exit "NASMUSICUI_STATE_DIR directory does not exist at $NASMUSICUI_STATE_DIR"; fi
-it="$NASMUSICUI_STATE_DIR/.testfile"; touch $it || error_exit "Failed to verify state directory at $NASMUSICUI_STATE_DIR"
-rm -f $it || error_exit "Failed to delete test file in $NASMUSICUI_STATE_DIR"
+echo ""; echo "-- NASWEBUI_STATE_DIR: Where to store sessions, workspaces, and other state (default: ~/.nastech/webui)"
+if [ -z "${NASWEBUI_STATE_DIR+x}" ]; then error_exit "NASWEBUI_STATE_DIR not set"; fi; 
+echo "-- NASWEBUI_STATE_DIR: $NASWEBUI_STATE_DIR"
+if [ ! -d "$NASWEBUI_STATE_DIR" ]; then mkdir -p $NASWEBUI_STATE_DIR || error_exit "Failed to create state directory at $NASWEBUI_STATE_DIR"; fi
+if [ ! -d "$NASWEBUI_STATE_DIR" ]; then error_exit "NASWEBUI_STATE_DIR directory does not exist at $NASWEBUI_STATE_DIR"; fi
+it="$NASWEBUI_STATE_DIR/.testfile"; touch $it || error_exit "Failed to verify state directory at $NASWEBUI_STATE_DIR"
+rm -f $it || error_exit "Failed to delete test file in $NASWEBUI_STATE_DIR"
 
-echo ""; echo "-- NASMUSICUI_DEFAULT_WORKSPACE: Default workspace directory shown on first launch"
-if [ -z "${NASMUSICUI_DEFAULT_WORKSPACE+x}" ]; then echo "NASMUSICUI_DEFAULT_WORKSPACE not set, setting to /workspace"; export NASMUSICUI_DEFAULT_WORKSPACE="/workspace"; fi;
-echo "-- NASMUSICUI_DEFAULT_WORKSPACE: $NASMUSICUI_DEFAULT_WORKSPACE"
+echo ""; echo "-- NASWEBUI_DEFAULT_WORKSPACE: Default workspace directory shown on first launch"
+if [ -z "${NASWEBUI_DEFAULT_WORKSPACE+x}" ]; then echo "NASWEBUI_DEFAULT_WORKSPACE not set, setting to /workspace"; export NASWEBUI_DEFAULT_WORKSPACE="/workspace"; fi;
+echo "-- NASWEBUI_DEFAULT_WORKSPACE: $NASWEBUI_DEFAULT_WORKSPACE"
 # The root init phase creates/chowns missing bind-mount directories before
 # dropping privileges. After that, the runtime user only verifies access.
-if [ ! -d "$NASMUSICUI_DEFAULT_WORKSPACE" ]; then
-  mkdir -p "$NASMUSICUI_DEFAULT_WORKSPACE" || error_exit "Failed to create default workspace at $NASMUSICUI_DEFAULT_WORKSPACE"
+if [ ! -d "$NASWEBUI_DEFAULT_WORKSPACE" ]; then
+  mkdir -p "$NASWEBUI_DEFAULT_WORKSPACE" || error_exit "Failed to create default workspace at $NASWEBUI_DEFAULT_WORKSPACE"
 fi
-if [ ! -d "$NASMUSICUI_DEFAULT_WORKSPACE" ]; then error_exit "NASMUSICUI_DEFAULT_WORKSPACE directory does not exist at $NASMUSICUI_DEFAULT_WORKSPACE"; fi
+if [ ! -d "$NASWEBUI_DEFAULT_WORKSPACE" ]; then error_exit "NASWEBUI_DEFAULT_WORKSPACE directory does not exist at $NASWEBUI_DEFAULT_WORKSPACE"; fi
 # Only write-test if the workspace is writable. Read-only bind-mounts (:ro)
 # are valid — the workspace is used for browsing, not writing by the server.
-if [ -w "$NASMUSICUI_DEFAULT_WORKSPACE" ]; then
-  it="$NASMUSICUI_DEFAULT_WORKSPACE/.testfile"; touch $it && rm -f $it || echo "!! WARNING: Could not write to $NASMUSICUI_DEFAULT_WORKSPACE (continuing)"
+if [ -w "$NASWEBUI_DEFAULT_WORKSPACE" ]; then
+  it="$NASWEBUI_DEFAULT_WORKSPACE/.testfile"; touch $it && rm -f $it || echo "!! WARNING: Could not write to $NASWEBUI_DEFAULT_WORKSPACE (continuing)"
 else
-  echo "-- NASMUSICUI_DEFAULT_WORKSPACE is read-only — skipping write check (read-only workspace is supported)"
+  echo "-- NASWEBUI_DEFAULT_WORKSPACE is read-only — skipping write check (read-only workspace is supported)"
 fi
 
 echo ""; echo "==================="

@@ -564,7 +564,7 @@ class TestSessionManifestAuthExemption:
     can fetch the manifest during PWA install without being redirected."""
 
     def test_session_manifest_json_is_public(self, monkeypatch):
-        monkeypatch.setenv("NASMUSICUI_PASSWORD", "test-password")
+        monkeypatch.setenv("NASWEBUI_PASSWORD", "test-password")
         from api.auth import check_auth, _invalidate_password_hash_cache
         from types import SimpleNamespace
         _invalidate_password_hash_cache()
@@ -572,7 +572,7 @@ class TestSessionManifestAuthExemption:
         assert check_auth(handler, SimpleNamespace(path="/session/manifest.json", query="")) is True
 
     def test_session_manifest_webmanifest_is_public(self, monkeypatch):
-        monkeypatch.setenv("NASMUSICUI_PASSWORD", "test-password")
+        monkeypatch.setenv("NASWEBUI_PASSWORD", "test-password")
         from api.auth import check_auth, _invalidate_password_hash_cache
         from types import SimpleNamespace
         _invalidate_password_hash_cache()

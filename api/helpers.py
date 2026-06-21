@@ -90,12 +90,12 @@ def _valid_csp_extra_connect_source(source: str) -> bool:
 
 
 def _csp_extra_connect_src() -> str:
-    raw = os.getenv("NASMUSICUI_CSP_CONNECT_EXTRA", "").strip()
+    raw = os.getenv("NASWEBUI_CSP_CONNECT_EXTRA", "").strip()
     if not raw:
         return ""
     sources = raw.split()
     if not sources or any(not _valid_csp_extra_connect_source(src) for src in sources):
-        logger.warning("Ignoring invalid NASMUSICUI_CSP_CONNECT_EXTRA value")
+        logger.warning("Ignoring invalid NASWEBUI_CSP_CONNECT_EXTRA value")
         return ""
     return " " + " ".join(sources)
 

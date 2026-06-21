@@ -38,7 +38,7 @@ _PLUGIN_STATIC_ROOTS: dict[str, Path] = {}
 
 
 def _get_plugin_base() -> Path:
-    return Path(os.environ.get("NASMUSICUI_PLUGINS_DIR", str(Path.home() / ".nastech" / "plugins")))
+    return Path(os.environ.get("NASWEBUI_PLUGINS_DIR", str(Path.home() / ".nastech" / "plugins")))
 
 
 def load_plugins() -> None:

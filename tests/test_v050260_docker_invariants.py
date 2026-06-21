@@ -7,7 +7,7 @@ extends coverage to the related fixes shipped alongside #1428:
 
 - All compose files reference the same UID/GID source (`${UID}` / `${GID}`)
 - All compose files document the bind-mount permission escape hatches
-  (`NASMUSICUI_SKIP_CHMOD`, `NASTECH_HOME_MODE`) inline so users hit by #1389
+  (`NASWEBUI_SKIP_CHMOD`, `NASTECH_HOME_MODE`) inline so users hit by #1389
   or #1399 see the fix in the file they're reading
 - The `.env.docker.example` template ships and documents the same vars
 - `docs/docker.md` exists and covers the multi-container architecture
@@ -89,18 +89,18 @@ def test_single_container_compose_uses_same_uid_source():
 
 
 def test_compose_files_document_skip_chmod_escape_hatch():
-    """Every compose file must mention NASMUSICUI_SKIP_CHMOD inline so users
+    """Every compose file must mention NASWEBUI_SKIP_CHMOD inline so users
     hit by #1389 (the auth.json/.env chmod-override bug) can find the fix
     in the file they're reading. The fix shipped in v0.50.254 but Docker
     users may not be reading CHANGELOGs."""
     for fname in ("docker-compose.yml", "docker-compose.two-container.yml", "docker-compose.three-container.yml"):
         src = (REPO / fname).read_text(encoding="utf-8")
-        assert "NASMUSICUI_SKIP_CHMOD" in src, (
-            f"{fname}: must document NASMUSICUI_SKIP_CHMOD as a bind-mount "
+        assert "NASWEBUI_SKIP_CHMOD" in src, (
+            f"{fname}: must document NASWEBUI_SKIP_CHMOD as a bind-mount "
             f"escape hatch so users hit by #1389 find the fix inline."
         )
         assert "NASTECH_HOME_MODE" in src, (
-            f"{fname}: must document NASTECH_HOME_MODE alongside NASMUSICUI_SKIP_CHMOD"
+            f"{fname}: must document NASTECH_HOME_MODE alongside NASWEBUI_SKIP_CHMOD"
         )
 
 
@@ -116,7 +116,7 @@ def test_env_docker_example_exists():
 
     # Must document the critical vars
     for var in ("UID", "GID", "NASTECH_HOME", "NASTECH_WORKSPACE",
-                "NASMUSICUI_PASSWORD", "NASMUSICUI_SKIP_CHMOD", "NASTECH_HOME_MODE"):
+                "NASWEBUI_PASSWORD", "NASWEBUI_SKIP_CHMOD", "NASTECH_HOME_MODE"):
         assert var in src, (
             f".env.docker.example must document {var} — without it, users "
             f"hit by the related failure mode have no in-template hint."

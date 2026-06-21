@@ -15,8 +15,8 @@ import urllib.request
 from typing import Any
 
 
-_RUNNER_BASE_URL_ENV = "NASMUSICUI_RUNNER_BASE_URL"
-_RUNNER_API_KEY_ENV = "NASMUSICUI_RUNNER_API_KEY"
+_RUNNER_BASE_URL_ENV = "NASWEBUI_RUNNER_BASE_URL"
+_RUNNER_API_KEY_ENV = "NASWEBUI_RUNNER_API_KEY"
 
 
 class RunnerClientError(RuntimeError):
@@ -36,7 +36,7 @@ class HttpRunnerClient:
         if not self.base_url:
             raise ValueError("runner base_url is required")
         # Hardening: the runner endpoint is operator-configured, but reject any
-        # non-HTTP(S) scheme so a misconfigured NASMUSICUI_RUNNER_BASE_URL
+        # non-HTTP(S) scheme so a misconfigured NASWEBUI_RUNNER_BASE_URL
         # (e.g. file:///etc/passwd or ftp://) can never be handed to urlopen.
         _scheme = urllib.parse.urlsplit(self.base_url).scheme.lower()
         if _scheme not in ("http", "https"):

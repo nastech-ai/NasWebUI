@@ -110,9 +110,9 @@ print(json.dumps({
 
 
 def test_naswebui_base_home_named_profile_matches_cookie_without_doubling(tmp_path):
-    """R19k / #749: NASMUSICUI_BASE_HOME may point directly at a named profile home.
+    """R19k / #749: NASWEBUI_BASE_HOME may point directly at a named profile home.
 
-    A single-profile WebUI deployment can start with both NASMUSICUI_BASE_HOME and
+    A single-profile WebUI deployment can start with both NASWEBUI_BASE_HOME and
     NASTECH_HOME set to /base/profiles/foo while the browser still sends the
     logical cookie nastech_profile=foo.  Both active-profile and explicit
     per-request helpers must use /base/profiles/foo, not the doubled
@@ -131,7 +131,7 @@ def test_naswebui_base_home_named_profile_matches_cookie_without_doubling(tmp_pa
 
     env = os.environ.copy()
     env.update({
-        'NASMUSICUI_BASE_HOME': str(profile_home),
+        'NASWEBUI_BASE_HOME': str(profile_home),
         'NASTECH_HOME': str(profile_home),
     })
     data = _run_profile_resolution_probe(env)
@@ -146,7 +146,7 @@ def test_naswebui_base_home_named_profile_matches_cookie_without_doubling(tmp_pa
 def test_naswebui_base_home_named_profile_nonmatching_cookie_uses_sibling_profile_path(tmp_path):
     """R19l / #749: non-matching cookies must not silently route to the pinned home.
 
-    When NASMUSICUI_BASE_HOME is supplied as /base/profiles/foo but the request asks
+    When NASWEBUI_BASE_HOME is supplied as /base/profiles/foo but the request asks
     for logical profile bar, preserving base semantics means bar resolves to the
     sibling /base/profiles/bar.  It must not fall back to foo, and it must not
     append bar under foo/profiles/bar.
@@ -155,7 +155,7 @@ def test_naswebui_base_home_named_profile_nonmatching_cookie_uses_sibling_profil
     profile_home.mkdir(parents=True)
 
     env = os.environ.copy()
-    env.update({'NASMUSICUI_BASE_HOME': str(profile_home)})
+    env.update({'NASWEBUI_BASE_HOME': str(profile_home)})
     data = _run_profile_resolution_probe(env)
 
     expected_bar_home = tmp_path / 'profiles' / 'bar'
@@ -165,7 +165,7 @@ def test_naswebui_base_home_named_profile_nonmatching_cookie_uses_sibling_profil
 
 # ── R19e-h: new_session() profile isolation ───────────────────────────────────
 # These tests call new_session() directly in-process.  Session.save() would write
-# to SESSION_DIR which is set from NASMUSICUI_STATE_DIR at import time and may
+# to SESSION_DIR which is set from NASWEBUI_STATE_DIR at import time and may
 # point to a test-scoped tmp dir that has already been torn down.  We patch save()
 # to a no-op — the tests only care about s.profile, not persistence.
 

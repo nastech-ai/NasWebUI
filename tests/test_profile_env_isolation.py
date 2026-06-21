@@ -13,7 +13,7 @@ def test_profile_switch_clears_previous_profile_env_vars(monkeypatch, tmp_path):
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("NASMUSICUI_BASE_HOME", str(base))
+    monkeypatch.setenv("NASWEBUI_BASE_HOME", str(base))
     monkeypatch.delenv("NASTECH_HOME", raising=False)
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("CUSTOM_TOKEN", raising=False)
@@ -49,7 +49,7 @@ def test_profile_switch_replaces_overlapping_keys(monkeypatch, tmp_path):
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("NASMUSICUI_BASE_HOME", str(base))
+    monkeypatch.setenv("NASWEBUI_BASE_HOME", str(base))
     monkeypatch.delenv("NASTECH_HOME", raising=False)
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("ONLY_P1", raising=False)

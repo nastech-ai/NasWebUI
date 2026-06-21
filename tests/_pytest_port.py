@@ -9,8 +9,8 @@ Usage::
 
     from tests._pytest_port import BASE
 
-conftest.py publishes ``NASMUSICUI_TEST_PORT`` and
-``NASMUSICUI_TEST_STATE_DIR`` to ``os.environ`` at module level
+conftest.py publishes ``NASWEBUI_TEST_PORT`` and
+``NASWEBUI_TEST_STATE_DIR`` to ``os.environ`` at module level
 (before any test file is imported), so this module always reads the
 correct values.  The auto-derivation fallback matches conftest's logic
 exactly, so standalone imports also work correctly.
@@ -32,15 +32,15 @@ _REPO_ROOT   = _TESTS_DIR.parent.resolve()
 _NASTECH_HOME = pathlib.Path(os.getenv('NASTECH_HOME',
                              str(pathlib.Path.home() / '.nastech')))
 
-TEST_PORT = int(os.environ.get('NASMUSICUI_TEST_PORT',
+TEST_PORT = int(os.environ.get('NASWEBUI_TEST_PORT',
                                str(_auto_test_port(_REPO_ROOT))))
 BASE = f"http://127.0.0.1:{TEST_PORT}"
 
 TEST_STATE_DIR = pathlib.Path(os.environ.get(
-    'NASMUSICUI_TEST_STATE_DIR',
+    'NASWEBUI_TEST_STATE_DIR',
     str(_NASTECH_HOME / _auto_state_dir_name(_REPO_ROOT))
 ))
 
 # Default model injected by conftest — tests that mutate the default model
 # must restore to this value so later tests see a consistent baseline.
-TEST_DEFAULT_MODEL = os.environ.get('NASMUSICUI_DEFAULT_MODEL', 'openai/gpt-5.4-mini')
+TEST_DEFAULT_MODEL = os.environ.get('NASWEBUI_DEFAULT_MODEL', 'openai/gpt-5.4-mini')

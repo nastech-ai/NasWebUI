@@ -246,12 +246,12 @@ def test_sse_write_deadline_env_override(monkeypatch):
 
     from api import streaming
 
-    monkeypatch.setenv("NASMUSICUI_SSE_WRITE_DEADLINE", "7.25")
+    monkeypatch.setenv("NASWEBUI_SSE_WRITE_DEADLINE", "7.25")
     try:
         reloaded = importlib.reload(streaming)
         assert reloaded.SSE_WRITE_DEADLINE_SECONDS == 7.25
     finally:
-        monkeypatch.delenv("NASMUSICUI_SSE_WRITE_DEADLINE", raising=False)
+        monkeypatch.delenv("NASWEBUI_SSE_WRITE_DEADLINE", raising=False)
         importlib.reload(streaming)
 
 

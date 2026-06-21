@@ -81,13 +81,13 @@ adapter-seam work:
 - #2469 shipped the Slice 3a cancel-control gate in v0.51.85.
 - #2479 shipped the first Slice 3a implementation in v0.51.86, routing Stop
   Generation through `RuntimeAdapter.cancel_run(...)` only when
-  `NASMUSICUI_RUNTIME_ADAPTER=legacy-journal` is enabled.
+  `NASWEBUI_RUNTIME_ADAPTER=legacy-journal` is enabled.
 - #2487 shipped the Slice 3b approval/clarify gate, and #2496 shipped approval /
   clarify response routing through the adapter seam in v0.51.89.
 - #2509 shipped the Slice 3c queue/continue + goal gate in v0.51.90.
 - #2544 shipped the first Slice 3c implementation in v0.51.91. The goal
   route now uses `RuntimeAdapter.update_goal(...)` only when
-  `NASMUSICUI_RUNTIME_ADAPTER=legacy-journal` is enabled, while preserving the
+  `NASWEBUI_RUNTIME_ADAPTER=legacy-journal` is enabled, while preserving the
   legacy-direct response shape and leaving post-turn goal evaluation in the
   existing agent loop.
 - #2560 shipped the queue-staging clarification in v0.51.92. The RFC now treats
@@ -414,7 +414,7 @@ individual migration slices.
 #### Slice 2 feature flag and revert contract
 
 Slice 2 should be guarded by one WebUI-local setting/environment flag, for
-example `NASMUSICUI_RUNTIME_ADAPTER=legacy-journal` with default
+example `NASWEBUI_RUNTIME_ADAPTER=legacy-journal` with default
 `legacy-direct` until the seam is proven. The flag selects only the route/adapter
 entry point:
 
@@ -513,7 +513,7 @@ Acceptance properties:
    streamed partial assistant content according to the existing cancellation
    contract.
 2. **Adapter flag is behavior-preserving.** With
-   `NASMUSICUI_RUNTIME_ADAPTER=legacy-journal`, Stop Generation uses
+   `NASWEBUI_RUNTIME_ADAPTER=legacy-journal`, Stop Generation uses
    `RuntimeAdapter.cancel_run(...)`; with the default `legacy-direct` path, the
    current route remains available as fallback.
 3. **No new runtime-surrogate state.** The implementation must not add a second
@@ -801,7 +801,7 @@ without routing normal browser chat to that backend yet.
 Scope:
 
 - add a concrete runner-client factory behind an explicit mode such as
-  `NASMUSICUI_RUNTIME_ADAPTER=runner-local`, while preserving `legacy-direct`
+  `NASWEBUI_RUNTIME_ADAPTER=runner-local`, while preserving `legacy-direct`
   and `legacy-journal` as the default/revert paths;
 - validate that `StartRunRequest` carries explicit session, profile, workspace,
   attachments, provider/model, toolset, source, and metadata fields into the
@@ -875,7 +875,7 @@ Scope:
 
 Acceptance tests for Slice 4d:
 
-1. **Route remains default-off.** Unset `NASMUSICUI_RUNTIME_ADAPTER` and
+1. **Route remains default-off.** Unset `NASWEBUI_RUNTIME_ADAPTER` and
    `legacy-direct` keep `/api/chat/start` on the existing path; `runner-local`
    is the only mode allowed to select the runner route.
 2. **Restart/reattach harness proves ownership moved.** A fake or local runner
@@ -957,7 +957,7 @@ Non-goals for Slice 4e:
 #### Slice 4f: Supervised local runner client backend gate
 
 Status as of 2026-05-31: shipped in v0.51.188 via #3073 / #3274. The client
-transport is now implemented behind `NASMUSICUI_RUNNER_BASE_URL` and remains
+transport is now implemented behind `NASWEBUI_RUNNER_BASE_URL` and remains
 default-off. With no endpoint configured, `runner-local` still returns the
 bounded not-configured path and the live in-process `_run_agent_streaming` path
 is unchanged. When configured, WebUI uses a JSON HTTP client boundary for start /
@@ -1045,7 +1045,7 @@ Scope:
 
 - define the local runner process lifecycle: spawn/start, health check, run
   ownership, graceful shutdown, crash classification, and cleanup;
-- keep WebUI as a client of `NASMUSICUI_RUNNER_BASE_URL`, not the owner of
+- keep WebUI as a client of `NASWEBUI_RUNNER_BASE_URL`, not the owner of
   process-local runner execution state;
 - persist run/session lookup, ordered events, terminal state, and active controls
   in runner-owned or journal-backed state that a restarted WebUI can discover;
@@ -1069,7 +1069,7 @@ Acceptance tests for Slice 4g:
    gain new module-level maps for runner-owned streams, cancel flags,
    approval/clarify callbacks, cached agents, child process run registries, goal
    state, or queue schedulers.
-4. **Default-off and reversible.** Unset `NASMUSICUI_RUNNER_BASE_URL` or switch
+4. **Default-off and reversible.** Unset `NASWEBUI_RUNNER_BASE_URL` or switch
    the adapter mode back to legacy and the existing in-process path remains
    available without session or journal migration.
 5. **Runner health and failure are observable.** A missing, unhealthy, or crashed

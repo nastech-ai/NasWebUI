@@ -103,7 +103,7 @@ class TestIssue1500EnvVarAlignment:
         cfg_path = tmp_path / "config.yaml"
         monkeypatch.setattr(ob, "_get_config_path", lambda: cfg_path)
         monkeypatch.setattr(profiles, "get_active_naswebui_home", lambda: tmp_path)
-        monkeypatch.delenv("NASMUSICUI_SKIP_ONBOARDING", raising=False)
+        monkeypatch.delenv("NASWEBUI_SKIP_ONBOARDING", raising=False)
         monkeypatch.delenv("LM_API_KEY", raising=False)
         monkeypatch.delenv("LMSTUDIO_API_KEY", raising=False)
 

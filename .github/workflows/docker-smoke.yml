@@ -19,7 +19,7 @@ name: Docker smoke
 #   - Reaper before each smoke run + trap on EXIT for orphan defence.
 #
 # Out of scope for v1 (per design review):
-#   - NASMUSICUI_SMOKE_TEST env flag in docker_init.bash (production-code footgun)
+#   - NASWEBUI_SMOKE_TEST env flag in docker_init.bash (production-code footgun)
 #   - --user 60000:60000 (skips the chown branch we're protecting against)
 #   - Hadolint / yamllint (separate lint workflow, follow-up PR)
 #   - Local-runnable scripts/docker-smoke-test.sh (ship CI first, then iterate)

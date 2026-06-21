@@ -40,8 +40,8 @@ _platform_default_nastech_home = _paths._platform_default_nastech_home
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 
 # ── Network config (env-overridable) ─────────────────────────────────────────
-HOST = os.getenv("NASMUSICUI_HOST", "127.0.0.1")
-PORT = int(os.getenv("NASMUSICUI_PORT", "8787"))
+HOST = os.getenv("NASWEBUI_HOST", "127.0.0.1")
+PORT = int(os.getenv("NASWEBUI_PORT", "8787"))
 
 
 def _env_int(name: str, default: int, *, minimum: int = 1) -> int:
@@ -62,15 +62,15 @@ def _env_int(name: str, default: int, *, minimum: int = 1) -> int:
     return value if value >= minimum else default
 
 # ── TLS/HTTPS config (optional, env-overridable) ────────────────────────────
-TLS_CERT = os.getenv("NASMUSICUI_TLS_CERT", "").strip() or None
-TLS_KEY = os.getenv("NASMUSICUI_TLS_KEY", "").strip() or None
+TLS_CERT = os.getenv("NASWEBUI_TLS_CERT", "").strip() or None
+TLS_KEY = os.getenv("NASWEBUI_TLS_KEY", "").strip() or None
 TLS_ENABLED = TLS_CERT is not None and TLS_KEY is not None
 
 # ── State directory (env-overridable, never inside repo) ──────────────────────
 _DEFAULT_NASTECH_HOME = _platform_default_nastech_home()
 
 STATE_DIR = (
-    Path(os.getenv("NASMUSICUI_STATE_DIR", str(_DEFAULT_NASTECH_HOME / "webui")))
+    Path(os.getenv("NASWEBUI_STATE_DIR", str(_DEFAULT_NASTECH_HOME / "webui")))
     .expanduser()
     .resolve()
 )
@@ -127,7 +127,7 @@ def _discover_agent_dir() -> Path:
     Locate the NasTech-Agent checkout using a multi-strategy search.
 
     Priority:
-      1. NASMUSICUI_AGENT_DIR env var  -- explicit override always wins
+      1. NASWEBUI_AGENT_DIR env var  -- explicit override always wins
       2. NASTECH_HOME / NasTech-Agent      -- e.g. ~/.nastech/NasTech-Agent
       3. Sibling of this repo            -- ../NasTech-Agent
       4. Parent of this repo             -- ../../NasTech-Agent (nested layout)
@@ -137,9 +137,9 @@ def _discover_agent_dir() -> Path:
     candidates = []
 
     # 1. Explicit env var
-    if os.getenv("NASMUSICUI_AGENT_DIR"):
+    if os.getenv("NASWEBUI_AGENT_DIR"):
         candidates.append(
-            Path(os.getenv("NASMUSICUI_AGENT_DIR")).expanduser().resolve()
+            Path(os.getenv("NASWEBUI_AGENT_DIR")).expanduser().resolve()
         )
 
     # 2. NASTECH_HOME / NasTech-Agent
@@ -179,13 +179,13 @@ def _discover_python(agent_dir: Path) -> str:
     Locate a Python executable that has the NasTech agent dependencies installed.
 
     Priority:
-      1. NASMUSICUI_PYTHON env var
+      1. NASWEBUI_PYTHON env var
       2. Agent venv at <agent_dir>/venv/bin/python
       3. Local .venv inside this repo
       4. System python3
     """
-    if os.getenv("NASMUSICUI_PYTHON"):
-        return os.getenv("NASMUSICUI_PYTHON")
+    if os.getenv("NASWEBUI_PYTHON"):
+        return os.getenv("NASWEBUI_PYTHON")
 
     if agent_dir:
         venv_py = agent_dir / "venv" / "bin" / "python"
@@ -518,8 +518,8 @@ def _workspace_candidates(raw: str | Path | None = None) -> list[Path]:
             candidates.append(path)
 
     add(raw)
-    if os.getenv("NASMUSICUI_DEFAULT_WORKSPACE"):
-        add(os.getenv("NASMUSICUI_DEFAULT_WORKSPACE"))
+    if os.getenv("NASWEBUI_DEFAULT_WORKSPACE"):
+        add(os.getenv("NASWEBUI_DEFAULT_WORKSPACE"))
 
     home_workspace = HOME / "workspace"
     home_work = HOME / "work"
@@ -552,7 +552,7 @@ def resolve_default_workspace(raw: str | Path | None = None) -> Path:
             return candidate
     raise RuntimeError(
         "Could not create or access any usable workspace directory. "
-        "Set NASMUSICUI_DEFAULT_WORKSPACE to a writable path."
+        "Set NASWEBUI_DEFAULT_WORKSPACE to a writable path."
     )
 
 
@@ -560,7 +560,7 @@ def resolve_default_workspace(raw: str | Path | None = None) -> Path:
 def _discover_default_workspace() -> Path:
     """
     Resolve the default workspace in order:
-      1. NASMUSICUI_DEFAULT_WORKSPACE env var
+      1. NASWEBUI_DEFAULT_WORKSPACE env var
       2. ~/workspace if it already exists
       3. ~/work if it already exists
       4. ~/workspace (create if needed)
@@ -570,7 +570,7 @@ def _discover_default_workspace() -> Path:
 
 
 DEFAULT_WORKSPACE = _discover_default_workspace()
-DEFAULT_MODEL = os.getenv("NASMUSICUI_DEFAULT_MODEL", "")  # Empty = use provider default; avoids showing unavailable OpenAI model to non-OpenAI users (#646)
+DEFAULT_MODEL = os.getenv("NASWEBUI_DEFAULT_MODEL", "")  # Empty = use provider default; avoids showing unavailable OpenAI model to non-OpenAI users (#646)
 
 
 # ── Startup diagnostics ───────────────────────────────────────────────────────
@@ -582,7 +582,7 @@ def _warn_state_dir_divergence(warn_prefix: str) -> None:
     for sibling directories with a sessions/ child that has .json files.
 
     Prints a diagnostic warning if a divergence is detected, helping users identify when
-    they may have switched launch methods and the NASMUSICUI_STATE_DIR env var differs.
+    they may have switched launch methods and the NASWEBUI_STATE_DIR env var differs.
     """
     try:
         # Check if session store is empty
@@ -623,9 +623,9 @@ def _warn_state_dir_divergence(warn_prefix: str) -> None:
                                 f"        Current : {STATE_DIR}\n"
                                 f"        Sibling : {sibling}\n"
                                 f"        If you switched launch methods (bootstrap.py / ctl.sh / systemd),\n"
-                                f"        the active NASMUSICUI_STATE_DIR env var may differ from the\n"
+                                f"        the active NASWEBUI_STATE_DIR env var may differ from the\n"
                                 f"        previous run. Set it explicitly to restore access:\n"
-                                f"          export NASMUSICUI_STATE_DIR={sibling}",
+                                f"          export NASWEBUI_STATE_DIR={sibling}",
                                 flush=True,
                             )
                             return
@@ -665,7 +665,7 @@ def print_startup_config() -> None:
             "      The server will start but agent features will not work.\n"
             "\n"
             "      To fix, set one of:\n"
-            "        export NASMUSICUI_AGENT_DIR=/path/to/NasTech-Agent\n"
+            "        export NASWEBUI_AGENT_DIR=/path/to/NasTech-Agent\n"
             "        export NASTECH_HOME=/path/to/.nastech\n"
             "\n"
             "      Or clone NasTech-Agent as a sibling of this repo:\n"
@@ -695,7 +695,7 @@ def verify_nastech_imports() -> tuple:
 
 # ── Limits ───────────────────────────────────────────────────────────────────
 MAX_FILE_BYTES = 400_000
-MAX_UPLOAD_BYTES = _env_mb_bytes("NASMUSICUI_MAX_UPLOAD_MB", 20)
+MAX_UPLOAD_BYTES = _env_mb_bytes("NASWEBUI_MAX_UPLOAD_MB", 20)
 
 # ── File type maps ───────────────────────────────────────────────────────────
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico", ".bmp"}
@@ -2967,11 +2967,11 @@ _cache_build_in_progress = False  # True while a cold path is actively building
 # the time a foreground caller will wait: past the budget it returns a usable
 # fallback (last-known disk cache or a network-free minimal catalog) and lets
 # the rebuild finish out-of-band and populate the cache for the next call.
-# Set NASMUSICUI_MODELS_REBUILD_BUDGET=0 to restore the legacy synchronous
+# Set NASWEBUI_MODELS_REBUILD_BUDGET=0 to restore the legacy synchronous
 # (unbounded) behaviour.
 try:
     _LIVE_REBUILD_BUDGET_SECONDS: float = float(
-        os.getenv("NASMUSICUI_MODELS_REBUILD_BUDGET", "4") or "4"
+        os.getenv("NASWEBUI_MODELS_REBUILD_BUDGET", "4") or "4"
     )
 except (TypeError, ValueError):
     _LIVE_REBUILD_BUDGET_SECONDS = 4.0
@@ -2985,10 +2985,10 @@ except (TypeError, ValueError):
 # could flood the log at warning level. Rate-limit per reason: the FIRST
 # occurrence in a cooldown window logs at warning; subsequent occurrences in
 # the same window log at info (so log signal stays useful but volume bounded).
-# Override the default cooldown via NASMUSICUI_BUDGET_WARN_COOLDOWN (seconds).
+# Override the default cooldown via NASWEBUI_BUDGET_WARN_COOLDOWN (seconds).
 try:
     _BUDGET_WARN_COOLDOWN_SECONDS: float = float(
-        os.getenv("NASMUSICUI_BUDGET_WARN_COOLDOWN", "300") or "300"
+        os.getenv("NASWEBUI_BUDGET_WARN_COOLDOWN", "300") or "300"
     )
 except (TypeError, ValueError):
     _BUDGET_WARN_COOLDOWN_SECONDS = 300.0
@@ -3108,7 +3108,7 @@ _provider_models_invalidated_ts: dict[str, float] = {}  # provider_id -> timesta
 # signal is somehow missed, but the cache will always be warm after the first
 # page load following a server start.
 # Cache file lives inside STATE_DIR so each server instance (different
-# NASMUSICUI_STATE_DIR / port) has its own file and test runs never
+# NASWEBUI_STATE_DIR / port) has its own file and test runs never
 # pollute the production server's cache. Also works on macOS and Windows
 # where /dev/shm does not exist.
 def _current_webui_version() -> str | None:
@@ -5449,8 +5449,8 @@ _INDEX_HTML_PATH = REPO_ROOT / "static" / "index.html"
 LOCK = threading.Lock()
 # Max compact Session objects held in the in-memory LRU (issue #3506). Lighter
 # than the agent cache (no live agent runtime), but still bounded and operator-
-# tunable via NASMUSICUI_SESSIONS_MAX for installs with hundreds of sessions.
-SESSIONS_MAX = _env_int("NASMUSICUI_SESSIONS_MAX", 100)
+# tunable via NASWEBUI_SESSIONS_MAX for installs with hundreds of sessions.
+SESSIONS_MAX = _env_int("NASWEBUI_SESSIONS_MAX", 100)
 CHAT_LOCK = threading.Lock()
 
 
@@ -5639,8 +5639,8 @@ SESSION_AGENT_CACHE: collections.OrderedDict = collections.OrderedDict()  # LRU 
 # the dominant lever on WebUI resident memory (issue #3506). The default is kept
 # deliberately modest -- large/long sessions can each weigh tens of MB, so 50
 # live agents could pin >1 GB on a heavily multiplexed install. Operators can
-# tune it via NASMUSICUI_AGENT_CACHE_MAX without editing source.
-SESSION_AGENT_CACHE_MAX = _env_int("NASMUSICUI_AGENT_CACHE_MAX", 25)
+# tune it via NASWEBUI_AGENT_CACHE_MAX without editing source.
+SESSION_AGENT_CACHE_MAX = _env_int("NASWEBUI_AGENT_CACHE_MAX", 25)
 SESSION_AGENT_CACHE_LOCK = threading.Lock()
 
 
@@ -5759,7 +5759,7 @@ _SETTINGS_DEFAULTS = {
     "tab_order": [],  # user-defined sidebar/rail tab order for reorderable tabs; chat/settings stay fixed
     "language": "en",  # UI locale code; must match a key in static/i18n.js LOCALES
     "bot_name": os.getenv(
-        "NASMUSICUI_BOT_NAME", "NasTech"
+        "NASWEBUI_BOT_NAME", "NasTech"
     ),  # display name for the assistant
     "sound_enabled": False,  # play notification sound when assistant finishes
     "rtl": False,  # right-to-left chat layout (chat messages + composer only)
@@ -6063,7 +6063,7 @@ def save_settings(settings: dict) -> dict:
 
 
 # Apply saved settings on startup (override env-derived defaults)
-# Exception: if NASMUSICUI_DEFAULT_WORKSPACE is explicitly set in the
+# Exception: if NASWEBUI_DEFAULT_WORKSPACE is explicitly set in the
 # environment, it wins over whatever settings.json has stored.  Persisted
 # config must never shadow an explicit env-var override (Docker deployments
 # rely on this — otherwise deleting settings.json is the only escape).
@@ -6073,7 +6073,7 @@ try:
 except OSError:
     _settings_file_exists = False
 if _settings_file_exists:
-    if not os.getenv("NASMUSICUI_DEFAULT_WORKSPACE"):
+    if not os.getenv("NASWEBUI_DEFAULT_WORKSPACE"):
         DEFAULT_WORKSPACE = resolve_default_workspace(
             _startup_settings.get("default_workspace")
         )

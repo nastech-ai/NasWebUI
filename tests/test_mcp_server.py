@@ -3,7 +3,7 @@
 Covers: project CRUD, profile scoping, title collision, color validation,
 session listing, cross-profile isolation.
 
-Uses NASMUSICUI_STATE_DIR env var to point to a temp directory,
+Uses NASWEBUI_STATE_DIR env var to point to a temp directory,
 so tests don't touch the real webui state. Module is re-imported
 per test class to ensure clean state.
 """
@@ -59,14 +59,14 @@ _SAVED_CONSTANTS = {"captured": False}
 # ═══════════════════════════════════════════════════════════════════════════
 
 def _fresh_state_dir():
-    """Create a clean temp state dir and set NASMUSICUI_STATE_DIR."""
+    """Create a clean temp state dir and set NASWEBUI_STATE_DIR."""
     td = tempfile.mkdtemp()
     state_dir = Path(td)
     sessions_dir = state_dir / "sessions"
     sessions_dir.mkdir(parents=True)
     (state_dir / "projects.json").write_text("[]", encoding="utf-8")
     (sessions_dir / "_index.json").write_text("[]", encoding="utf-8")
-    os.environ["NASMUSICUI_STATE_DIR"] = str(state_dir)
+    os.environ["NASWEBUI_STATE_DIR"] = str(state_dir)
     return state_dir
 
 
@@ -81,7 +81,7 @@ def _cleanup_state_dir(state_dir: Path):
     no longer exists or doesn't match their pytest-managed state dir."""
     import shutil
     shutil.rmtree(state_dir, ignore_errors=True)
-    os.environ.pop("NASMUSICUI_STATE_DIR", None)
+    os.environ.pop("NASWEBUI_STATE_DIR", None)
 
     # Restore api.config / mcp_server / api.models module constants.
     saved = _SAVED_CONSTANTS
@@ -107,7 +107,7 @@ def _cleanup_state_dir(state_dir: Path):
 def _reimport_mcp():
     """Re-point mcp_server's module-level STATE_DIR / SESSION_DIR /
     SESSION_INDEX_FILE / PROJECTS_FILE constants at the current
-    NASMUSICUI_STATE_DIR.
+    NASWEBUI_STATE_DIR.
 
     Returns (mcp_module, profiles_module) — profiles_module is the
     live api.profiles reference.
@@ -128,7 +128,7 @@ def _reimport_mcp():
     that mutate those env vars during their own setup and don't restore
     them in the strict sense the active-profile path resolution needs.
     """
-    state_dir = Path(os.environ['NASMUSICUI_STATE_DIR'])
+    state_dir = Path(os.environ['NASWEBUI_STATE_DIR'])
 
     # Sibling test files (e.g. test_profile_path_security.py) mutate
     # NASTECH_BASE_HOME / NASTECH_HOME but only restore sys.modules — the
@@ -246,8 +246,8 @@ def _reimport_mcp():
     # Re-evaluate WEBUI_URL from current env (PR #1895 made it env-aware
     # but the value is computed once at module load; tests need to see
     # current env state).
-    mod.WEBUI_HOST = os.environ.get("NASMUSICUI_HOST", "127.0.0.1")
-    mod.WEBUI_PORT = os.environ.get("NASMUSICUI_PORT", "8787")
+    mod.WEBUI_HOST = os.environ.get("NASWEBUI_HOST", "127.0.0.1")
+    mod.WEBUI_PORT = os.environ.get("NASWEBUI_PORT", "8787")
     mod.WEBUI_URL = f"http://{mod.WEBUI_HOST}:{mod.WEBUI_PORT}"
 
     fresh_profiles._active_profile = 'default'
@@ -391,7 +391,7 @@ class TestDeleteProject:
         assert "error" in result
 
     async def test_delete_no_auth_refuses_unassign(self):
-        """Without NASMUSICUI_PASSWORD, delete_project must NOT touch
+        """Without NASWEBUI_PASSWORD, delete_project must NOT touch
         session JSONs. Direct FS writes would bypass _write_session_index()
         and leave _index.json holding the stale project_id, causing a
         running WebUI to keep grouping sessions under the deleted project.
@@ -401,7 +401,7 @@ class TestDeleteProject:
         surface a `warning` field telling the operator to set the env var.
         """
         from api.config import SESSION_DIR, SESSION_INDEX_FILE
-        os.environ.pop("NASMUSICUI_PASSWORD", None)
+        os.environ.pop("NASWEBUI_PASSWORD", None)
 
         # Create project + a session JSON that points at it
         created = await _call(self.mod, "create_project", name="ToDelete")
@@ -427,7 +427,7 @@ class TestDeleteProject:
         assert result["ok"] is True
         assert result["unassigned_sessions"] == 0
         assert "warning" in result
-        assert "NASMUSICUI_PASSWORD" in result["warning"]
+        assert "NASWEBUI_PASSWORD" in result["warning"]
         # Session JSON untouched
         assert session_path.read_text(encoding="utf-8") == session_before
         # Index untouched
@@ -598,7 +598,7 @@ class TestApiPassword:
     def setup(self):
         self.state_dir = _fresh_state_dir()
         # Ensure env var is unset for the test
-        os.environ.pop("NASMUSICUI_PASSWORD", None)
+        os.environ.pop("NASWEBUI_PASSWORD", None)
         self.mod, self.profiles = _reimport_mcp()
         yield
         _cleanup_state_dir(self.state_dir)
@@ -616,11 +616,11 @@ class TestApiPassword:
         assert self.mod._api_password() is None
 
     async def test_env_var_returned(self):
-        os.environ["NASMUSICUI_PASSWORD"] = "secret123"
+        os.environ["NASWEBUI_PASSWORD"] = "secret123"
         try:
             assert self.mod._api_password() == "secret123"
         finally:
-            os.environ.pop("NASMUSICUI_PASSWORD", None)
+            os.environ.pop("NASWEBUI_PASSWORD", None)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -834,7 +834,7 @@ class TestApiWireFormat:
         self.thread.start()
 
         # Disable auth so _api_post() does not attempt a real /api/auth/login.
-        os.environ.pop("NASMUSICUI_PASSWORD", None)
+        os.environ.pop("NASWEBUI_PASSWORD", None)
 
         self.mod, self.profiles = _reimport_mcp()
         # Override AFTER import so the value sticks in the loaded module.
@@ -898,27 +898,27 @@ class TestApiWireFormat:
         assert result["ok"] is True
 
     async def test_url_built_from_env_vars(self):
-        """NASMUSICUI_HOST / NASMUSICUI_PORT govern WEBUI_URL.
+        """NASWEBUI_HOST / NASWEBUI_PORT govern WEBUI_URL.
 
         Locks the maintainer-suggested env-var contract from #1895 review:
         the MCP must track the same env vars api/config.py:32-33 reads, so
         a non-default WebUI port (e.g. 8788 when 8787 is held by another
         service on the host) does not require a code edit."""
-        os.environ["NASMUSICUI_HOST"] = "10.0.0.42"
-        os.environ["NASMUSICUI_PORT"] = "9999"
+        os.environ["NASWEBUI_HOST"] = "10.0.0.42"
+        os.environ["NASWEBUI_PORT"] = "9999"
         try:
             mod, _ = _reimport_mcp()
             assert mod.WEBUI_HOST == "10.0.0.42"
             assert mod.WEBUI_PORT == "9999"
             assert mod.WEBUI_URL == "http://10.0.0.42:9999"
         finally:
-            os.environ.pop("NASMUSICUI_HOST", None)
-            os.environ.pop("NASMUSICUI_PORT", None)
+            os.environ.pop("NASWEBUI_HOST", None)
+            os.environ.pop("NASWEBUI_PORT", None)
 
     async def test_url_default_when_env_unset(self):
         """Default upstream port is 8787, matching api/config.py:33."""
-        os.environ.pop("NASMUSICUI_HOST", None)
-        os.environ.pop("NASMUSICUI_PORT", None)
+        os.environ.pop("NASWEBUI_HOST", None)
+        os.environ.pop("NASWEBUI_PORT", None)
         mod, _ = _reimport_mcp()
         assert mod.WEBUI_HOST == "127.0.0.1"
         assert mod.WEBUI_PORT == "8787"

@@ -421,9 +421,9 @@ def test_manual_compress_worker_uses_session_profile_env(monkeypatch, tmp_path, 
             thread_env = getattr(_thread_ctx, "env", {})
             EnvAssertingAgent.seen_env = {
                 "NASTECH_HOME": os.environ.get("NASTECH_HOME"),
-                "NASMUSICUI_TEST_PROFILE_ENV": os.environ.get("NASMUSICUI_TEST_PROFILE_ENV"),
+                "NASWEBUI_TEST_PROFILE_ENV": os.environ.get("NASWEBUI_TEST_PROFILE_ENV"),
                 "THREAD_NASTECH_HOME": thread_env.get("NASTECH_HOME"),
-                "THREAD_NASMUSICUI_TEST_PROFILE_ENV": thread_env.get("NASMUSICUI_TEST_PROFILE_ENV"),
+                "THREAD_NASWEBUI_TEST_PROFILE_ENV": thread_env.get("NASWEBUI_TEST_PROFILE_ENV"),
                 "SKILL_MODULE_HOME": getattr(skill_module, "NASTECH_HOME", None),
                 "SKILL_MODULE_DIR": getattr(skill_module, "SKILLS_DIR", None),
             }
@@ -446,10 +446,10 @@ def test_manual_compress_worker_uses_session_profile_env(monkeypatch, tmp_path, 
     monkeypatch.setattr(
         profiles,
         "get_profile_runtime_env",
-        lambda home: {"NASMUSICUI_TEST_PROFILE_ENV": "work-runtime"},
+        lambda home: {"NASWEBUI_TEST_PROFILE_ENV": "work-runtime"},
     )
     monkeypatch.setenv("NASTECH_HOME", "default-home")
-    monkeypatch.delenv("NASMUSICUI_TEST_PROFILE_ENV", raising=False)
+    monkeypatch.delenv("NASWEBUI_TEST_PROFILE_ENV", raising=False)
     _install_fake_compression_runtime(monkeypatch, EnvAssertingAgent)
 
     with routes._MANUAL_COMPRESSION_JOBS_LOCK:
@@ -465,16 +465,16 @@ def test_manual_compress_worker_uses_session_profile_env(monkeypatch, tmp_path, 
 
     assert EnvAssertingAgent.seen_env == {
         "NASTECH_HOME": str(profile_home),
-        "NASMUSICUI_TEST_PROFILE_ENV": "work-runtime",
+        "NASWEBUI_TEST_PROFILE_ENV": "work-runtime",
         "THREAD_NASTECH_HOME": str(profile_home),
-        "THREAD_NASMUSICUI_TEST_PROFILE_ENV": "work-runtime",
+        "THREAD_NASWEBUI_TEST_PROFILE_ENV": "work-runtime",
         "SKILL_MODULE_HOME": profile_home,
         "SKILL_MODULE_DIR": profile_home / "skills",
     }
     assert str(getattr(fake_skill_module, "NASTECH_HOME")) == "default-home"
     assert str(getattr(fake_skill_module, "SKILLS_DIR")) == "default-home/skills"
     assert os.environ.get("NASTECH_HOME") == "default-home"
-    assert os.environ.get("NASMUSICUI_TEST_PROFILE_ENV") is None
+    assert os.environ.get("NASWEBUI_TEST_PROFILE_ENV") is None
     with routes._MANUAL_COMPRESSION_JOBS_LOCK:
         assert routes._MANUAL_COMPRESSION_JOBS[sid]["status"] == "done"
 

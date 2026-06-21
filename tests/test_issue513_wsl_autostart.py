@@ -25,9 +25,9 @@ def test_wsl_autostart_docs_cover_session_and_task_scheduler_options():
     assert "Windows Task Scheduler" in doc
     assert "scripts/wsl/naswebui_autostart.sh" in doc
     assert "scripts/windows/setup_webui_autostart.ps1" in doc
-    assert "NASMUSICUI_REPO" in doc
-    assert "NASMUSICUI_LOG_DIR" in doc
-    assert "NASMUSICUI_REQUIRE_AGENT_PROCESS" in doc
+    assert "NASWEBUI_REPO" in doc
+    assert "NASWEBUI_LOG_DIR" in doc
+    assert "NASWEBUI_REQUIRE_AGENT_PROCESS" in doc
     assert "/root" not in doc
     assert "C:\\Users\\Michael" not in doc
 
@@ -38,15 +38,15 @@ def test_wsl_autostart_launcher_has_safe_duplicate_prevention_and_exports_runtim
     assert script.startswith("#!/usr/bin/env bash\n")
     assert "set -euo pipefail" in script
     assert "flock -n" in script
-    assert "NASMUSICUI_LOCK_FILE" in script
-    assert "NASMUSICUI_PID_FILE" in script
+    assert "NASWEBUI_LOCK_FILE" in script
+    assert "NASWEBUI_PID_FILE" in script
     assert "curl -fsS --max-time 3" in script
-    assert "bash \"${NASMUSICUI_REPO}/start.sh\" --foreground" in script
+    assert "bash \"${NASWEBUI_REPO}/start.sh\" --foreground" in script
     assert "nohup" in script
 
-    # The launcher documents NASMUSICUI_HOST/PORT as runtime knobs; they must
+    # The launcher documents NASWEBUI_HOST/PORT as runtime knobs; they must
     # be exported so bootstrap.py/server.py receive the selected WSL values.
-    assert re.search(r"^export NASMUSICUI_HOST NASMUSICUI_PORT$", script, re.MULTILINE)
+    assert re.search(r"^export NASWEBUI_HOST NASWEBUI_PORT$", script, re.MULTILINE)
 
     assert "/root" not in script
     assert "/home/michael" not in script

@@ -16,7 +16,7 @@ from pathlib import Path
 
 # Isolate state dir so tests never touch real sessions
 _TEST_STATE = Path(tempfile.mkdtemp())
-os.environ["NASMUSICUI_STATE_DIR"] = str(_TEST_STATE)
+os.environ["NASWEBUI_STATE_DIR"] = str(_TEST_STATE)
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 

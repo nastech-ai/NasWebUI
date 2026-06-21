@@ -50,7 +50,7 @@ if [[ -f "${REPO_ROOT}/.env" ]]; then
   unset _naswebui_env_filtered
 fi
 
-PYTHON="${NASMUSICUI_PYTHON:-}"
+PYTHON="${NASWEBUI_PYTHON:-}"
 if [[ -z "${PYTHON}" ]]; then
   if command -v python3 >/dev/null 2>&1; then
     PYTHON="$(command -v python3)"

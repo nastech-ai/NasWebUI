@@ -6,7 +6,7 @@ per-provider probe (the Copilot token-exchange HTTPS call) is monkeypatched to
 hang. We drive start_session_turn directly (no browser, no real agent) and
 measure how long model-resolution takes.
 
-BEFORE (legacy behaviour: NASMUSICUI_MODELS_REBUILD_BUDGET=0 AND
+BEFORE (legacy behaviour: NASWEBUI_MODELS_REBUILD_BUDGET=0 AND
 prefer_cache forced off): the wakeup blocks on the hung probe — exactly the
 "stuck at resolve_model_provider" symptom.
 
@@ -110,7 +110,7 @@ def _time_call(label, fn, timeout):
 def main():
     print("=== BEFORE (legacy: budget=0, prefer_cache forced OFF) ===")
     import os
-    os.environ["NASMUSICUI_MODELS_REBUILD_BUDGET"] = "0"
+    os.environ["NASWEBUI_MODELS_REBUILD_BUDGET"] = "0"
     # Reimport config so the budget constant picks up env=0.
     for m in ("api.config", "api.routes"):
         sys.modules.pop(m, None)
@@ -132,7 +132,7 @@ def main():
 
     print()
     print("=== AFTER (shipped: prefer_cached_catalog=True + bounded rebuild) ===")
-    os.environ["NASMUSICUI_MODELS_REBUILD_BUDGET"] = "4"
+    os.environ["NASWEBUI_MODELS_REBUILD_BUDGET"] = "4"
     for m in ("api.config", "api.routes"):
         sys.modules.pop(m, None)
     import api.config as cfg2  # noqa: F401

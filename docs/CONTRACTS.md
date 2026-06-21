@@ -166,7 +166,7 @@ Required checks:
 - Contract-affecting PRs include `Contract Routing`; intentional contract
   changes also include `Contract Change`.
 - Onboarding/setup validation used isolated `NASTECH_HOME` and
-  `NASMUSICUI_STATE_DIR`, unless the human operator explicitly requested real
+  `NASWEBUI_STATE_DIR`, unless the human operator explicitly requested real
   state.
 - Docs and `CHANGELOG.md` updates are either included or explicitly not needed.
 - After the GitHub write, read the PR back and verify the headings rendered as
@@ -208,7 +208,7 @@ Before opening a change for review, confirm:
 - New dependencies, build tools, frameworks, or long-lived processes are avoided
   unless the benefit and rollback story are explicit.
 - Onboarding/setup validation uses isolated `NASTECH_HOME` and
-  `NASMUSICUI_STATE_DIR` unless the human operator explicitly asks to use real
+  `NASWEBUI_STATE_DIR` unless the human operator explicitly asks to use real
   state.
 - Secrets, private paths, local-only workflows, and personal notes stay out of
   tracked docs and examples.

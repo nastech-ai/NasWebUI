@@ -20,7 +20,7 @@ import pytest
 
 # Ensure both repos are importable.
 WEBUI_ROOT = pathlib.Path(__file__).resolve().parent.parent
-AGENT_ROOT = pathlib.Path(os.environ.get("NASMUSICUI_AGENT_ROOT", pathlib.Path.home() / "NasTech-Agent"))
+AGENT_ROOT = pathlib.Path(os.environ.get("NASWEBUI_AGENT_ROOT", pathlib.Path.home() / "NasTech-Agent"))
 for p in (str(WEBUI_ROOT), str(AGENT_ROOT)):
     if p not in sys.path:
         sys.path.insert(0, p)
@@ -55,7 +55,7 @@ def test_cron_profile_context_pins_profile_home(tmp_path, monkeypatch):
     from cron.jobs import list_jobs
     # Force cron.jobs to re-evaluate its cached constants for this test run.
     import cron.jobs as _cj
-    _cj.NASMUSICUI_DIR = default_home
+    _cj.NASWEBUI_DIR = default_home
     _cj.CRON_DIR = default_home / "cron"
     _cj.JOBS_FILE = _cj.CRON_DIR / "jobs.json"
     _cj.OUTPUT_DIR = _cj.CRON_DIR / "output"
@@ -96,7 +96,7 @@ def test_cron_profile_context_for_home_pins_explicit_home(tmp_path):
     os.environ["NASTECH_HOME"] = str(home_a)
     try:
         import cron.jobs as _cj
-        _cj.NASMUSICUI_DIR = home_a
+        _cj.NASWEBUI_DIR = home_a
         _cj.CRON_DIR = home_a / "cron"
         _cj.JOBS_FILE = _cj.CRON_DIR / "jobs.json"
         _cj.OUTPUT_DIR = _cj.CRON_DIR / "output"

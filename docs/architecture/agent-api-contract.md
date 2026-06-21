@@ -39,7 +39,7 @@ helpers are genuinely shared code.
 | Audit class | Current surface | Replacement classification |
 | --- | --- | --- |
 | `docker_agent_source_volume` | Compose files and Docker docs expose `NasTech-Agent-src` and `/opt/nastech` to make the agent checkout visible to WebUI. | Remove the WebUI source mount only after startup install and runtime imports have migrated. This needs Docker/compose follow-up work, not a runtime behavior change in this audit PR. |
-| `startup_dependency_install` | `api/startup.py` discovers `NASMUSICUI_AGENT_DIR` or `$NASTECH_HOME/NasTech-Agent`; `server.py` calls `auto_install_agent_deps()` after import verification fails; `docker_init.bash` installs from the staged agent source. | Replace source-tree pip installs with a packaged NasTech-Agent WebUI client plus an agent health/version capability contract. Keep `NASMUSICUI_AGENT_DIR` during migration as an override/debug path, but it should stop being required in normal multi-container startup. |
+| `startup_dependency_install` | `api/startup.py` discovers `NASWEBUI_AGENT_DIR` or `$NASTECH_HOME/NasTech-Agent`; `server.py` calls `auto_install_agent_deps()` after import verification fails; `docker_init.bash` installs from the staged agent source. | Replace source-tree pip installs with a packaged NasTech-Agent WebUI client plus an agent health/version capability contract. Keep `NASWEBUI_AGENT_DIR` during migration as an override/debug path, but it should stop being required in normal multi-container startup. |
 | `runtime_auxiliary_model_metadata` | `api/streaming.py`, `api/routes.py`, `api/config.py`, and `api/providers.py` import `agent.auxiliary_client`, `agent.model_metadata`, `agent.models_dev`, `nastech_cli.models`, and `agent.account_usage`. | Existing provider/model WebUI endpoints can keep serving UI data where they already wrap agent helpers. Missing surfaces need NasTech-Agent endpoints or a client package for auxiliary task config, text auxiliary calls, context length, token estimate, provider catalog, and account usage. |
 | `runtime_session_state` | `api/streaming.py`, `api/goals.py`, and `api/state_sync.py` import `nastech_state.SessionDB` directly. | Move cross-container state reads and writes behind NasTech-Agent session/state endpoints. WebUI-only presentation state can remain local, but agent session storage should not be opened from the WebUI container. |
 | `runtime_gateway_provider` | `api/streaming.py` and `api/routes.py` import `nastech_cli.runtime_provider`; adapter helpers such as `agent.anthropic_adapter` are also imported for gateway normalization. | Provider resolution, runtime routing, and gateway invocation should be NasTech-Agent API calls. WebUI can keep request validation and display formatting, but it should not import runtime provider internals from the agent checkout. |
@@ -90,7 +90,7 @@ and safe to import without the agent source tree:
 
 The WebUI can keep code that is only presentation, validation, or routing glue:
 
-- User-facing diagnostics that display whether `NASMUSICUI_AGENT_DIR` is set.
+- User-facing diagnostics that display whether `NASWEBUI_AGENT_DIR` is set.
 - Route-level request validation and response formatting.
 - WebUI-only caches and client-facing state that do not open agent SessionDB.
 - Docker documentation describing the transition while both paths are supported.
@@ -100,7 +100,7 @@ The WebUI can keep code that is only presentation, validation, or routing glue:
 `tests/test_agent_source_dependency_audit.py` pins the contract shape:
 
 - Docker/compose source sharing is reported.
-- Startup dependency installation and `NASMUSICUI_AGENT_DIR` are reported.
+- Startup dependency installation and `NASWEBUI_AGENT_DIR` are reported.
 - Runtime auxiliary/model metadata imports are reported.
 - Runtime SessionDB/state imports are reported.
 - Runtime provider/gateway imports are reported.

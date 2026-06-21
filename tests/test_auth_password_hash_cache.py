@@ -2,7 +2,7 @@
 Tests for get_password_hash() caching (env-var path).
 
 get_password_hash() calls PBKDF2-SHA256 with 600k iterations, which takes
-~1 second per invocation.  When NASMUSICUI_PASSWORD is set via env var,
+~1 second per invocation.  When NASWEBUI_PASSWORD is set via env var,
 the hash never changes during the process lifetime, so the result should
 be computed once and cached.
 
@@ -29,7 +29,7 @@ from pathlib import Path
 # would change its module-level STATE_DIR global and leak into all
 # subsequently collected tests (breaking test_pytest_state_isolation.py).
 _TEST_STATE = Path(tempfile.mkdtemp())
-os.environ["NASMUSICUI_STATE_DIR"] = str(_TEST_STATE)
+os.environ["NASWEBUI_STATE_DIR"] = str(_TEST_STATE)
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -55,10 +55,10 @@ class TestPasswordHashCache(unittest.TestCase):
         auth._AUTH_HASH_CACHE = None
         # Clear the env var before each test so a dirty environment
         # doesn't cascade across test boundaries
-        os.environ.pop('NASMUSICUI_PASSWORD', None)
+        os.environ.pop('NASWEBUI_PASSWORD', None)
 
     def _set_env_pw(self, pw: str) -> None:
-        os.environ['NASMUSICUI_PASSWORD'] = pw
+        os.environ['NASWEBUI_PASSWORD'] = pw
 
     def test_first_call_returns_hash(self):
         """First call with env var set should return a hex hash string."""
@@ -103,7 +103,7 @@ class TestPasswordHashCache(unittest.TestCase):
         first = auth.get_password_hash()
         # The env var could change between calls — cache must still
         # return the original value.
-        os.environ['NASMUSICUI_PASSWORD'] = 'different-password'
+        os.environ['NASWEBUI_PASSWORD'] = 'different-password'
         second = auth.get_password_hash()
         self.assertEqual(first, second,
                          "Cache must return the original hash even if "
@@ -117,7 +117,7 @@ class TestPasswordHashCache(unittest.TestCase):
         be None (auth disabled).
         """
         # Ensure no env var
-        os.environ.pop('NASMUSICUI_PASSWORD', None)
+        os.environ.pop('NASWEBUI_PASSWORD', None)
         h = auth.get_password_hash()
         self.assertIsNone(h, "With no env var and no settings file, "
                              "hash should be None")
@@ -125,7 +125,7 @@ class TestPasswordHashCache(unittest.TestCase):
 
     def test_cache_returns_none_when_disabled(self):
         """Once computed as None (no password), cache must keep returning None."""
-        os.environ.pop('NASMUSICUI_PASSWORD', None)
+        os.environ.pop('NASWEBUI_PASSWORD', None)
         h1 = auth.get_password_hash()
         h2 = auth.get_password_hash()
         self.assertIsNone(h1)
@@ -164,10 +164,10 @@ class TestPasswordHashCacheConcurrency(unittest.TestCase):
         auth._AUTH_HASH_LOCK = threading.Lock()
         auth._AUTH_HASH_COMPUTED = False
         auth._AUTH_HASH_CACHE = None
-        os.environ.pop('NASMUSICUI_PASSWORD', None)
+        os.environ.pop('NASWEBUI_PASSWORD', None)
 
     def _set_env_pw(self, pw: str) -> None:
-        os.environ['NASMUSICUI_PASSWORD'] = pw
+        os.environ['NASWEBUI_PASSWORD'] = pw
 
     def test_concurrent_burst_only_computes_once(self):
         """Under a burst of N concurrent requests, PBKDF2 runs exactly once.
@@ -220,7 +220,7 @@ class TestPasswordHashCacheConcurrency(unittest.TestCase):
 
     def test_concurrent_burst_with_no_env_var(self):
         """Concurrent calls with no env var must all return None."""
-        os.environ.pop('NASMUSICUI_PASSWORD', None)
+        os.environ.pop('NASWEBUI_PASSWORD', None)
         results: list = []
         results_lock = threading.Lock()
 
@@ -250,7 +250,7 @@ class TestPasswordCacheInvalidation(unittest.TestCase):
         auth._AUTH_HASH_LOCK = threading.Lock()
         auth._AUTH_HASH_COMPUTED = False
         auth._AUTH_HASH_CACHE = None
-        os.environ.pop('NASMUSICUI_PASSWORD', None)
+        os.environ.pop('NASWEBUI_PASSWORD', None)
         # Start with a clean settings.json so write tests are isolated
         self._sf = config.SETTINGS_FILE
         self._backup = None
@@ -264,7 +264,7 @@ class TestPasswordCacheInvalidation(unittest.TestCase):
         elif self._sf.exists():
             self._sf.unlink()
         auth._invalidate_password_hash_cache()
-        os.environ.pop('NASMUSICUI_PASSWORD', None)
+        os.environ.pop('NASWEBUI_PASSWORD', None)
 
     def test_set_password_takes_effect_without_restart(self):
         config.save_settings({"_set_password": "first"})

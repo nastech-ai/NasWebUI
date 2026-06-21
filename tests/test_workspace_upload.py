@@ -382,7 +382,7 @@ class TestWorkspaceUploadArchive:
     def test_zip_bomb_cap_trips(self, cleanup_test_sessions):
         """When extraction exceeds the cap, it should be rejected and cleaned up.
 
-        The test server runs with NASMUSICUI_MAX_EXTRACTED_MB=5 (set in
+        The test server runs with NASWEBUI_MAX_EXTRACTED_MB=5 (set in
         conftest), so a highly-compressible archive that extracts to >5MB trips
         the byte-tracking zip-bomb guard. (Monkeypatching the cap in the pytest
         process does nothing — extraction runs in the out-of-process server.)

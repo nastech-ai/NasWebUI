@@ -70,7 +70,7 @@ def _isolate_onboarding_writes(monkeypatch, tmp_path):
     cfg_path = tmp_path / "config.yaml"
     monkeypatch.setattr(ob, "_get_config_path", lambda: cfg_path)
     monkeypatch.setattr(profiles, "get_active_nastech_home", lambda: tmp_path)
-    monkeypatch.delenv("NASMUSICUI_SKIP_ONBOARDING", raising=False)
+    monkeypatch.delenv("NASWEBUI_SKIP_ONBOARDING", raising=False)
     for var in (
         "LM_API_KEY", "LMSTUDIO_API_KEY", "OLLAMA_API_KEY", "OPENAI_API_KEY",
         "OPENROUTER_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY",

@@ -30,7 +30,7 @@ def test_profile_runtime_env_includes_terminal_config_and_dotenv(tmp_path):
     (home / ".env").write_text(
         "TERMINAL_TIMEOUT=60\n"
         "TERMINAL_SSH_HOST=pollux-from-env\n"
-        "NASMUSICUI_MAX_ITERATIONS=90\n",
+        "NASWEBUI_MAX_ITERATIONS=90\n",
         encoding="utf-8",
     )
 
@@ -44,7 +44,7 @@ def test_profile_runtime_env_includes_terminal_config_and_dotenv(tmp_path):
     # .env remains the final override source, matching CLI/profile behaviour.
     assert env["TERMINAL_TIMEOUT"] == "60"
     assert env["TERMINAL_SSH_HOST"] == "pollux-from-env"
-    assert env["NASMUSICUI_MAX_ITERATIONS"] == "90"
+    assert env["NASWEBUI_MAX_ITERATIONS"] == "90"
 
 
 def test_streaming_applies_profile_runtime_env_to_agent_run():
@@ -76,10 +76,10 @@ def test_streaming_thread_env_allows_profile_terminal_cwd_override():
     env = ns["_build_agent_thread_env"](
         {
             "TERMINAL_CWD": "/profile/config/cwd",
-            "NASMUSICUI_EXEC_ASK": "0",
-            "NASMUSICUI_SESSION_KEY": "old-session",
-            "NASMUSICUI_SESSION_ID": "old-session",
-            "NASMUSICUI_SESSION_PLATFORM": "cli",
+            "NASWEBUI_EXEC_ASK": "0",
+            "NASWEBUI_SESSION_KEY": "old-session",
+            "NASWEBUI_SESSION_ID": "old-session",
+            "NASWEBUI_SESSION_PLATFORM": "cli",
             "NASTECH_HOME": "/old/profile/home",
             "TERMINAL_ENV": "ssh",
         },
@@ -89,9 +89,9 @@ def test_streaming_thread_env_allows_profile_terminal_cwd_override():
     )
 
     assert env["TERMINAL_CWD"] == "/active/workspace"
-    assert env["NASMUSICUI_EXEC_ASK"] == "1"
-    assert env["NASMUSICUI_SESSION_KEY"] == "active-session"
-    assert env["NASMUSICUI_SESSION_ID"] == "active-session"
-    assert env["NASMUSICUI_SESSION_PLATFORM"] == "webui"
+    assert env["NASWEBUI_EXEC_ASK"] == "1"
+    assert env["NASWEBUI_SESSION_KEY"] == "active-session"
+    assert env["NASWEBUI_SESSION_ID"] == "active-session"
+    assert env["NASWEBUI_SESSION_PLATFORM"] == "webui"
     assert env["NASTECH_HOME"] == "/active/profile/home"
     assert env["TERMINAL_ENV"] == "ssh"

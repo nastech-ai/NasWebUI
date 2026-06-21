@@ -232,7 +232,7 @@
                 <span class="thinking-card-toggle">▶</span>
               </div>
               <div class="thinking-card-body"><pre>Check how the CLI resolves workspace:
-grep for NASMUSICUI_WORKSPACE and --workspace
+grep for NASWEBUI_WORKSPACE and --workspace
 inspect argv vs env precedence.</pre></div>
             </div>
           </div></div>
@@ -242,11 +242,11 @@ inspect argv vs env precedence.</pre></div>
             <div class="tool-card-header">
               <span class="tool-card-icon">⚡</span>
               <span class="tool-card-name">bash</span>
-              <span class="tool-card-preview">grep -rn "NASMUSICUI_WORKSPACE" . · exit 0</span>
+              <span class="tool-card-preview">grep -rn "NASWEBUI_WORKSPACE" . · exit 0</span>
               <span class="tool-card-toggle">▶</span>
             </div>
             <div class="tool-card-detail">
-              <div class="tool-card-result"><pre>cli/main.py:14:WORKSPACE_ENV = "NASMUSICUI_WORKSPACE"
+              <div class="tool-card-result"><pre>cli/main.py:14:WORKSPACE_ENV = "NASWEBUI_WORKSPACE"
 cli/main.py:92:    ws = os.getenv(WORKSPACE_ENV) or args.workspace</pre></div>
             </div>
           </div>
@@ -266,7 +266,7 @@ cli/main.py:92:    ws = os.getenv(WORKSPACE_ENV) or args.workspace</pre></div>
           <div class="assistant-turn-blocks"><div class="assistant-segment">
             <div class="msg-body">
               <p>Both work, but <strong>env wins</strong>. The CLI reads
-              <code>NASMUSICUI_WORKSPACE</code> first and only falls back to the
+              <code>NASWEBUI_WORKSPACE</code> first and only falls back to the
               <code>--workspace</code> flag if the env var is unset.</p>
               <p>So in practice:</p>
               <ul>
@@ -309,7 +309,7 @@ cli/main.py:92:    ws = os.getenv(WORKSPACE_ENV) or args.workspace</pre></div>
                     <span class="thinking-card-toggle">▶</span>
                   </div>
                   <div class="thinking-card-body"><pre>Check how the CLI resolves workspace:
-grep for NASMUSICUI_WORKSPACE and --workspace
+grep for NASWEBUI_WORKSPACE and --workspace
 inspect argv vs env precedence.</pre></div>
                 </div>
                 <div class="tool-card-row">
@@ -317,7 +317,7 @@ inspect argv vs env precedence.</pre></div>
                     <div class="tool-card-header">
                       <span class="tool-card-icon">⚡</span>
                       <span class="tool-card-name">bash</span>
-                      <span class="tool-card-preview">grep -rn "NASMUSICUI_WORKSPACE" . · exit 0</span>
+                      <span class="tool-card-preview">grep -rn "NASWEBUI_WORKSPACE" . · exit 0</span>
                       <span class="tool-card-toggle">▶</span>
                     </div>
                   </div>
@@ -341,7 +341,7 @@ inspect argv vs env precedence.</pre></div>
               <div class="p2s-answer-kicker">Answer</div>
               <div class="msg-body">
                 <p>Both work, but <strong>env wins</strong>. The CLI reads
-                <code>NASMUSICUI_WORKSPACE</code> first and only falls back to the
+                <code>NASWEBUI_WORKSPACE</code> first and only falls back to the
                 <code>--workspace</code> flag if the env var is unset.</p>
                 <p>So in practice:</p>
                 <ul>

@@ -74,7 +74,7 @@ services:
       # traverse its own home directory. 0640 BREAKS the agent (no x bit → no
       # traversal). Use 0750 for group-traversable or 0701 for x-only.
       # The agent's container detection (/.dockerenv) already auto-skips
-      # credential chmod inside Docker, so NASMUSICUI_SKIP_CHMOD is redundant here.
+      # credential chmod inside Docker, so NASWEBUI_SKIP_CHMOD is redundant here.
       # - NASTECH_HOME_MODE=0750
     restart: unless-stopped
     networks:
@@ -102,9 +102,9 @@ services:
       # across Linux, macOS, WSL2, and Docker Desktop on Windows.
       - ${NASTECH_WORKSPACE:-${HOME}/workspace}:/workspace
     environment:
-      - NASMUSICUI_HOST=0.0.0.0
-      - NASMUSICUI_PORT=8787
-      - NASMUSICUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
+      - NASWEBUI_HOST=0.0.0.0
+      - NASWEBUI_PORT=8787
+      - NASWEBUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
       # Match your host user's UID/GID for correct file permissions.
       # In two-container setups the WebUI auto-detects UID/GID from the shared
       # nastech-home volume, but you can override explicitly if needed (#668):
@@ -114,13 +114,13 @@ services:
       - WANTED_UID=${UID:-1000}
       - WANTED_GID=${GID:-1000}
       # Optional: set a password for remote access
-      # - NASMUSICUI_PASSWORD=your-secret-password
+      # - NASWEBUI_PASSWORD=your-secret-password
       # Bind-mount permission handling for the WebUI (fixes #1389, #1399).
       # NOTE: WebUI's NASTECH_HOME_MODE is a credential-file threshold (allow
       # group bits on .env/.signing_key/etc.), DIFFERENT from the agent's
       # which applies to the NASTECH_HOME directory itself. 0640 is correct
       # for the WebUI; do NOT copy this value to the agent service block.
-      # - NASMUSICUI_SKIP_CHMOD=1
+      # - NASWEBUI_SKIP_CHMOD=1
       # - NASTECH_HOME_MODE=0640
     restart: unless-stopped
     networks:

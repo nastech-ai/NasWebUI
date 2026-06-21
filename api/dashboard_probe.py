@@ -205,7 +205,7 @@ def save_dashboard_config(payload: dict) -> dict:
 
 
 def _webui_bind_host_allows_auto_probe() -> bool:
-    raw_host = str(os.environ.get("NASMUSICUI_HOST") or "127.0.0.1").strip().lower()
+    raw_host = str(os.environ.get("NASWEBUI_HOST") or "127.0.0.1").strip().lower()
     host = raw_host.replace("[", "").replace("]", "")
     return host in _LOOPBACK_HOSTS
 

@@ -59,7 +59,7 @@ jobs:
           $cliDir = Join-Path $agentDir 'nastech_cli'
           New-Item -ItemType Directory -Force -Path $cliDir | Out-Null
           Set-Content -Path (Join-Path $cliDir '__init__.py') -Value '# stub for CI path-discovery test only'
-          "NASMUSICUI_AGENT_DIR=$agentDir" >> $env:GITHUB_ENV
+          "NASWEBUI_AGENT_DIR=$agentDir" >> $env:GITHUB_ENV
           Write-Host "Stub NasTech-Agent provisioned at $agentDir"
 
       # Run start.ps1 and verify it passes its own discovery guards
@@ -97,7 +97,7 @@ jobs:
           $guardErrors = @(
             'Python 3 is required',
             'NasTech-Agent not found',
-            'NASMUSICUI_AGENT_DIR is set to',
+            'NASWEBUI_AGENT_DIR is set to',
             'is not a valid integer port',
             'is out of TCP-port range',
             'server.py not found'

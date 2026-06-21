@@ -41,7 +41,7 @@ so it works well as a daily-driver agent interface from your phone.
 2. Start the WebUI listening on all interfaces with password auth enabled:
 
 ```bash
-NASMUSICUI_HOST=0.0.0.0 NASMUSICUI_PASSWORD=your-secret ./start.sh
+NASWEBUI_HOST=0.0.0.0 NASWEBUI_PASSWORD=your-secret ./start.sh
 ```
 
 3. Open `http://<server-tailscale-ip>:8787` in your phone's browser
@@ -68,8 +68,8 @@ take longer when dependencies compile from source, Android browser tabs may
 reload when switching apps, and disabling battery optimization for the terminal
 or VM host may be needed for longer-running sessions.
 
-> **Tip:** If using Docker, set `NASMUSICUI_HOST=0.0.0.0` in your
+> **Tip:** If using Docker, set `NASWEBUI_HOST=0.0.0.0` in your
 > `docker-compose.yml` environment (already the default) and set
-> `NASMUSICUI_PASSWORD`.
+> `NASWEBUI_PASSWORD`.
 
 ---

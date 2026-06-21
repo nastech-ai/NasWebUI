@@ -63,7 +63,7 @@ not require mounting the live source checkout.
 
 ## Non-goals for this slice
 
-- Do not remove `NASMUSICUI_AGENT_DIR`.
+- Do not remove `NASWEBUI_AGENT_DIR`.
 - Do not break local source-checkout development.
 - Do not fail startup solely because the agent source is writable.
 - Do not replace the runtime adapter or NasTech Agent API in this document-only

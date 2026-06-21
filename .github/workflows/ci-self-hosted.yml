@@ -110,7 +110,7 @@ jobs:
           docker run --rm -d \
             --name naswebui-ci-smoke \
             -p 8787:8787 \
-            -e NASMUSICUI_NO_AGENT=1 \
+            -e NASWEBUI_NO_AGENT=1 \
             ghcr.io/nastech-ai/naswebui:ci-${{ github.sha }} || true
           sleep 5
           curl --fail --silent http://127.0.0.1:8787/health && echo "✅ /health OK" || echo "⚠️  health check skipped (agent not present)"

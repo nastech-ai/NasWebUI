@@ -10,7 +10,7 @@ import os
 
 # Isolate state dir so we don't touch real sessions
 _TEST_STATE = Path(tempfile.mkdtemp())
-os.environ["NASMUSICUI_STATE_DIR"] = str(_TEST_STATE)
+os.environ["NASWEBUI_STATE_DIR"] = str(_TEST_STATE)
 
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -183,9 +183,9 @@ class TestSessionTtlResolution(unittest.TestCase):
         # Snapshot environment + load_settings so each test starts clean.
         self._saved_env = {
             k: os.environ.get(k)
-            for k in ("NASMUSICUI_SESSION_TTL",)
+            for k in ("NASWEBUI_SESSION_TTL",)
         }
-        os.environ.pop("NASMUSICUI_SESSION_TTL", None)
+        os.environ.pop("NASWEBUI_SESSION_TTL", None)
         self._saved_load_settings = auth.load_settings
 
     def tearDown(self):
@@ -197,14 +197,14 @@ class TestSessionTtlResolution(unittest.TestCase):
         auth.load_settings = self._saved_load_settings
 
     def test_env_var_overrides_settings(self):
-        """NASMUSICUI_SESSION_TTL env var should take priority."""
-        os.environ["NASMUSICUI_SESSION_TTL"] = "3600"
+        """NASWEBUI_SESSION_TTL env var should take priority."""
+        os.environ["NASWEBUI_SESSION_TTL"] = "3600"
         from api.auth import _resolve_session_ttl
         self.assertEqual(_resolve_session_ttl(), 3600)
 
     def test_clamps_minimum(self):
         """Values below 60 seconds fall through to settings/default (do not honor)."""
-        os.environ["NASMUSICUI_SESSION_TTL"] = "10"
+        os.environ["NASWEBUI_SESSION_TTL"] = "10"
         auth.load_settings = lambda: {}
         from api.auth import _resolve_session_ttl
         # Out-of-range env values are rejected; falls through to default 30 days.
@@ -212,7 +212,7 @@ class TestSessionTtlResolution(unittest.TestCase):
 
     def test_clamps_maximum(self):
         """Values above 1 year fall through to settings/default (do not honor)."""
-        os.environ["NASMUSICUI_SESSION_TTL"] = "100000000"
+        os.environ["NASWEBUI_SESSION_TTL"] = "100000000"
         auth.load_settings = lambda: {}
         from api.auth import _resolve_session_ttl
         # Out-of-range env values are rejected; falls through to default 30 days.
@@ -220,21 +220,21 @@ class TestSessionTtlResolution(unittest.TestCase):
 
     def test_invalid_env_falls_through(self):
         """Non-integer env var falls through to default."""
-        os.environ["NASMUSICUI_SESSION_TTL"] = "not-a-number"
+        os.environ["NASWEBUI_SESSION_TTL"] = "not-a-number"
         auth.load_settings = lambda: {}
         from api.auth import _resolve_session_ttl
         self.assertEqual(_resolve_session_ttl(), auth.SESSION_TTL)
 
     def test_empty_env_falls_through(self):
         """Empty env var falls through to default."""
-        os.environ["NASMUSICUI_SESSION_TTL"] = ""
+        os.environ["NASWEBUI_SESSION_TTL"] = ""
         auth.load_settings = lambda: {}
         from api.auth import _resolve_session_ttl
         self.assertEqual(_resolve_session_ttl(), auth.SESSION_TTL)
 
     def test_settings_path_returns_value(self):
         """settings.json session_ttl_seconds path works when env is unset."""
-        os.environ.pop("NASMUSICUI_SESSION_TTL", None)
+        os.environ.pop("NASWEBUI_SESSION_TTL", None)
         auth.load_settings = lambda: {"session_ttl_seconds": 7200}
         from api.auth import _resolve_session_ttl
         self.assertEqual(_resolve_session_ttl(), 7200)
@@ -242,7 +242,7 @@ class TestSessionTtlResolution(unittest.TestCase):
     def test_session_uses_dynamic_ttl(self):
         """Newly created sessions should honor the resolved TTL."""
         auth._sessions.clear()
-        os.environ["NASMUSICUI_SESSION_TTL"] = "3600"
+        os.environ["NASWEBUI_SESSION_TTL"] = "3600"
         token_hex = auth.create_session().split(".")[0]
         from api.auth import _sessions
         for t, exp in _sessions.items():

@@ -129,7 +129,7 @@ class TestCSRF:
         See test_proxy_host_default_https_port_matches_https_origin for the
         real-world proxy case that should pass.
         """
-        monkeypatch.setenv("NASMUSICUI_TRUST_FORWARDED_HOST", "1")
+        monkeypatch.setenv("NASWEBUI_TRUST_FORWARDED_HOST", "1")
         assert not self._csrf_allowed({
             "Origin": "http://example.com",
             "X-Forwarded-Host": "example.com:443",
@@ -137,7 +137,7 @@ class TestCSRF:
 
     def test_proxy_host_default_https_port_matches_https_origin(self, monkeypatch):
         """HTTPS Origin without port should match X-Forwarded-Host with explicit :443."""
-        monkeypatch.setenv("NASMUSICUI_TRUST_FORWARDED_HOST", "1")
+        monkeypatch.setenv("NASWEBUI_TRUST_FORWARDED_HOST", "1")
         assert self._csrf_allowed({
             "Origin": "https://example.com",
             "X-Forwarded-Host": "example.com:443",
@@ -145,7 +145,7 @@ class TestCSRF:
 
     def test_proxy_host_port_normalization_still_rejects_other_host(self, monkeypatch):
         """Port normalization must not allow different hosts through."""
-        monkeypatch.setenv("NASMUSICUI_TRUST_FORWARDED_HOST", "1")
+        monkeypatch.setenv("NASWEBUI_TRUST_FORWARDED_HOST", "1")
         assert not self._csrf_allowed({
             "Origin": "https://evil.com",
             "X-Forwarded-Host": "example.com:443",
@@ -153,7 +153,7 @@ class TestCSRF:
 
     def test_allowed_public_origin_bypasses_missing_proxy_port(self, monkeypatch):
         """Explicitly configured public origins should pass even if proxy strips :port from Host."""
-        monkeypatch.setenv('NASMUSICUI_ALLOWED_ORIGINS', 'https://myapp.example.com:8000')
+        monkeypatch.setenv('NASWEBUI_ALLOWED_ORIGINS', 'https://myapp.example.com:8000')
         assert self._csrf_allowed({
             'Origin': 'https://myapp.example.com:8000',
             'Host': 'myapp.example.com',
@@ -162,7 +162,7 @@ class TestCSRF:
 
     def test_other_origin_not_allowed_by_public_origin_allowlist(self, monkeypatch):
         """Allowlist must stay exact; unrelated origins must still be rejected."""
-        monkeypatch.setenv('NASMUSICUI_ALLOWED_ORIGINS', 'https://myapp.example.com:8000')
+        monkeypatch.setenv('NASWEBUI_ALLOWED_ORIGINS', 'https://myapp.example.com:8000')
         assert not self._csrf_allowed({
             'Origin': 'https://evil.com:8000',
             'Host': 'myapp.example.com',
@@ -177,7 +177,7 @@ class TestCSRF:
         Before M-1 fix, _ports_match treated both 80 and 443 as equivalent to
         absent port, allowing http://host to match https://host:443 servers.
         """
-        monkeypatch.setenv("NASMUSICUI_TRUST_FORWARDED_HOST", "1")
+        monkeypatch.setenv("NASWEBUI_TRUST_FORWARDED_HOST", "1")
         assert not self._csrf_allowed({
             'Origin': 'http://example.com',     # http, no port = :80
             'X-Forwarded-Host': 'example.com:443',  # HTTPS port
@@ -185,7 +185,7 @@ class TestCSRF:
 
     def test_cross_protocol_port_not_confused_https_origin_http_host(self, monkeypatch):
         """https:// origin must NOT match a host with :80 (HTTP default)."""
-        monkeypatch.setenv("NASMUSICUI_TRUST_FORWARDED_HOST", "1")
+        monkeypatch.setenv("NASWEBUI_TRUST_FORWARDED_HOST", "1")
         assert not self._csrf_allowed({
             'Origin': 'https://example.com',    # https, no port = :443
             'X-Forwarded-Host': 'example.com:80',   # HTTP port
@@ -219,19 +219,19 @@ class TestCSRF:
 
         This documents the original bug: Origin: https://app.com:8000 with
         Host: app.com (proxy stripped the port). Before this PR that returned 403.
-        The fix (NASMUSICUI_ALLOWED_ORIGINS) handles it; without the env var
+        The fix (NASWEBUI_ALLOWED_ORIGINS) handles it; without the env var
         the request is still rejected, which is the safe default.
         """
-        monkeypatch.delenv('NASMUSICUI_ALLOWED_ORIGINS', raising=False)
+        monkeypatch.delenv('NASWEBUI_ALLOWED_ORIGINS', raising=False)
         assert not self._csrf_allowed({
             'Origin': 'https://myapp.example.com:8000',
             'Host': 'myapp.example.com',
         }), 'without allowlist, port mismatch must be rejected (safe default)'
 
     def test_allowed_origins_comma_separated(self, monkeypatch):
-        """NASMUSICUI_ALLOWED_ORIGINS accepts multiple comma-separated origins."""
+        """NASWEBUI_ALLOWED_ORIGINS accepts multiple comma-separated origins."""
         monkeypatch.setenv(
-            'NASMUSICUI_ALLOWED_ORIGINS',
+            'NASWEBUI_ALLOWED_ORIGINS',
             'https://app1.example.com:8000, https://app2.example.com:9000',
         )
         assert self._csrf_allowed({'Origin': 'https://app1.example.com:8000', 'Host': 'proxy.internal'})
@@ -240,7 +240,7 @@ class TestCSRF:
 
     def test_allowed_origins_without_scheme_ignored(self, monkeypatch, capsys):
         """Allowlist entries missing the scheme are skipped and a warning is printed."""
-        monkeypatch.setenv('NASMUSICUI_ALLOWED_ORIGINS', 'myapp.example.com:8000')
+        monkeypatch.setenv('NASWEBUI_ALLOWED_ORIGINS', 'myapp.example.com:8000')
         from api.routes import _allowed_public_origins
         result = _allowed_public_origins()
         assert len(result) == 0, 'entry without scheme must be ignored'
@@ -249,7 +249,7 @@ class TestCSRF:
 
     def test_allowed_origins_trailing_slash_normalized(self, monkeypatch):
         """Trailing slash in allowlist entry is stripped before comparison."""
-        monkeypatch.setenv('NASMUSICUI_ALLOWED_ORIGINS', 'https://myapp.example.com:8000/')
+        monkeypatch.setenv('NASWEBUI_ALLOWED_ORIGINS', 'https://myapp.example.com:8000/')
         assert self._csrf_allowed({
             'Origin': 'https://myapp.example.com:8000',
             'Host': 'proxy.internal',

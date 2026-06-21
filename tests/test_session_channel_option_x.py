@@ -474,7 +474,7 @@ def test_real_completion_event_shape_routes_to_session_channel():
     ch = bp.get_or_create_session_channel(webui_sid)
     q = ch.subscribe()
     # streaming.py binds key == webui_session_id (register_process_session
-    # called with (session_id, session_id)). NASMUSICUI_SESSION_KEY for the
+    # called with (session_id, session_id)). NASWEBUI_SESSION_KEY for the
     # spawned child therefore equals webui_sid, and the terminal tool stamps
     # that onto ProcessSession.session_key at spawn time.
     bp.register_process_session(webui_sid, webui_sid)

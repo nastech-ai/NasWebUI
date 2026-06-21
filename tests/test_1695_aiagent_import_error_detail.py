@@ -12,7 +12,7 @@ This test suite locks the diagnostic shape of the new error message:
   - The original message string is preserved (so existing log scrapers /
     monitoring / docs-search keep working).
   - The running python interpreter path is included.
-  - NASMUSICUI_AGENT_DIR is shown if set, "(not set)" otherwise.
+  - NASWEBUI_AGENT_DIR is shown if set, "(not set)" otherwise.
   - The relevant sys.path entries are shown.
   - A pip install -e . hint is included.
   - A pointer to docs/troubleshooting.md is included.
@@ -69,23 +69,23 @@ class TestAIAgentImportErrorDetail:
         )
 
     def test_shows_agent_dir_env_when_set(self, monkeypatch):
-        """If NASMUSICUI_AGENT_DIR is set, the diagnostic must show its value
+        """If NASWEBUI_AGENT_DIR is set, the diagnostic must show its value
         so the user can confirm whether the override is pointing at the right
         directory.
         """
         helper = _import_helper()
-        monkeypatch.setenv("NASMUSICUI_AGENT_DIR", "/custom/agent/path")
+        monkeypatch.setenv("NASWEBUI_AGENT_DIR", "/custom/agent/path")
         out = helper()
-        assert "NASMUSICUI_AGENT_DIR: /custom/agent/path" in out
+        assert "NASWEBUI_AGENT_DIR: /custom/agent/path" in out
 
     def test_shows_agent_dir_env_unset_marker(self, monkeypatch):
-        """If NASMUSICUI_AGENT_DIR is NOT set, the diagnostic must say so
+        """If NASWEBUI_AGENT_DIR is NOT set, the diagnostic must say so
         explicitly — silence is ambiguous (could be empty string, could be unset).
         """
         helper = _import_helper()
-        monkeypatch.delenv("NASMUSICUI_AGENT_DIR", raising=False)
+        monkeypatch.delenv("NASWEBUI_AGENT_DIR", raising=False)
         out = helper()
-        assert "NASMUSICUI_AGENT_DIR: (not set)" in out
+        assert "NASWEBUI_AGENT_DIR: (not set)" in out
 
     def test_includes_pip_install_editable_hint(self):
         """The most common fix (per #1695) is `pip install -e .` in the agent dir.

@@ -18,7 +18,7 @@ _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 _WRITER_LOCKS: dict[tuple[str, str, str], threading.Lock] = {}
 _WRITER_LOCKS_GUARD = threading.Lock()
 _TERMINAL_SSE_EVENTS = {"done", "cancel", "apperror", "error", "stream_end"}
-_FSYNC_MODE_ENV = "NASMUSICUI_RUN_JOURNAL_FSYNC"
+_FSYNC_MODE_ENV = "NASWEBUI_RUN_JOURNAL_FSYNC"
 _FSYNC_MODE_EAGER = "eager"
 _FSYNC_MODE_TERMINAL_ONLY = "terminal-only"
 

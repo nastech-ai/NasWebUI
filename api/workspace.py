@@ -33,7 +33,7 @@ def _profile_state_dir() -> Path:
     """Return the webui_state directory for the active profile.
 
     For the default profile, returns the global STATE_DIR (respects
-    NASMUSICUI_STATE_DIR env var for test isolation).
+    NASWEBUI_STATE_DIR env var for test isolation).
     For named profiles, returns {profile_home}/webui_state/.
     """
     try:
@@ -675,7 +675,7 @@ def resolve_trusted_workspace(path: str | Path | None = None) -> Path:
         pass
 
     # (C) Trusted if it is equal to or under the boot-time DEFAULT_WORKSPACE.
-    #     In Docker deployments NASMUSICUI_DEFAULT_WORKSPACE is often set to a
+    #     In Docker deployments NASWEBUI_DEFAULT_WORKSPACE is often set to a
     #     volume mount outside the user's home (e.g. /data/workspace).  That path
     #     was already validated at server startup, so any sub-path of it is safe
     #     without requiring the user to add it to the workspace list manually.

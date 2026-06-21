@@ -28,8 +28,8 @@ def _load_repo_dotenv() -> None:
     ``python3 bootstrap.py`` directly behaves identically to ``./start.sh``.
     Variables are set unconditionally (matching shell source semantics), so a
     value in .env overrides one already present in the shell environment.
-    ``ctl.sh`` sets NASMUSICUI_PRESERVE_ENV=1 when it has already resolved
-    launcher-specific values such as NASTECH_HOME or NASMUSICUI_STATE_DIR.
+    ``ctl.sh`` sets NASWEBUI_PRESERVE_ENV=1 when it has already resolved
+    launcher-specific values such as NASTECH_HOME or NASWEBUI_STATE_DIR.
 
     Only loads the webui repo .env — not ~/.nastech/.env, which the server
     loads independently at startup for provider credentials.
@@ -41,7 +41,7 @@ def _load_repo_dotenv() -> None:
     if not env_path.exists():
         return
     try:
-        preserve_existing = os.getenv("NASMUSICUI_PRESERVE_ENV", "").strip().lower() in {
+        preserve_existing = os.getenv("NASWEBUI_PRESERVE_ENV", "").strip().lower() in {
             "1",
             "true",
             "yes",
@@ -71,9 +71,9 @@ def _load_repo_dotenv() -> None:
 # values from .env even when bootstrap.py is invoked directly (not via start.sh).
 _load_repo_dotenv()
 
-DEFAULT_HOST = os.getenv("NASMUSICUI_HOST", "127.0.0.1")
-DEFAULT_PORT = int(os.getenv("NASMUSICUI_PORT", "8787"))
-# Set NASMUSICUI_SKIP_ONBOARDING=1 to bypass the first-run wizard when
+DEFAULT_HOST = os.getenv("NASWEBUI_HOST", "127.0.0.1")
+DEFAULT_PORT = int(os.getenv("NASWEBUI_PORT", "8787"))
+# Set NASWEBUI_SKIP_ONBOARDING=1 to bypass the first-run wizard when
 # the environment is already fully configured (e.g. managed hosting).
 
 
@@ -112,7 +112,7 @@ def _agent_dir_from_nastech_cli() -> Path | None:
     the hard-coded candidate list in :func:`discover_agent_dir` cannot.
 
     Last-resort only: this is invoked after every explicit candidate
-    (`NASMUSICUI_AGENT_DIR`, `$NASTECH_HOME/NasTech-Agent`, etc.) has missed.
+    (`NASWEBUI_AGENT_DIR`, `$NASTECH_HOME/NasTech-Agent`, etc.) has missed.
     A stale clone in a known location still wins over the live `nastech` CLI
     — that's intentional, since the candidate list is treated as
     authoritative when present, and matches existing behavior.
@@ -142,7 +142,7 @@ def _agent_dir_from_nastech_cli() -> Path | None:
 def discover_agent_dir() -> Path | None:
     home = Path(os.getenv("NASTECH_HOME", str(Path.home() / ".nastech"))).expanduser()
     candidates = [
-        os.getenv("NASMUSICUI_AGENT_DIR", ""),
+        os.getenv("NASWEBUI_AGENT_DIR", ""),
         str(home / "NasTech-Agent"),
         str(REPO_ROOT.parent / "NasTech-Agent"),
         str(Path.home() / ".nastech" / "NasTech-Agent"),
@@ -158,7 +158,7 @@ def discover_agent_dir() -> Path | None:
 
 
 def discover_launcher_python(agent_dir: Path | None) -> str:
-    env_python = os.getenv("NASMUSICUI_PYTHON")
+    env_python = os.getenv("NASWEBUI_PYTHON")
     if env_python:
         return env_python
     if agent_dir:
@@ -260,7 +260,7 @@ def ensure_python_has_webui_deps(python_exe: str, agent_dir: Path | None = None)
         return str(venv_python)
     raise RuntimeError(
         "Python environment cannot import both WebUI dependencies and NasTech Agent. "
-        "Set NASMUSICUI_PYTHON to the NasTech Agent venv Python or install the "
+        "Set NASWEBUI_PYTHON to the NasTech Agent venv Python or install the "
         "WebUI requirements into that environment."
     )
 
@@ -342,7 +342,7 @@ def parse_args() -> argparse.Namespace:
 # - NOTIFY_SOCKET            systemd Type=notify, s6 sd_notify-style
 # - XPC_SERVICE_NAME         launchd (set to the Label of the running plist)
 # - SUPERVISOR_ENABLED       supervisord
-# - NASMUSICUI_FOREGROUND  explicit user opt-in (=1 / true / yes / on)
+# - NASWEBUI_FOREGROUND  explicit user opt-in (=1 / true / yes / on)
 #
 # Note on XPC_SERVICE_NAME: macOS launchd sets this in EVERY Terminal-launched
 # shell too — typical values include "0" (truthy in Python!) and
@@ -386,9 +386,9 @@ def _detect_supervisor() -> str | None:
     Pure inspection of os.environ — no side effects. Returned name is the env
     var that triggered detection, useful for log messages and for tests.
     """
-    explicit = os.environ.get("NASMUSICUI_FOREGROUND", "").strip().lower()
+    explicit = os.environ.get("NASWEBUI_FOREGROUND", "").strip().lower()
     if explicit in ("1", "true", "yes", "on"):
-        return "NASMUSICUI_FOREGROUND"
+        return "NASWEBUI_FOREGROUND"
     for name in _SUPERVISOR_ENV_VARS:
         value = os.environ.get(name, "")
         if _is_real_supervisor_value(name, value):
@@ -411,16 +411,16 @@ def main() -> int:
 
     python_exe = ensure_python_has_webui_deps(discover_launcher_python(agent_dir), agent_dir)
     state_dir = Path(
-        os.getenv("NASMUSICUI_STATE_DIR", str(Path.home() / ".nastech" / "webui"))
+        os.getenv("NASWEBUI_STATE_DIR", str(Path.home() / ".nastech" / "webui"))
     ).expanduser()
     state_dir.mkdir(parents=True, exist_ok=True)
 
     # Mutate os.environ so child (or post-execv) inherits the resolved values.
-    os.environ["NASMUSICUI_HOST"] = args.host
-    os.environ["NASMUSICUI_PORT"] = str(args.port)
-    os.environ.setdefault("NASMUSICUI_STATE_DIR", str(state_dir))
+    os.environ["NASWEBUI_HOST"] = args.host
+    os.environ["NASWEBUI_PORT"] = str(args.port)
+    os.environ.setdefault("NASWEBUI_STATE_DIR", str(state_dir))
     if agent_dir:
-        os.environ["NASMUSICUI_AGENT_DIR"] = str(agent_dir)
+        os.environ["NASWEBUI_AGENT_DIR"] = str(agent_dir)
 
     server_cwd = str(agent_dir or REPO_ROOT)
     server_path = str(REPO_ROOT / "server.py")
@@ -448,7 +448,7 @@ def main() -> int:
         if not os.access(python_exe, os.X_OK):
             raise RuntimeError(
                 f"Python interpreter at {python_exe!r} is not executable. "
-                f"Set NASMUSICUI_PYTHON to a working interpreter or fix "
+                f"Set NASWEBUI_PYTHON to a working interpreter or fix "
                 f"the agent venv at {agent_dir}."
             )
         # os.execv replaces the current process image. On Windows, execv

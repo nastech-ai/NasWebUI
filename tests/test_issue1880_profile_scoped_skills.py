@@ -13,7 +13,7 @@ pytestmark = requires_agent_modules
 
 
 def _state_dir() -> pathlib.Path:
-    return pathlib.Path(os.environ["NASMUSICUI_TEST_STATE_DIR"])
+    return pathlib.Path(os.environ["NASWEBUI_TEST_STATE_DIR"])
 
 
 def _remove_path(path: pathlib.Path) -> None:

@@ -1,6 +1,6 @@
 """
 NasWebUI -- optional authentication.
-Off by default. Enable by setting NASMUSICUI_PASSWORD, configuring a
+Off by default. Enable by setting NASWEBUI_PASSWORD, configuring a
 password in Settings, or registering passkeys and then going passwordless.
 """
 import hashlib
@@ -29,11 +29,11 @@ SESSION_TTL = 86400 * 30  # 30 days
 def _resolve_session_ttl() -> int:
     """Resolve session TTL from env > settings > default.
 
-    Priority mirrors get_password_hash(): NASMUSICUI_SESSION_TTL env var
+    Priority mirrors get_password_hash(): NASWEBUI_SESSION_TTL env var
     first, then settings.json, falling back to ``SESSION_TTL`` (30 days).
     Clamped to [60s, 1 year] to prevent runaway cookies or self-lockout.
     """
-    env_v = os.getenv('NASMUSICUI_SESSION_TTL', '').strip()
+    env_v = os.getenv('NASWEBUI_SESSION_TTL', '').strip()
     if env_v.isdigit():
         val = int(env_v)
         if 60 <= val <= 86400 * 365:
@@ -289,7 +289,7 @@ def get_password_hash() -> str | None:
         if _AUTH_HASH_COMPUTED:
             return _AUTH_HASH_CACHE
 
-        env_pw = os.getenv('NASMUSICUI_PASSWORD', '').strip()
+        env_pw = os.getenv('NASWEBUI_PASSWORD', '').strip()
         if env_pw:
             result = _hash_password(env_pw)
         else:
@@ -313,13 +313,13 @@ def _passkey_feature_flag_enabled() -> bool:
     non-localhost hosts) can disable it entirely with no UI surface, no
     endpoints, no credential storage. To enable:
 
-      - Set ``NASMUSICUI_PASSKEY=1`` in the environment, OR
+      - Set ``NASWEBUI_PASSKEY=1`` in the environment, OR
       - Set ``webui_passkey_enabled: true`` in the per-profile config.yaml
 
     With the flag off, ``are_passkeys_enabled()`` always returns False even if
     credentials were registered in the past, and ``/login`` shows password-only.
     """
-    env_value = os.getenv("NASMUSICUI_PASSKEY", "")
+    env_value = os.getenv("NASWEBUI_PASSKEY", "")
     if env_value:
         return env_value.strip().lower() in {"1", "true", "yes", "on"}
     try:
@@ -559,19 +559,19 @@ def _is_secure_context(handler=None) -> bool:
     """Return True if cookies should carry the Secure flag.
 
     Priority order:
-    1. ``NASMUSICUI_SECURE`` env var: 1/true/yes -> True; 0/false/no -> False.
+    1. ``NASWEBUI_SECURE`` env var: 1/true/yes -> True; 0/false/no -> False.
     2. Direct TLS socket (handler.request.getpeercert present) -> True.
-    3. ``NASMUSICUI_TRUST_FORWARDED_PROTO=1`` opt-in: trust
+    3. ``NASWEBUI_TRUST_FORWARDED_PROTO=1`` opt-in: trust
        ``X-Forwarded-Proto: https`` header from a known reverse proxy.
     4. Otherwise -> False (loopback or non-loopback, plain HTTP is not secure).
 
     .. warning::
        ``X-Forwarded-Proto`` is only trustworthy behind a reverse proxy.
-       It is ignored unless ``NASMUSICUI_TRUST_FORWARDED_PROTO=1`` is
+       It is ignored unless ``NASWEBUI_TRUST_FORWARDED_PROTO=1`` is
        set explicitly, preventing header-injection attacks on plain-HTTP
        deployments.
     """
-    env = os.getenv('NASMUSICUI_SECURE', '').strip().lower()
+    env = os.getenv('NASWEBUI_SECURE', '').strip().lower()
     if env in ('1', 'true', 'yes'):
         return True
     if env in ('0', 'false', 'no'):
@@ -579,7 +579,7 @@ def _is_secure_context(handler=None) -> bool:
     if handler is not None:
         if getattr(handler.request, 'getpeercert', None) is not None:
             return True
-        trust_fwd = os.getenv('NASMUSICUI_TRUST_FORWARDED_PROTO', '').strip().lower()
+        trust_fwd = os.getenv('NASWEBUI_TRUST_FORWARDED_PROTO', '').strip().lower()
         if trust_fwd in ('1', 'true', 'yes'):
             if handler.headers.get('X-Forwarded-Proto', '') == 'https':
                 return True

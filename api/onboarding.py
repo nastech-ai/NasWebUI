@@ -849,12 +849,12 @@ def get_onboarding_status() -> dict:
     last_workspace = get_last_workspace()
     available_models = get_available_models()
 
-    # NASMUSICUI_SKIP_ONBOARDING=1 lets hosting providers (e.g. Agent37) ship
+    # NASWEBUI_SKIP_ONBOARDING=1 lets hosting providers (e.g. Agent37) ship
     # a pre-configured instance without the wizard blocking the first load.
     # This is an operator-level override and is honoured unconditionally —
     # the operator knows their deployment is configured; we must not second-guess
     # it by requiring chat_ready to also be true.
-    skip_env = os.environ.get("NASMUSICUI_SKIP_ONBOARDING", "").strip()
+    skip_env = os.environ.get("NASWEBUI_SKIP_ONBOARDING", "").strip()
     skip_requested = skip_env in {"1", "true", "yes"}
     auto_completed = skip_requested  # unconditional: operator says skip, we skip
 
@@ -939,7 +939,7 @@ def apply_onboarding_setup(body: dict) -> dict:
     # (e.g. a stale JS bundle or a curious user), we must not overwrite the
     # operator's config.yaml or .env files.  Just mark onboarding complete and
     # return the current status — no file writes.
-    skip_env = os.environ.get("NASMUSICUI_SKIP_ONBOARDING", "").strip()
+    skip_env = os.environ.get("NASWEBUI_SKIP_ONBOARDING", "").strip()
     if skip_env in {"1", "true", "yes"}:
         save_settings({"onboarding_completed": True})
         return get_onboarding_status()

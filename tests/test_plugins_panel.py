@@ -283,7 +283,7 @@ class TestDashboardPluginsEnforcement:
             manifest = {"name": "testplugin", "tab": {"path": "/testplugin"}, "label": "Test Plugin"}
             (plugin_dir / "manifest.json").write_text(json.dumps(manifest))
 
-            with patch.dict("os.environ", {"NASMUSICUI_PLUGINS_DIR": td}):
+            with patch.dict("os.environ", {"NASWEBUI_PLUGINS_DIR": td}):
                 from api.plugins import load_plugins, PLUGIN_MANIFESTS
                 PLUGIN_MANIFESTS.clear()
                 load_plugins()
@@ -453,8 +453,8 @@ class TestPluginNameValidation:
         import api.plugins as plugins
 
         with tempfile.TemporaryDirectory() as td:
-            prev = os.environ.get("NASMUSICUI_PLUGINS_DIR")
-            os.environ["NASMUSICUI_PLUGINS_DIR"] = td
+            prev = os.environ.get("NASWEBUI_PLUGINS_DIR")
+            os.environ["NASWEBUI_PLUGINS_DIR"] = td
             try:
                 root = Path(td) / "tplug" / "dashboard"
                 (root / "dist").mkdir(parents=True)
@@ -477,9 +477,9 @@ class TestPluginNameValidation:
                 plugins.PLUGIN_MANIFESTS.clear()
                 plugins._PLUGIN_STATIC_ROOTS.clear()
                 if prev is None:
-                    os.environ.pop("NASMUSICUI_PLUGINS_DIR", None)
+                    os.environ.pop("NASWEBUI_PLUGINS_DIR", None)
                 else:
-                    os.environ["NASMUSICUI_PLUGINS_DIR"] = prev
+                    os.environ["NASWEBUI_PLUGINS_DIR"] = prev
 
 
 class TestPluginCollisionDetection:
@@ -495,7 +495,7 @@ class TestPluginCollisionDetection:
             manifest = {"name": "testplugin", "tab": {"path": "/testplugin-duplicate"}}
             (plugin_dir / "manifest.json").write_text(json.dumps(manifest))
 
-            with patch.dict("os.environ", {"NASMUSICUI_PLUGINS_DIR": td}):
+            with patch.dict("os.environ", {"NASWEBUI_PLUGINS_DIR": td}):
                 PLUGIN_MANIFESTS.clear()
                 with patch.object(logging, "warning") as mock_warn:
                     load_plugins()

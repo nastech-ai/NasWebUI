@@ -22,11 +22,11 @@
     inside-WSL2 path produces a venv `start.ps1` can't invoke.
 
 .PARAMETER Port
-    TCP port the WebUI binds to. Overrides NASMUSICUI_PORT env.
+    TCP port the WebUI binds to. Overrides NASWEBUI_PORT env.
     Default: 8787.
 
 .PARAMETER BindHost
-    Bind address. Overrides NASMUSICUI_HOST env.
+    Bind address. Overrides NASWEBUI_HOST env.
     Default: 127.0.0.1.
 
 .EXAMPLE
@@ -38,7 +38,7 @@
     # Bind to 127.0.0.1:9000.
 
 .EXAMPLE
-    $env:NASMUSICUI_HOST = '0.0.0.0'
+    $env:NASWEBUI_HOST = '0.0.0.0'
     .\start.ps1
     # Bind to all interfaces (set a password first via env or Settings).
 
@@ -78,7 +78,7 @@ if (Test-Path $envFile) {
 }
 
 # === Find Python (matches start.sh order) ==============================
-$Python = $env:NASMUSICUI_PYTHON
+$Python = $env:NASWEBUI_PYTHON
 if (-not $Python) {
     foreach ($candidate in @('python3', 'python', 'py')) {
         $cmd = Get-Command $candidate -ErrorAction SilentlyContinue
@@ -86,19 +86,19 @@ if (-not $Python) {
     }
 }
 if (-not $Python) {
-    Write-Error 'Python 3 is required to run server.py (set NASMUSICUI_PYTHON or add python to PATH).'
+    Write-Error 'Python 3 is required to run server.py (set NASWEBUI_PYTHON or add python to PATH).'
     exit 1
 }
 
 # === Find NasTech Agent dir (server.py imports from it) =================
-# When NASMUSICUI_AGENT_DIR is set we still validate it on disk —
+# When NASWEBUI_AGENT_DIR is set we still validate it on disk —
 # an explicit override pointing at a missing dir should fail FAST
 # with a clear message, not silently progress into a python3 launch
 # that's about to crash on missing imports. Smoke-test feedback on
 # PR #2783: nastech-ai/NasWebUI requested this guard.
-$AgentDir = $env:NASMUSICUI_AGENT_DIR
+$AgentDir = $env:NASWEBUI_AGENT_DIR
 if ($AgentDir -and -not (Test-Path (Join-Path $AgentDir 'nastech_cli') -PathType Container)) {
-    Write-Error "NASMUSICUI_AGENT_DIR is set to '$AgentDir' but no nastech_cli/ folder exists there. Unset the variable to fall back to auto-discovery, or fix the path."
+    Write-Error "NASWEBUI_AGENT_DIR is set to '$AgentDir' but no nastech_cli/ folder exists there. Unset the variable to fall back to auto-discovery, or fix the path."
     exit 1
 }
 if (-not $AgentDir) {
@@ -125,7 +125,7 @@ if (-not $AgentDir) {
 }
 if (-not $AgentDir) {
     $searched = $candidates -join ', '
-    Write-Error "NasTech-Agent not found. Searched: $searched. Set NASMUSICUI_AGENT_DIR explicitly to override."
+    Write-Error "NasTech-Agent not found. Searched: $searched. Set NASWEBUI_AGENT_DIR explicitly to override."
     exit 1
 }
 
@@ -136,29 +136,29 @@ if (Test-Path $agentVenvPython) {
 }
 
 # === Resolve bind + state defaults =====================================
-$BindHostFinal = if ($BindHost) { $BindHost } elseif ($env:NASMUSICUI_HOST) { $env:NASMUSICUI_HOST } else { '127.0.0.1' }
+$BindHostFinal = if ($BindHost) { $BindHost } elseif ($env:NASWEBUI_HOST) { $env:NASWEBUI_HOST } else { '127.0.0.1' }
 $PortFinal = if ($Port) {
     $Port
-} elseif ($env:NASMUSICUI_PORT) {
+} elseif ($env:NASWEBUI_PORT) {
     # TryParse + range guard on the env var. A plain [int] cast on the
     # env var throws InvalidCastException with no actionable context when
     # the env var is set to a non-integer (typo, accidental shell
     # expansion, etc.) — surface a targeted error message instead.
     $parsedPort = 0
-    if (-not [int]::TryParse($env:NASMUSICUI_PORT, [ref]$parsedPort)) {
-        Write-Error "NASMUSICUI_PORT='$($env:NASMUSICUI_PORT)' is not a valid integer port. Unset the variable to use the default (8787), or set it to a number 1-65535."
+    if (-not [int]::TryParse($env:NASWEBUI_PORT, [ref]$parsedPort)) {
+        Write-Error "NASWEBUI_PORT='$($env:NASWEBUI_PORT)' is not a valid integer port. Unset the variable to use the default (8787), or set it to a number 1-65535."
         exit 1
     }
     if ($parsedPort -lt 1 -or $parsedPort -gt 65535) {
-        Write-Error "NASMUSICUI_PORT=$parsedPort is out of TCP-port range. Must be 1-65535."
+        Write-Error "NASWEBUI_PORT=$parsedPort is out of TCP-port range. Must be 1-65535."
         exit 1
     }
     $parsedPort
 } else {
     8787
 }
-$env:NASMUSICUI_HOST = $BindHostFinal
-$env:NASMUSICUI_PORT = "$PortFinal"
+$env:NASWEBUI_HOST = $BindHostFinal
+$env:NASWEBUI_PORT = "$PortFinal"
 if (-not $env:NASTECH_HOME) {
     if ($env:LOCALAPPDATA) {
         $env:NASTECH_HOME = Join-Path $env:LOCALAPPDATA 'naswebui'
@@ -166,19 +166,19 @@ if (-not $env:NASTECH_HOME) {
         $env:NASTECH_HOME = Join-Path $env:USERPROFILE '.naswebui'
     }
 }
-if (-not $env:NASMUSICUI_STATE_DIR) {
-    $env:NASMUSICUI_STATE_DIR = Join-Path $env:NASTECH_HOME 'webui'
+if (-not $env:NASWEBUI_STATE_DIR) {
+    $env:NASWEBUI_STATE_DIR = Join-Path $env:NASTECH_HOME 'webui'
 }
 
 # === Ensure dirs exist =================================================
 New-Item -ItemType Directory -Force -Path $env:NASTECH_HOME | Out-Null
-New-Item -ItemType Directory -Force -Path $env:NASMUSICUI_STATE_DIR | Out-Null
+New-Item -ItemType Directory -Force -Path $env:NASWEBUI_STATE_DIR | Out-Null
 
 # === Launch (foreground, matches start.sh) =============================
 Write-Host "[start.ps1] NasWebUI native Windows launcher" -ForegroundColor Cyan
 Write-Host "[start.ps1] Python:     $Python"
 Write-Host "[start.ps1] Agent dir:  $AgentDir"
-Write-Host "[start.ps1] State dir:  $env:NASMUSICUI_STATE_DIR"
+Write-Host "[start.ps1] State dir:  $env:NASWEBUI_STATE_DIR"
 Write-Host "[start.ps1] Binding:    ${BindHostFinal}:${PortFinal}"
 Write-Host ""
 

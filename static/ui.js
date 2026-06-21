@@ -13,7 +13,7 @@ function assistantDisplayName(){
 }
 const INFLIGHT={};  // keyed by session_id while request in-flight
 const SESSION_QUEUES={};  // keyed by session_id for queued follow-up turns
-const MAX_UPLOAD_BYTES=(window.__NASMUSICUI_CONFIG__&&window.__NASMUSICUI_CONFIG__.maxUploadBytes)||20*1024*1024;
+const MAX_UPLOAD_BYTES=(window.__NASWEBUI_CONFIG__&&window.__NASWEBUI_CONFIG__.maxUploadBytes)||20*1024*1024;
 const MAX_UPLOAD_MB=Math.round(MAX_UPLOAD_BYTES/1024/1024);
 // Tracks which session's queue to drain in setBusy(false).
 // Set to activeSid just before setBusy(false) in done/error handlers so the

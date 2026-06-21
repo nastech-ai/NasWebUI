@@ -30,8 +30,8 @@ import time
 # Isolate from the user's real NASTECH_HOME so the catalog cache file we
 # build here does not contaminate the real ~/.nastech/webui/.
 os.environ["NASTECH_HOME"] = "/tmp/hwebui-2518-bench/bench-home"
-os.environ["NASMUSICUI_STATE_DIR"] = "/tmp/hwebui-2518-bench/bench-home/webui"
-os.makedirs(os.environ["NASMUSICUI_STATE_DIR"], exist_ok=True)
+os.environ["NASWEBUI_STATE_DIR"] = "/tmp/hwebui-2518-bench/bench-home/webui"
+os.makedirs(os.environ["NASWEBUI_STATE_DIR"], exist_ok=True)
 
 from api.config import get_available_models  # noqa: E402
 from api.routes import _resolve_compatible_session_model_state  # noqa: E402

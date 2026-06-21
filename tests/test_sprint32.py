@@ -8,7 +8,7 @@ from api.startup import auto_install_agent_deps, _trusted_agent_dir
 class TestAutoInstallAgentDeps:
     """Tests for auto_install_agent_deps().
 
-    All tests that exercise the install path set NASMUSICUI_AUTO_INSTALL=1
+    All tests that exercise the install path set NASWEBUI_AUTO_INSTALL=1
     (the new opt-in gate) and mock _trusted_agent_dir to return True (so pytest
     tmp_path directories — which are group-writable by default — pass the check).
     Tests that verify skip behavior set the flag and mock trust=True so they
@@ -16,13 +16,13 @@ class TestAutoInstallAgentDeps:
     """
 
     def test_disabled_by_default(self, tmp_path, capsys):
-        """Auto-install must be off unless NASMUSICUI_AUTO_INSTALL=1 is set."""
+        """Auto-install must be off unless NASWEBUI_AUTO_INSTALL=1 is set."""
         agent_dir = tmp_path / 'NasTech-Agent'
         agent_dir.mkdir()
         (agent_dir / 'requirements.txt').write_text('somepkg\n')
-        env = {'NASMUSICUI_AGENT_DIR': str(agent_dir)}
+        env = {'NASWEBUI_AGENT_DIR': str(agent_dir)}
         with patch.dict('os.environ', env, clear=False):
-            os.environ.pop('NASMUSICUI_AUTO_INSTALL', None)
+            os.environ.pop('NASWEBUI_AUTO_INSTALL', None)
             with patch('subprocess.run') as mock_run:
                 assert auto_install_agent_deps() is False
                 assert not mock_run.called
@@ -33,7 +33,7 @@ class TestAutoInstallAgentDeps:
         agent_dir.mkdir()
         req = agent_dir / 'requirements.txt'
         req.write_text('pyyaml\n')
-        env = {'NASMUSICUI_AGENT_DIR': str(agent_dir), 'NASMUSICUI_AUTO_INSTALL': '1'}
+        env = {'NASWEBUI_AGENT_DIR': str(agent_dir), 'NASWEBUI_AUTO_INSTALL': '1'}
         with patch.dict('os.environ', env, clear=False):
             with patch('api.startup._trusted_agent_dir', return_value=True):
                 with patch('subprocess.run') as mock_run:
@@ -46,7 +46,7 @@ class TestAutoInstallAgentDeps:
         agent_dir = tmp_path / 'NasTech-Agent'
         agent_dir.mkdir()
         (agent_dir / 'pyproject.toml').write_text('[project]\nname="NasTech-Agent"\n')
-        env = {'NASMUSICUI_AGENT_DIR': str(agent_dir), 'NASMUSICUI_AUTO_INSTALL': '1'}
+        env = {'NASWEBUI_AGENT_DIR': str(agent_dir), 'NASWEBUI_AUTO_INSTALL': '1'}
         with patch.dict('os.environ', env, clear=False):
             with patch('api.startup._trusted_agent_dir', return_value=True):
                 with patch('subprocess.run') as mock_run:
@@ -58,9 +58,9 @@ class TestAutoInstallAgentDeps:
     def test_skips_when_agent_dir_missing(self, tmp_path, capsys):
         missing = tmp_path / 'nonexistent-agent'
         env_overrides = {
-            'NASMUSICUI_AGENT_DIR': str(missing),
+            'NASWEBUI_AGENT_DIR': str(missing),
             'NASTECH_HOME': str(tmp_path / 'no-nastech-home'),
-            'NASMUSICUI_AUTO_INSTALL': '1',
+            'NASWEBUI_AUTO_INSTALL': '1',
         }
         with patch.dict('os.environ', env_overrides, clear=False):
             with patch('subprocess.run') as mock_run:
@@ -72,7 +72,7 @@ class TestAutoInstallAgentDeps:
     def test_skips_when_no_install_file(self, tmp_path, capsys):
         agent_dir = tmp_path / 'NasTech-Agent'
         agent_dir.mkdir()
-        env = {'NASMUSICUI_AGENT_DIR': str(agent_dir), 'NASMUSICUI_AUTO_INSTALL': '1'}
+        env = {'NASWEBUI_AGENT_DIR': str(agent_dir), 'NASWEBUI_AUTO_INSTALL': '1'}
         with patch.dict('os.environ', env, clear=False):
             with patch('api.startup._trusted_agent_dir', return_value=True):
                 with patch('subprocess.run') as mock_run:
@@ -85,7 +85,7 @@ class TestAutoInstallAgentDeps:
         agent_dir = tmp_path / 'NasTech-Agent'
         agent_dir.mkdir()
         (agent_dir / 'requirements.txt').write_text('somepkg\n')
-        env = {'NASMUSICUI_AGENT_DIR': str(agent_dir), 'NASMUSICUI_AUTO_INSTALL': '1'}
+        env = {'NASWEBUI_AGENT_DIR': str(agent_dir), 'NASWEBUI_AUTO_INSTALL': '1'}
         with patch.dict('os.environ', env, clear=False):
             with patch('api.startup._trusted_agent_dir', return_value=False):
                 with patch('subprocess.run') as mock_run:
@@ -97,7 +97,7 @@ class TestAutoInstallAgentDeps:
         agent_dir = tmp_path / 'NasTech-Agent'
         agent_dir.mkdir()
         (agent_dir / 'requirements.txt').write_text('somepkg\n')
-        env = {'NASMUSICUI_AGENT_DIR': str(agent_dir), 'NASMUSICUI_AUTO_INSTALL': '1'}
+        env = {'NASWEBUI_AGENT_DIR': str(agent_dir), 'NASWEBUI_AUTO_INSTALL': '1'}
         with patch.dict('os.environ', env, clear=False):
             with patch('api.startup._trusted_agent_dir', return_value=True):
                 with patch('subprocess.run') as mock_run:
@@ -110,7 +110,7 @@ class TestAutoInstallAgentDeps:
         agent_dir = tmp_path / 'NasTech-Agent'
         agent_dir.mkdir()
         (agent_dir / 'requirements.txt').write_text('somepkg\n')
-        env = {'NASMUSICUI_AGENT_DIR': str(agent_dir), 'NASMUSICUI_AUTO_INSTALL': '1'}
+        env = {'NASWEBUI_AGENT_DIR': str(agent_dir), 'NASWEBUI_AUTO_INSTALL': '1'}
         with patch.dict('os.environ', env, clear=False):
             with patch('api.startup._trusted_agent_dir', return_value=True):
                 with patch('subprocess.run', side_effect=subprocess.TimeoutExpired('pip', 120)):

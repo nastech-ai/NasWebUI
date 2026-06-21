@@ -67,7 +67,7 @@ def _fresh_tts_limiter(monkeypatch):
     import api.auth as _auth
     monkeypatch.setattr(_auth, "is_auth_enabled", lambda: False)
     monkeypatch.setattr(routes, "is_auth_enabled", lambda: False, raising=False)
-    monkeypatch.delenv("NASMUSICUI_TRUST_FORWARDED_FOR", raising=False)
+    monkeypatch.delenv("NASWEBUI_TRUST_FORWARDED_FOR", raising=False)
     _reset_limiter()
     yield
     _reset_limiter()
@@ -179,7 +179,7 @@ def test_tts_rate_limit_ignores_spoofed_forwarded_for_by_default():
 
 
 def test_tts_rate_limit_can_trust_forwarded_for_when_opted_in(monkeypatch):
-    monkeypatch.setenv("NASMUSICUI_TRUST_FORWARDED_FOR", "1")
+    monkeypatch.setenv("NASWEBUI_TRUST_FORWARDED_FOR", "1")
 
     h1 = _post(
         {"text": "hello", "voice": "not-a-real-voice"},

@@ -442,7 +442,7 @@ class TestAttachmentRootIntegration:
         # Set up isolated attachment root
         attachment_root = tmp_path / "attachments"
         attachment_root.mkdir(parents=True)
-        monkeypatch.setenv("NASMUSICUI_ATTACHMENT_DIR", str(attachment_root))
+        monkeypatch.setenv("NASWEBUI_ATTACHMENT_DIR", str(attachment_root))
 
         # The image lives in the attachment inbox, NOT in the workspace
         session_inbox = attachment_root / "sess123"
@@ -478,7 +478,7 @@ class TestAttachmentRootIntegration:
         """Paths outside BOTH allowed roots remain rejected — no security regression."""
         attachment_root = tmp_path / "attachments"
         attachment_root.mkdir()
-        monkeypatch.setenv("NASMUSICUI_ATTACHMENT_DIR", str(attachment_root))
+        monkeypatch.setenv("NASWEBUI_ATTACHMENT_DIR", str(attachment_root))
 
         workspace = tmp_path / "workspace"
         workspace.mkdir()
@@ -508,7 +508,7 @@ class TestAttachmentRootIntegration:
         """Workspace-resident images still work (backward compat with pre-#2319 uploads)."""
         attachment_root = tmp_path / "attachments"
         attachment_root.mkdir()
-        monkeypatch.setenv("NASMUSICUI_ATTACHMENT_DIR", str(attachment_root))
+        monkeypatch.setenv("NASWEBUI_ATTACHMENT_DIR", str(attachment_root))
 
         workspace = tmp_path / "workspace"
         workspace.mkdir()

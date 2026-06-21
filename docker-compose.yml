@@ -36,22 +36,22 @@ services:
       - WANTED_UID=${UID:-1000}
       - WANTED_GID=${GID:-1000}
       # Required: bind address and port
-      - NASMUSICUI_HOST=0.0.0.0
-      - NASMUSICUI_PORT=8787
+      - NASWEBUI_HOST=0.0.0.0
+      - NASWEBUI_PORT=8787
       # Where to store sessions, workspaces, and other state (default: ~/.nastech/webui)
-      - NASMUSICUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
+      - NASWEBUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
       # Default workspace directory shown on first launch
-#      - NASMUSICUI_DEFAULT_WORKSPACE=/workspace
+#      - NASWEBUI_DEFAULT_WORKSPACE=/workspace
       # Optional: set a password for remote access
-      # - NASMUSICUI_PASSWORD=your-secret-password
+      # - NASWEBUI_PASSWORD=your-secret-password
       #
       # Bind-mount permission handling (fixes #1389, #1399):
       #   When you mount an EXISTING ~/.nastech directory (the common case),
       #   the WebUI's startup credential-permission fixer can clash with
       #   your host file modes (e.g. 0640 group-readable .env files).
-      #   Set NASMUSICUI_SKIP_CHMOD=1 to bypass the fixer entirely, OR set
+      #   Set NASWEBUI_SKIP_CHMOD=1 to bypass the fixer entirely, OR set
       #   NASTECH_HOME_MODE=0640 to allow group bits while still stripping
       #   world-readable. Both are documented in api/startup.py.
-      # - NASMUSICUI_SKIP_CHMOD=1
+      # - NASWEBUI_SKIP_CHMOD=1
       # - NASTECH_HOME_MODE=0640
     restart: unless-stopped

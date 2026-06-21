@@ -3475,10 +3475,10 @@ CLAUDE_CODE_MAX_CONTENT_CHARS = 200_000
 
 def _default_claude_code_projects_dir() -> Path | None:
     """Resolve the Claude Code projects directory without touching real home in tests."""
-    override = os.getenv('NASMUSICUI_CLAUDE_PROJECTS_DIR')
+    override = os.getenv('NASWEBUI_CLAUDE_PROJECTS_DIR')
     if override:
         return Path(override).expanduser()
-    if os.getenv('NASMUSICUI_TEST_STATE_DIR'):
+    if os.getenv('NASWEBUI_TEST_STATE_DIR'):
         return None
     return Path.home() / '.claude' / 'projects'
 

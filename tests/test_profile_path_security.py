@@ -12,7 +12,7 @@ if str(REPO_ROOT) not in sys.path:
 
 
 def _reload_profiles_module(base_home: Path):
-    os.environ["NASMUSICUI_BASE_HOME"] = str(base_home)
+    os.environ["NASWEBUI_BASE_HOME"] = str(base_home)
     os.environ["NASTECH_HOME"] = str(base_home)
 
     # Save the original module references so we can restore them after the test.

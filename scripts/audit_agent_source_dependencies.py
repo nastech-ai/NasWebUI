@@ -244,7 +244,7 @@ def build_report(root: Path) -> dict[str, object]:
         ),
         (
             ("startup_install_function", r"auto_install_agent_deps"),
-            ("agent_dir_env", r"NASMUSICUI_AGENT_DIR"),
+            ("agent_dir_env", r"NASWEBUI_AGENT_DIR"),
             ("agent_source_install", r"uv pip install.*\[all\]"),
             ("agent_source_staging", r"_agent_src|_stage_src"),
         ),
@@ -269,7 +269,7 @@ def build_report(root: Path) -> dict[str, object]:
             class_id="startup_dependency_install",
             title="Startup dependency installation from agent checkout",
             current_dependency=(
-                "WebUI startup discovers NASMUSICUI_AGENT_DIR or ~/.nastech/NasTech-Agent "
+                "WebUI startup discovers NASWEBUI_AGENT_DIR or ~/.nastech/NasTech-Agent "
                 "and installs the agent checkout extras."
             ),
             replacement_surface=(

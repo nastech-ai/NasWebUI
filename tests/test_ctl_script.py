@@ -23,14 +23,14 @@ def run_ctl(
 ):
     merged = os.environ.copy()
     for key in (
-        "NASMUSICUI_HOST",
-        "NASMUSICUI_PORT",
-        "NASMUSICUI_PYTHON",
-        "NASMUSICUI_STATE_DIR",
-        "NASMUSICUI_PID_FILE",
-        "NASMUSICUI_LOG_FILE",
-        "NASMUSICUI_CTL_STATE_FILE",
-        "NASMUSICUI_NO_DOTENV",
+        "NASWEBUI_HOST",
+        "NASWEBUI_PORT",
+        "NASWEBUI_PYTHON",
+        "NASWEBUI_STATE_DIR",
+        "NASWEBUI_PID_FILE",
+        "NASWEBUI_LOG_FILE",
+        "NASWEBUI_CTL_STATE_FILE",
+        "NASWEBUI_NO_DOTENV",
     ):
         merged.pop(key, None)
     merged.update(
@@ -38,7 +38,7 @@ def run_ctl(
             "HOME": str(home),
             "NASTECH_HOME": str(home / ".nastech"),
             "PATH": os.environ.get("PATH", ""),
-            "NASMUSICUI_NO_DOTENV": "0" if load_dotenv else "1",
+            "NASWEBUI_NO_DOTENV": "0" if load_dotenv else "1",
         }
     )
     if env:
@@ -59,7 +59,7 @@ def write_fake_python(path: Path) -> None:
             """
             #!/usr/bin/env bash
             printf 'fake-python args:%s\n' "$*" >> "${FAKE_PYTHON_LOG}"
-            printf 'host=%s port=%s state=%s\n' "${NASMUSICUI_HOST:-}" "${NASMUSICUI_PORT:-}" "${NASMUSICUI_STATE_DIR:-}" >> "${FAKE_PYTHON_LOG}"
+            printf 'host=%s port=%s state=%s\n' "${NASWEBUI_HOST:-}" "${NASWEBUI_PORT:-}" "${NASWEBUI_STATE_DIR:-}" >> "${FAKE_PYTHON_LOG}"
             trap 'printf "terminated\n" >> "${FAKE_PYTHON_LOG}"; exit 0' TERM INT
             while true; do sleep 0.1; done
             """
@@ -198,11 +198,11 @@ def test_start_writes_pid_under_naswebui_home_runs_foreground_no_browser_and_log
         tmp_path,
         "start",
         env={
-            "NASMUSICUI_PYTHON": str(fake_python),
+            "NASWEBUI_PYTHON": str(fake_python),
             "FAKE_PYTHON_LOG": str(fake_log),
-            "NASMUSICUI_HOST": "0.0.0.0",
-            "NASMUSICUI_PORT": "18991",
-            "NASMUSICUI_CTL_ALLOW_LAUNCHD_CONFLICT": "1",
+            "NASWEBUI_HOST": "0.0.0.0",
+            "NASWEBUI_PORT": "18991",
+            "NASWEBUI_CTL_ALLOW_LAUNCHD_CONFLICT": "1",
         },
     )
 
@@ -245,7 +245,7 @@ def test_start_can_ignore_repo_dotenv_for_authoritative_test_env(tmp_path):
     shutil.copy2(CTL, repo_root / "ctl.sh")
     (repo_root / "bootstrap.py").write_text("# fake bootstrap target\n", encoding="utf-8")
     (repo_root / ".env").write_text(
-        f"NASMUSICUI_STATE_DIR={tmp_path / 'host-specific-webui'}\n",
+        f"NASWEBUI_STATE_DIR={tmp_path / 'host-specific-webui'}\n",
         encoding="utf-8",
     )
     fake_python = tmp_path / "fake-python"
@@ -256,9 +256,9 @@ def test_start_can_ignore_repo_dotenv_for_authoritative_test_env(tmp_path):
         tmp_path,
         "start",
         env={
-            "NASMUSICUI_PYTHON": str(fake_python),
+            "NASWEBUI_PYTHON": str(fake_python),
             "FAKE_PYTHON_LOG": str(fake_log),
-            "NASMUSICUI_CTL_ALLOW_LAUNCHD_CONFLICT": "1",
+            "NASWEBUI_CTL_ALLOW_LAUNCHD_CONFLICT": "1",
         },
         repo_root=repo_root,
     )
@@ -286,7 +286,7 @@ def test_start_loads_dotenv_but_inline_overrides_win(tmp_path):
     fake_log = tmp_path / "fake-python.log"
     write_fake_python(fake_python)
     (repo_root / ".env").write_text(
-        "NASMUSICUI_HOST=127.9.9.9\nNASMUSICUI_PORT=18888\n",
+        "NASWEBUI_HOST=127.9.9.9\nNASWEBUI_PORT=18888\n",
         encoding="utf-8",
     )
 
@@ -294,10 +294,10 @@ def test_start_loads_dotenv_but_inline_overrides_win(tmp_path):
         tmp_path,
         "start",
         env={
-            "NASMUSICUI_PYTHON": str(fake_python),
+            "NASWEBUI_PYTHON": str(fake_python),
             "FAKE_PYTHON_LOG": str(fake_log),
-            "NASMUSICUI_HOST": "0.0.0.0",
-            "NASMUSICUI_CTL_ALLOW_LAUNCHD_CONFLICT": "1",
+            "NASWEBUI_HOST": "0.0.0.0",
+            "NASWEBUI_CTL_ALLOW_LAUNCHD_CONFLICT": "1",
         },
         repo_root=repo_root,
         load_dotenv=True,
@@ -384,7 +384,7 @@ def test_start_refuses_second_instance_when_launchd_job_owns_the_port(tmp_path):
             "start",
             env={
                 "PATH": f"{bash_path(fake_bin)}{os.pathsep}{os.environ.get('PATH', '')}",
-                "NASMUSICUI_LAUNCHD_LABEL": "com.parantoux.naswebui",
+                "NASWEBUI_LAUNCHD_LABEL": "com.parantoux.naswebui",
             },
         )
         assert result.returncode == 2
@@ -427,9 +427,9 @@ def test_start_allows_alternate_port_while_launchd_job_runs_on_default(tmp_path)
             "start",
             env={
                 "PATH": f"{bash_path(fake_bin)}{os.pathsep}{os.environ.get('PATH', '')}",
-                "NASMUSICUI_LAUNCHD_LABEL": "com.parantoux.naswebui",
-                "NASMUSICUI_PORT": "18992",
-                "NASMUSICUI_PYTHON": str(fake_python),
+                "NASWEBUI_LAUNCHD_LABEL": "com.parantoux.naswebui",
+                "NASWEBUI_PORT": "18992",
+                "NASWEBUI_PYTHON": str(fake_python),
             },
         )
         combined = result.stdout + result.stderr

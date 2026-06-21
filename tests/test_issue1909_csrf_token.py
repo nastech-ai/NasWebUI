@@ -72,7 +72,7 @@ def test_authenticated_allowed_public_origin_accepts_valid_csrf_token(monkeypatc
     cookie = _signed_cookie("f" * 64)
     token = auth.csrf_token_for_session(cookie)
     monkeypatch.setattr(auth, "is_auth_enabled", lambda: True)
-    monkeypatch.setenv("NASMUSICUI_ALLOWED_ORIGINS", "https://myapp.example.com:8000")
+    monkeypatch.setenv("NASWEBUI_ALLOWED_ORIGINS", "https://myapp.example.com:8000")
     try:
         headers = {
             "Origin": "https://myapp.example.com:8000",
@@ -89,7 +89,7 @@ def test_authenticated_reverse_proxy_same_origin_accepts_valid_csrf_token(monkey
     cookie = _signed_cookie("g" * 64)
     token = auth.csrf_token_for_session(cookie)
     monkeypatch.setattr(auth, "is_auth_enabled", lambda: True)
-    monkeypatch.setenv("NASMUSICUI_TRUST_FORWARDED_HOST", "1")
+    monkeypatch.setenv("NASWEBUI_TRUST_FORWARDED_HOST", "1")
     try:
         headers = {
             "Origin": "https://example.com",
@@ -107,7 +107,7 @@ def test_authenticated_forwarded_host_is_ignored_without_proxy_opt_in(monkeypatc
     cookie = _signed_cookie("h" * 64)
     token = auth.csrf_token_for_session(cookie)
     monkeypatch.setattr(auth, "is_auth_enabled", lambda: True)
-    monkeypatch.delenv("NASMUSICUI_TRUST_FORWARDED_HOST", raising=False)
+    monkeypatch.delenv("NASWEBUI_TRUST_FORWARDED_HOST", raising=False)
     try:
         headers = {
             "Origin": "https://example.com",

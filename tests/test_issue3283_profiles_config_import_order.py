@@ -24,8 +24,8 @@ def test_profiles_first_then_config_still_initializes_active_profile(tmp_path):
     repo_root = Path(__file__).resolve().parents[1]
     env = os.environ.copy()
     env.pop("NASTECH_HOME", None)
-    env.pop("NASMUSICUI_BASE_HOME", None)
-    env.pop("NASMUSICUI_STATE_DIR", None)
+    env.pop("NASWEBUI_BASE_HOME", None)
+    env.pop("NASWEBUI_STATE_DIR", None)
     env["HOME"] = str(home)
     env["PYTHONPATH"] = str(repo_root)
 

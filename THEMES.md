@@ -98,8 +98,8 @@ Two ways to ship it:
    list (`static/commands.js`), then open a PR.
 
 2. **Self-hosted (no fork):** use the WebUI extensions surface — see
-   `docs/EXTENSIONS.md`. Drop your CSS in `NASMUSICUI_EXTENSION_DIR` and
-   declare it in `NASMUSICUI_EXTENSION_STYLESHEET_URLS`. No code changes
+   `docs/EXTENSIONS.md`. Drop your CSS in `NASWEBUI_EXTENSION_DIR` and
+   declare it in `NASWEBUI_EXTENSION_STYLESHEET_URLS`. No code changes
    needed; the skin attribute can be set from your own JS.
 
 ### Tips

@@ -259,7 +259,7 @@ def test_goal_endpoint_preserves_response_shape_under_runtime_adapter_flag(monke
         pending_user_message = None
         active_stream_id = None
 
-    monkeypatch.setenv("NASMUSICUI_RUNTIME_ADAPTER", "legacy-journal")
+    monkeypatch.setenv("NASWEBUI_RUNTIME_ADAPTER", "legacy-journal")
     monkeypatch.setattr(webui_goals, "GoalManager", FakeGoalManager)
     monkeypatch.setattr(routes, "get_session", lambda sid: FakeSession())
     monkeypatch.setattr(routes, "j", lambda handler, payload, status=200, **kwargs: {"status": status, "payload": payload})
@@ -309,7 +309,7 @@ def test_goal_endpoint_adapter_keeps_full_set_text_and_legacy_payload_status(mon
         pending_user_message = None
         active_stream_id = None
 
-    monkeypatch.setenv("NASMUSICUI_RUNTIME_ADAPTER", "legacy-journal")
+    monkeypatch.setenv("NASWEBUI_RUNTIME_ADAPTER", "legacy-journal")
     monkeypatch.setattr(webui_goals, "GoalManager", FakeGoalManager)
     monkeypatch.setattr(routes, "get_session", lambda sid: FakeSession())
     monkeypatch.setattr(routes, "resolve_trusted_workspace", lambda workspace: tmp_path)
@@ -355,7 +355,7 @@ def test_goal_endpoint_adapter_error_payload_still_controls_http_status(monkeypa
         pending_user_message = None
         active_stream_id = "running-stream"
 
-    monkeypatch.setenv("NASMUSICUI_RUNTIME_ADAPTER", "legacy-journal")
+    monkeypatch.setenv("NASWEBUI_RUNTIME_ADAPTER", "legacy-journal")
     monkeypatch.setattr(webui_goals, "GoalManager", FakeGoalManager)
     monkeypatch.setattr(routes, "get_session", lambda sid: FakeSession())
     monkeypatch.setitem(routes.STREAMS, "running-stream", {"queue": object()})

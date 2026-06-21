@@ -56,7 +56,7 @@ def _platform_default_nastech_home() -> Path:
     ``%LOCALAPPDATA%.nastech`` location is not yet established.  This is a
     non-destructive, self-healing fallback: no files are moved, and once the
     new location has state (fresh installs, or users who set NASTECH_HOME) the
-    legacy path is never preferred.  Explicit NASTECH_HOME / NASMUSICUI_STATE_DIR
+    legacy path is never preferred.  Explicit NASTECH_HOME / NASWEBUI_STATE_DIR
     overrides take precedence upstream and are unaffected.
     """
     if os.name == "nt":

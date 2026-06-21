@@ -452,7 +452,7 @@ _PREFILL_CONTEXT_DEFAULT_MAX_CHARS = 12_000
 
 
 def _prefill_context_max_chars(config_data: dict) -> int:
-    raw = os.getenv("NASMUSICUI_PREFILL_CONTEXT_MAX_CHARS", "") or str(
+    raw = os.getenv("NASWEBUI_PREFILL_CONTEXT_MAX_CHARS", "") or str(
         config_data.get("webui_prefill_context_max_chars") or ""
     )
     try:
@@ -535,7 +535,7 @@ def _load_prefill_messages_file(file_raw: str, *, source: str = "file", status: 
 
 
 def _prefill_script_timeout(config_data: dict) -> float:
-    raw = os.getenv("NASMUSICUI_PREFILL_MESSAGES_SCRIPT_TIMEOUT", "") or str(config_data.get("webui_prefill_messages_script_timeout") or "")
+    raw = os.getenv("NASWEBUI_PREFILL_MESSAGES_SCRIPT_TIMEOUT", "") or str(config_data.get("webui_prefill_messages_script_timeout") or "")
     try:
         return max(0.1, min(float(raw or 5), 30.0))
     except Exception:
@@ -572,7 +572,7 @@ def _messages_from_prefill_script_output(text: str) -> list[dict]:
 
 
 def _load_prefill_messages_script(config_data: dict) -> dict:
-    script_raw = os.getenv("NASMUSICUI_PREFILL_MESSAGES_SCRIPT", "") or config_data.get("webui_prefill_messages_script")
+    script_raw = os.getenv("NASWEBUI_PREFILL_MESSAGES_SCRIPT", "") or config_data.get("webui_prefill_messages_script")
     if not script_raw:
         return _prefill_not_configured()
     command = _prefill_script_command(script_raw)
@@ -1056,11 +1056,11 @@ def _aiagent_import_error_detail() -> str:
     lines = ["AIAgent not available -- check that NasTech-Agent is on sys.path"]
     lines.append("")
     lines.append(f"  python:  {_sys.executable}")
-    agent_dir = _os.environ.get("NASMUSICUI_AGENT_DIR")
+    agent_dir = _os.environ.get("NASWEBUI_AGENT_DIR")
     if agent_dir:
-        lines.append(f"  NASMUSICUI_AGENT_DIR: {agent_dir}")
+        lines.append(f"  NASWEBUI_AGENT_DIR: {agent_dir}")
     else:
-        lines.append("  NASMUSICUI_AGENT_DIR: (not set)")
+        lines.append("  NASWEBUI_AGENT_DIR: (not set)")
 
     # Show only the sys.path entries that look relevant — full sys.path is noisy.
     relevant = [p for p in _sys.path if "nastech" in p.lower() or "agent" in p.lower()]
@@ -4369,7 +4369,7 @@ def _sse(handler, event, data):
 # so no events are lost for a tab that comes back. Operators behind unusual
 # proxies can tune the deadline without code changes.
 try:
-    _raw_deadline = os.getenv("NASMUSICUI_SSE_WRITE_DEADLINE") or os.getenv("NASTECH_SSE_WRITE_DEADLINE")
+    _raw_deadline = os.getenv("NASWEBUI_SSE_WRITE_DEADLINE") or os.getenv("NASTECH_SSE_WRITE_DEADLINE")
     SSE_WRITE_DEADLINE_SECONDS = float(_raw_deadline or "20.0")
 except (TypeError, ValueError):
     SSE_WRITE_DEADLINE_SECONDS = 20.0

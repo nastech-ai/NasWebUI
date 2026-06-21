@@ -290,7 +290,7 @@ def _server_nastech_home() -> pathlib.Path:
     env_path = data.get("system", {}).get("env_path", "")
     if env_path:
         return pathlib.Path(env_path).parent
-    return pathlib.Path(os.environ.get("NASMUSICUI_TEST_STATE_DIR", str(pathlib.Path.home() / ".nastech" / "webui-mvp-test")))
+    return pathlib.Path(os.environ.get("NASWEBUI_TEST_STATE_DIR", str(pathlib.Path.home() / ".nastech" / "webui-mvp-test")))
 
 
 def _server_reachable() -> bool:

@@ -17,11 +17,11 @@ def fix_credential_permissions() -> None:
     """Ensure sensitive files in NASTECH_HOME have safe permissions.
 
     Respects:
-      - NASMUSICUI_SKIP_CHMOD=1  → bypass entirely
+      - NASWEBUI_SKIP_CHMOD=1  → bypass entirely
       - NASTECH_HOME_MODE     → group bits are allowed if set by the operator,
                                only world-readable/world-writable files are fixed
     """
-    if os.environ.get('NASMUSICUI_SKIP_CHMOD', '').strip() in ('1', 'true'):
+    if os.environ.get('NASWEBUI_SKIP_CHMOD', '').strip() in ('1', 'true'):
         return
 
     # Parse operator-declared mode to know if group bits are intentional
@@ -57,7 +57,7 @@ def fix_credential_permissions() -> None:
 
 def _agent_dir() -> Path | None:
     nastech_home = Path(os.environ.get('NASTECH_HOME', str(Path.home() / '.nastech')))
-    for raw in [os.environ.get('NASMUSICUI_AGENT_DIR', '').strip(), str(nastech_home / 'NasTech-Agent')]:
+    for raw in [os.environ.get('NASWEBUI_AGENT_DIR', '').strip(), str(nastech_home / 'NasTech-Agent')]:
         if not raw:
             continue
         p = Path(raw).expanduser()
@@ -72,8 +72,8 @@ def _trusted_agent_dir(agent_dir: Path) -> bool:
     on POSIX systems, is owned by the current process user.
 
     Intentionally does NOT enforce a canonical path (i.e. does not require
-    the dir to be ~/.nastech/NasTech-Agent), so custom NASMUSICUI_AGENT_DIR
-    paths work correctly when NASMUSICUI_AUTO_INSTALL=1 is set.
+    the dir to be ~/.nastech/NasTech-Agent), so custom NASWEBUI_AGENT_DIR
+    paths work correctly when NASWEBUI_AUTO_INSTALL=1 is set.
     """
     try:
         st = agent_dir.stat()
@@ -89,9 +89,9 @@ def _trusted_agent_dir(agent_dir: Path) -> bool:
 
 
 def auto_install_agent_deps() -> bool:
-    enabled = os.environ.get('NASMUSICUI_AUTO_INSTALL', '').strip().lower() in ('1', 'true', 'yes')
+    enabled = os.environ.get('NASWEBUI_AUTO_INSTALL', '').strip().lower() in ('1', 'true', 'yes')
     if not enabled:
-        print('[!!] Auto-install disabled. Set NASMUSICUI_AUTO_INSTALL=1 to enable.', flush=True)
+        print('[!!] Auto-install disabled. Set NASWEBUI_AUTO_INSTALL=1 to enable.', flush=True)
         return False
     agent_dir = _agent_dir()
     if agent_dir is None:

@@ -16,7 +16,7 @@ new browser session. The prefill should point the agent toward retrieval; the
 notes/search tools should provide the specific facts on demand.
 
 Static JSON remains supported through `prefill_messages_file` or
-`NASMUSICUI_PREFILL_MESSAGES_FILE`. For dynamic recall, opt in explicitly with a
+`NASWEBUI_PREFILL_MESSAGES_FILE`. For dynamic recall, opt in explicitly with a
 WebUI-specific script hook:
 
 ```yaml
@@ -29,8 +29,8 @@ webui_prefill_messages_script_timeout: 5
 or:
 
 ```bash
-NASMUSICUI_PREFILL_MESSAGES_SCRIPT="python3 /path/to/notes_recall.py" \
-NASMUSICUI_PREFILL_MESSAGES_SCRIPT_TIMEOUT=5 \
+NASWEBUI_PREFILL_MESSAGES_SCRIPT="python3 /path/to/notes_recall.py" \
+NASWEBUI_PREFILL_MESSAGES_SCRIPT_TIMEOUT=5 \
 ./ctl.sh restart
 ```
 
@@ -40,7 +40,7 @@ message so dynamic recall text becomes ordinary context instead of an extra
 system instruction. If the hook must provide system-level guidance, emit JSON
 messages with an explicit `role: "system"` entry instead. Script output is capped
 at 256 KiB before parsing. Parsed prefill context is then bounded by
-`webui_prefill_context_max_chars` or `NASMUSICUI_PREFILL_CONTEXT_MAX_CHARS`
+`webui_prefill_context_max_chars` or `NASWEBUI_PREFILL_CONTEXT_MAX_CHARS`
 (default: 12,000 characters; set to `0` to disable). When a dynamic script
 exceeds the budget and a compact static prefill file is configured, WebUI falls
 back to that file. If no compact fallback is available, WebUI injects a short
@@ -57,16 +57,16 @@ NasTech Gateway API server while preserving the existing WebUI `/api/chat/start`
 and `/api/chat/stream` browser contract:
 
 ```bash
-NASMUSICUI_CHAT_BACKEND=gateway \
-NASMUSICUI_GATEWAY_BASE_URL=http://127.0.0.1:8642 \
-NASMUSICUI_GATEWAY_API_KEY=... \
+NASWEBUI_CHAT_BACKEND=gateway \
+NASWEBUI_GATEWAY_BASE_URL=http://127.0.0.1:8642 \
+NASWEBUI_GATEWAY_API_KEY=... \
 ./ctl.sh restart
 ```
 
-`NASMUSICUI_CHAT_BACKEND` is intentionally strict: only `gateway`,
+`NASWEBUI_CHAT_BACKEND` is intentionally strict: only `gateway`,
 `api_server`, or `api-server` enable the bridge. Generic truthy values such as
 `1` or `true` are ignored so existing deployments do not change execution
-ownership accidentally. If `NASMUSICUI_GATEWAY_API_KEY` is omitted, WebUI falls
+ownership accidentally. If `NASWEBUI_GATEWAY_API_KEY` is omitted, WebUI falls
 back to `API_SERVER_KEY` when present. When Gateway returns HTTP 401, WebUI
 reports a `gateway_auth_error` that points at this WebUI↔Gateway key mismatch
 rather than showing the Gateway's generic provider-style "Invalid API key" body.

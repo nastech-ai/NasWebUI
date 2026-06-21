@@ -18,7 +18,7 @@ This file tracks UI bugs and polish items. Fixed items are kept for reference.
 
 - **MCP tools not available in WebUI sessions** — MCP servers must be configured in the active profile's config.yaml under mcp_servers:. If MCP tools are not appearing, check that the profile is correct and the MCP server process is reachable from inside the WebUI container. (#628)
 
-- **os.environ race condition in concurrent sessions** — Concurrent agent sessions share process-level os.environ for TERMINAL_CWD, NASMUSICUI_SESSION_KEY, and NASTECH_HOME. _ENV_LOCK serializes mutations but does not fully isolate env vars during agent execution. Upstream fix pending in NasTech-Agent. (#195)
+- **os.environ race condition in concurrent sessions** — Concurrent agent sessions share process-level os.environ for TERMINAL_CWD, NASWEBUI_SESSION_KEY, and NASTECH_HOME. _ENV_LOCK serializes mutations but does not fully isolate env vars during agent execution. Upstream fix pending in NasTech-Agent. (#195)
 
 ---
 

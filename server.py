@@ -35,7 +35,7 @@ if _SIGPIPE is not None:
     signal.signal(_SIGPIPE, signal.SIG_IGN)
 
 # ── Test-mode network isolation ─────────────────────────────────────────────
-# When `NASMUSICUI_TEST_NETWORK_BLOCK=1` is set in the environment, refuse
+# When `NASWEBUI_TEST_NETWORK_BLOCK=1` is set in the environment, refuse
 # outbound socket connections to anything that is not loopback / RFC1918 /
 # link-local / reserved-TLD. This catches accidental real outbound (forgotten
 # mocks, leaked credentials triggering SDK init, new code paths bypassing an
@@ -48,7 +48,7 @@ if _SIGPIPE is not None:
 # A test that legitimately needs real outbound spawns the server with the env
 # var unset (no current callers — every test_server-using test should be
 # mockable).
-if os.environ.get("NASMUSICUI_TEST_NETWORK_BLOCK", "").strip() in ("1", "true", "yes"):
+if os.environ.get("NASWEBUI_TEST_NETWORK_BLOCK", "").strip() in ("1", "true", "yes"):
     _REAL_CREATE_CONN = socket.create_connection
     _REAL_SOCK_CONNECT = socket.socket.connect
 
@@ -550,13 +550,13 @@ def main() -> None:
     if HOST not in ('127.0.0.1', '::1', 'localhost') and not is_auth_enabled():
         print(f'[!!] WARNING: Binding to {HOST} with NO PASSWORD SET.', flush=True)
         print(f'     Anyone on the network can access your filesystem and agent.', flush=True)
-        print(f'     Set a password via Settings or NASMUSICUI_PASSWORD env var.', flush=True)
+        print(f'     Set a password via Settings or NASWEBUI_PASSWORD env var.', flush=True)
         print(f'     To suppress: bind to 127.0.0.1 or set a password.', flush=True)
         if within_container:
             print(f'     Note: You are running within a container, must bind to 0.0.0.0 (IPv4) or :: (IPv6) to publish the port.', flush=True)
     elif not is_auth_enabled():
         print(f'  [tip] No password set. Any process on this machine can read sessions', flush=True)
-        print(f'        and memory via the local API. Set NASMUSICUI_PASSWORD to', flush=True)
+        print(f'        and memory via the local API. Set NASWEBUI_PASSWORD to', flush=True)
         print(f'        enable authentication.', flush=True)
 
     ok, missing, errors = verify_nastech_imports()

@@ -647,7 +647,7 @@ FAIL: Multiple messages sent while one is in flight.
 ### T12.2: Upload Failure Shows Status
 SETUP: Active session.
 STEPS:
-  1. Try to attach a file larger than the configured upload limit (20MB by default; overridden by `NASMUSICUI_MAX_UPLOAD_MB` if set)
+  1. Try to attach a file larger than the configured upload limit (20MB by default; overridden by `NASWEBUI_MAX_UPLOAD_MB` if set)
 EXPECT:
   - Status bar shows an error message about file size or the upload is rejected
   - The chat is not broken (can still send messages)
@@ -1255,7 +1255,7 @@ EXPECT:
   - Labels use Title Case not ALL CAPS
   - Role icons are circles (not squares) with a subtle border
   - The role label area does not visually overpower the message content below
-FAIL: Bright gold "NASMUSICUI" and blue "YOU" in caps drawing eye away from content.
+FAIL: Bright gold "NASWEBUI" and blue "YOU" in caps drawing eye away from content.
 
 ### T25.3: Code Blocks Have a Connected Language Header
 EXPECT:
@@ -1841,7 +1841,7 @@ Each has automated API-level tests in `tests/test_sprint{N}.py`.
 
 ### Sprint 19: Auth + Security
 - No password set: everything works as normal. No login page.
-- Set `NASMUSICUI_PASSWORD=test` env var. Restart. All pages redirect to `/login`.
+- Set `NASWEBUI_PASSWORD=test` env var. Restart. All pages redirect to `/login`.
 - Login page: minimal card, password field, "Sign in" button.
 - Enter correct password → redirected to `/`. Cookie set (24h).
 - Enter wrong password → error message, stay on login page.

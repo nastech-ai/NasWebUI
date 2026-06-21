@@ -112,9 +112,9 @@ def test_status_tries_default_loopback_targets_until_dashboard_found(monkeypatch
     from api import dashboard_probe
 
     # This test verifies the default auto-probe sequence. Other tests exercise
-    # .env/bootstrap behavior and may leave NASMUSICUI_HOST at 0.0.0.0 in the
+    # .env/bootstrap behavior and may leave NASWEBUI_HOST at 0.0.0.0 in the
     # process env; make the default precondition explicit here.
-    monkeypatch.delenv("NASMUSICUI_HOST", raising=False)
+    monkeypatch.delenv("NASWEBUI_HOST", raising=False)
 
     attempts = []
 
@@ -168,7 +168,7 @@ def test_status_skips_auto_probe_when_webui_bind_host_is_non_loopback(monkeypatc
     def fail_probe(*args, **kwargs):
         raise AssertionError("auto mode must not probe dashboard when WebUI binds non-loopback")
 
-    monkeypatch.setenv("NASMUSICUI_HOST", "0.0.0.0")
+    monkeypatch.setenv("NASWEBUI_HOST", "0.0.0.0")
     monkeypatch.setattr(dashboard_probe, "probe_official_dashboard", fail_probe)
 
     result = dashboard_probe.get_dashboard_status(config_data={})

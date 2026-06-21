@@ -12,7 +12,7 @@ Pass ``--foreground`` to ``bootstrap.py`` (or ``bash start.sh``):
 bash start.sh --foreground
 ```
 
-Or set ``NASMUSICUI_FOREGROUND=1`` in the environment. The Web UI will
+Or set ``NASWEBUI_FOREGROUND=1`` in the environment. The Web UI will
 auto-detect launchd / systemd / supervisord even without the flag, but being
 explicit is safer.
 
@@ -176,7 +176,7 @@ These trigger ``--foreground`` behavior even when the flag is not passed:
 | ``NOTIFY_SOCKET`` | systemd ``Type=notify`` / s6 | sd_notify-style notification socket |
 | ``XPC_SERVICE_NAME`` | launchd | Set to the plist Label — narrowed to ``com.<rdns>.<svc>`` form (see below) |
 | ``SUPERVISOR_ENABLED`` | supervisord | Always set under supervisord |
-| ``NASMUSICUI_FOREGROUND`` | you | Explicit opt-in; accepts ``1`` / ``true`` / ``yes`` / ``on`` |
+| ``NASWEBUI_FOREGROUND`` | you | Explicit opt-in; accepts ``1`` / ``true`` / ``yes`` / ``on`` |
 
 ### XPC_SERVICE_NAME noise filter
 
@@ -194,13 +194,13 @@ the most common installation path. We narrow detection to launchd
 **Label-style** names (typically reverse-DNS like ``com.example.foo``).
 Real launchd plists always use this form. If you ever see
 ``XPC_SERVICE_NAME=0`` in your service environment, the auto-detect will
-ignore it — set ``NASMUSICUI_FOREGROUND=1`` or pass ``--foreground``
+ignore it — set ``NASWEBUI_FOREGROUND=1`` or pass ``--foreground``
 explicitly to be safe.
 
 ### Supervisors that are NOT auto-detected
 
 The following set no env var that we can reliably detect. Pass
-``--foreground`` (or ``NASMUSICUI_FOREGROUND=1``) explicitly:
+``--foreground`` (or ``NASWEBUI_FOREGROUND=1``) explicitly:
 
 - **runit** (without sd_notify) — pure runit chains
 - **daemontools** / ``svc``
@@ -210,7 +210,7 @@ The following set no env var that we can reliably detect. Pass
 - **Custom shell-script supervisors** that fork-and-wait
 
 If your supervisor isn't in the auto-detect list and you see the orphan-PID
-respawn loop, set ``NASMUSICUI_FOREGROUND=1`` in the service environment.
+respawn loop, set ``NASWEBUI_FOREGROUND=1`` in the service environment.
 
 ## Diagnostic recipe
 

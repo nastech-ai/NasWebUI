@@ -191,7 +191,7 @@ Remaining gaps and forward work live in [Forward Work](#forward-work) below.
 - [x] Upload path-traversal guard
 - [x] Credential redaction in API responses
 - [x] Profile `.env` secret isolation on switch
-- [x] Auto-install gate (opt-in via `NASMUSICUI_AUTO_INSTALL=1`)
+- [x] Auto-install gate (opt-in via `NASWEBUI_AUTO_INSTALL=1`)
 
 ### Visual / UX
 - [x] 8 themes — Dark, Light, System (auto-sync), Slate, Solarized, Monokai, Nord, OLED, Sienna

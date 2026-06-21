@@ -1636,12 +1636,12 @@ def _ports_match(origin_scheme: str, origin_port: str | None, allowed_port: str 
 
 
 def _allowed_public_origins() -> set[str]:
-    """Parse NASMUSICUI_ALLOWED_ORIGINS env var (comma-separated) into a set.
+    """Parse NASWEBUI_ALLOWED_ORIGINS env var (comma-separated) into a set.
 
     Each entry must include the scheme, e.g. https://myapp.example.com:8000.
     Entries without a scheme are silently skipped and a warning is printed.
     """
-    raw = os.getenv('NASMUSICUI_ALLOWED_ORIGINS', '')
+    raw = os.getenv('NASWEBUI_ALLOWED_ORIGINS', '')
     result = set()
     for value in raw.split(','):
         value = value.strip().rstrip('/').lower()
@@ -1650,7 +1650,7 @@ def _allowed_public_origins() -> set[str]:
         if not (value.startswith('http://') or value.startswith('https://')):
             import sys
             print(
-                f"[webui] WARNING: NASMUSICUI_ALLOWED_ORIGINS entry {value!r} is missing "
+                f"[webui] WARNING: NASWEBUI_ALLOWED_ORIGINS entry {value!r} is missing "
                 f"the scheme (expected https://hostname or http://hostname). Entry ignored.",
                 flush=True, file=sys.stderr,
             )
@@ -1737,7 +1737,7 @@ def _check_csrf(handler) -> bool:
             for h in [host]
             if h.strip()
         ]
-        trust_forwarded_host = os.getenv("NASMUSICUI_TRUST_FORWARDED_HOST", "").strip().lower()
+        trust_forwarded_host = os.getenv("NASWEBUI_TRUST_FORWARDED_HOST", "").strip().lower()
         if trust_forwarded_host in ("1", "true", "yes", "on"):
             allowed_hosts.extend(
                 h.strip()
@@ -1795,7 +1795,7 @@ def _onboarding_request_is_local(handler) -> bool:
 
     Forwarded client-IP headers are ignored by default because direct clients can
     spoof them. Operators behind a trusted reverse proxy may opt in with
-    NASMUSICUI_TRUST_FORWARDED_FOR=1, matching the explicit forwarded-header
+    NASWEBUI_TRUST_FORWARDED_FOR=1, matching the explicit forwarded-header
     trust model used elsewhere in the server.
 
     When forwarded headers are PRESENT but not trusted, the request arrived
@@ -1804,11 +1804,11 @@ def _onboarding_request_is_local(handler) -> bool:
     In that case we deny rather than fall back to the proxy socket — otherwise a
     public client behind any reverse proxy would be treated as local. Operators
     who front the WebUI with a trusted proxy must set
-    NASMUSICUI_TRUST_FORWARDED_FOR=1 (or NASMUSICUI_ONBOARDING_OPEN=1).
+    NASWEBUI_TRUST_FORWARDED_FOR=1 (or NASWEBUI_ONBOARDING_OPEN=1).
     """
     import ipaddress
 
-    trust_forwarded = _truthy_env("NASMUSICUI_TRUST_FORWARDED_FOR")
+    trust_forwarded = _truthy_env("NASWEBUI_TRUST_FORWARDED_FOR")
     if trust_forwarded:
         candidates = [
             handler.headers.get("X-Forwarded-For", "").split(",")[-1].strip(),
@@ -1831,8 +1831,8 @@ def _onboarding_request_is_local(handler) -> bool:
     # client (or a same-host proxy the operator controls), whereas a PRIVATE/LAN
     # raw socket is a separate proxy box that could be forwarding an arbitrary
     # (public) client we can't see without trusting the header. Operators who
-    # front the WebUI with a LAN proxy must set NASMUSICUI_TRUST_FORWARDED_FOR=1
-    # (or NASMUSICUI_ONBOARDING_OPEN=1).
+    # front the WebUI with a LAN proxy must set NASWEBUI_TRUST_FORWARDED_FOR=1
+    # (or NASWEBUI_ONBOARDING_OPEN=1).
     forwarded_present = bool(
         handler.headers.get("X-Forwarded-For", "").strip()
         or handler.headers.get("X-Real-IP", "").strip()
@@ -1853,7 +1853,7 @@ def _onboarding_gate_allows(handler, auth_enabled: bool | None = None) -> bool:
     from api.auth import is_auth_enabled
 
     auth_enabled = is_auth_enabled() if auth_enabled is None else auth_enabled
-    if auth_enabled or _truthy_env("NASMUSICUI_ONBOARDING_OPEN"):
+    if auth_enabled or _truthy_env("NASWEBUI_ONBOARDING_OPEN"):
         return True
     return _onboarding_request_is_local(handler)
 
@@ -4803,7 +4803,7 @@ def _project_os_onboarding_context(repo_root: Path, project_md: dict | None, pla
     status_text = str((status_md or {}).get("content") or "")
     merged = "\n".join([project_text, plan_text, status_text])
     is_non_git_workspace = not (repo_root / ".git").exists()
-    has_boundary_hold = "TO_BE_VALIDATED_BY_NASMUSICUI" in merged
+    has_boundary_hold = "TO_BE_VALIDATED_BY_NASWEBUI" in merged
     child_repo_blocked = (
         "auto-promoted" in merged
         or "auto-adopted" in merged
@@ -4821,7 +4821,7 @@ def _project_os_onboarding_context(repo_root: Path, project_md: dict | None, pla
     summary = "workspace root onboarding 진행 중 · 저장소 경계는 아직 미확정이며 자동 승격은 금지됩니다."
     next_safe_action = "workspace-root 기준으로 경계만 좁게 검증"
     if has_boundary_hold:
-        summary = "workspace root onboarding 진행 중 · 저장소 경계는 아직 미확정이며 TO_BE_VALIDATED_BY_NASMUSICUI 상태를 유지합니다."
+        summary = "workspace root onboarding 진행 중 · 저장소 경계는 아직 미확정이며 TO_BE_VALIDATED_BY_NASWEBUI 상태를 유지합니다."
     return {
         "active": True,
         "doc_source": "root",
@@ -4829,7 +4829,7 @@ def _project_os_onboarding_context(repo_root: Path, project_md: dict | None, pla
         "summary": summary,
         "next_safe_action": next_safe_action,
         "workspace_root_confirmed": workspace_root_confirmed,
-        "repo_boundary_status": "TO_BE_VALIDATED_BY_NASMUSICUI" if has_boundary_hold else "confirmed",
+        "repo_boundary_status": "TO_BE_VALIDATED_BY_NASWEBUI" if has_boundary_hold else "confirmed",
         "child_repo_auto_promotion_blocked": bool(child_repo_blocked),
         "guardrails": [
             "workspace root 확인됨" if workspace_root_confirmed else "workspace root 확인 필요",
@@ -5690,7 +5690,7 @@ def handle_get(handler, parsed) -> bool:
         # precedence in api.auth.get_password_hash(), but until now the UI
         # had no way to know — see issue #1139 / #1560.
         settings["password_env_var"] = bool(
-            os.getenv("NASMUSICUI_PASSWORD", "").strip()
+            os.getenv("NASWEBUI_PASSWORD", "").strip()
         )
         # Inject the running version so the UI badge stays in sync with git tags
         # without any manual release step.
@@ -8325,16 +8325,16 @@ def handle_post(handler, parsed) -> bool:
         if requested_passwordless:
             body["_clear_password"] = True
 
-        # #1560: NASMUSICUI_PASSWORD env var takes precedence in
+        # #1560: NASWEBUI_PASSWORD env var takes precedence in
         # api.auth.get_password_hash(), so writing password_hash to settings.json
         # has no effect on auth. Refuse loudly with 409 instead of silently
         # succeeding — the previous behaviour returned 200 + a green save toast
         # while every subsequent login still required the env-var password.
         if requested_password or requested_clear_password:
-            if os.getenv("NASMUSICUI_PASSWORD", "").strip():
+            if os.getenv("NASWEBUI_PASSWORD", "").strip():
                 return bad(
                     handler,
-                    "NASMUSICUI_PASSWORD env var is set — it overrides the settings password. "
+                    "NASWEBUI_PASSWORD env var is set — it overrides the settings password. "
                     "Unset the env var and restart the server before changing the password here.",
                     409,
                 )
@@ -8343,13 +8343,13 @@ def handle_post(handler, parsed) -> bool:
         # WebUI. While auth is disabled, the generic /api/settings route is also
         # unauthenticated, so gate bootstrap password setup the same way as
         # onboarding setup: local/private networks only, unless the operator
-        # explicitly opts into remote bootstrap with NASMUSICUI_ONBOARDING_OPEN.
+        # explicitly opts into remote bootstrap with NASWEBUI_ONBOARDING_OPEN.
         if requested_password and not auth_enabled_before:
             if not _onboarding_gate_allows(handler, auth_enabled_before):
                 return bad(
                     handler,
                     "First password setup is only available from local networks when auth is not enabled. "
-                    "To bootstrap this on a remote server, set NASMUSICUI_ONBOARDING_OPEN=1.",
+                    "To bootstrap this on a remote server, set NASWEBUI_ONBOARDING_OPEN=1.",
                     403,
                 )
 
@@ -8358,7 +8358,7 @@ def handle_post(handler, parsed) -> bool:
             from api.passkeys import registered_credentials
 
             if not _passkey_feature_flag_enabled():
-                return bad(handler, "Passkey support is disabled. Enable NASMUSICUI_PASSKEY before going passwordless.", 409)
+                return bad(handler, "Passkey support is disabled. Enable NASWEBUI_PASSKEY before going passwordless.", 409)
             if not registered_credentials():
                 return bad(handler, "Register a passkey before going passwordless.", 409)
         elif requested_clear_password:
@@ -8400,7 +8400,7 @@ def handle_post(handler, parsed) -> bool:
 
     if parsed.path == "/api/onboarding/oauth/start":
         if not _onboarding_gate_allows(handler):
-            return bad(handler, "Onboarding OAuth is only available from local networks when auth is not enabled. To bypass this on a remote server, set NASMUSICUI_ONBOARDING_OPEN=1.", 403)
+            return bad(handler, "Onboarding OAuth is only available from local networks when auth is not enabled. To bypass this on a remote server, set NASWEBUI_ONBOARDING_OPEN=1.", 403)
         try:
             return j(handler, start_onboarding_oauth_flow(body), extra_headers={"Cache-Control": "no-store"})
         except ValueError as e:
@@ -8420,10 +8420,10 @@ def handle_post(handler, parsed) -> bool:
         # even when the user accesses via localhost:8787 on the host.
         # Behind a reverse proxy (nginx/Caddy/Traefik) or SSH tunnel, X-Forwarded-For
         # carries the real origin IP — read it first before falling back to the raw socket addr.
-        # NASMUSICUI_ONBOARDING_OPEN=1 lets operators on remote servers explicitly bypass
+        # NASWEBUI_ONBOARDING_OPEN=1 lets operators on remote servers explicitly bypass
         # the check when they control network access themselves (e.g. firewall + VPN).
         if not _onboarding_gate_allows(handler):
-            return bad(handler, "Onboarding setup is only available from local networks when auth is not enabled. To bypass this on a remote server, set NASMUSICUI_ONBOARDING_OPEN=1.", 403)
+            return bad(handler, "Onboarding setup is only available from local networks when auth is not enabled. To bypass this on a remote server, set NASWEBUI_ONBOARDING_OPEN=1.", 403)
         try:
             return j(handler, apply_onboarding_setup(body))
         except ValueError as e:
@@ -8437,7 +8437,7 @@ def handle_post(handler, parsed) -> bool:
         # the other onboarding mutators so an unauthenticated public client on a
         # passwordless bind can't hide the first-run wizard. (#3765)
         if not _onboarding_gate_allows(handler):
-            return bad(handler, "Onboarding is only available from local networks when auth is not enabled. To bypass this on a remote server, set NASMUSICUI_ONBOARDING_OPEN=1.", 403)
+            return bad(handler, "Onboarding is only available from local networks when auth is not enabled. To bypass this on a remote server, set NASWEBUI_ONBOARDING_OPEN=1.", 403)
         return j(handler, complete_onboarding())
 
     if parsed.path == "/api/onboarding/probe":
@@ -8448,7 +8448,7 @@ def handle_post(handler, parsed) -> bool:
         # network gate as /api/onboarding/setup (also writing-adjacent in
         # spirit because it carries an api_key the user typed).
         if not _onboarding_gate_allows(handler):
-            return bad(handler, "Onboarding probe is only available from local networks when auth is not enabled. To bypass this on a remote server, set NASMUSICUI_ONBOARDING_OPEN=1.", 403)
+            return bad(handler, "Onboarding probe is only available from local networks when auth is not enabled. To bypass this on a remote server, set NASWEBUI_ONBOARDING_OPEN=1.", 403)
         provider = str((body or {}).get("provider") or "").strip().lower()
         base_url = str((body or {}).get("base_url") or "")
         api_key = str((body or {}).get("api_key") or "").strip() or None
@@ -8950,7 +8950,7 @@ def handle_post(handler, parsed) -> bool:
         from api.passkeys import PasskeyError, PasskeyRateLimitError, authentication_options
 
         if not _passkey_feature_flag_enabled():
-            return j(handler, {"error": "Passkey support is disabled. Set NASMUSICUI_PASSKEY=1 or webui_passkey_enabled: true to enable."}, status=404)
+            return j(handler, {"error": "Passkey support is disabled. Set NASWEBUI_PASSKEY=1 or webui_passkey_enabled: true to enable."}, status=404)
         if not is_auth_enabled():
             return j(handler, {"error": "Auth not enabled"}, status=400)
         try:
@@ -10157,7 +10157,7 @@ def _handle_tts(handler, parsed):
                 self._checks = 0
 
             def _get_client_key(self, h):
-                trust_proxy = os.getenv("NASMUSICUI_TRUST_FORWARDED_FOR", "").strip().lower()
+                trust_proxy = os.getenv("NASWEBUI_TRUST_FORWARDED_FOR", "").strip().lower()
                 if trust_proxy in ("1", "true", "yes", "on"):
                     for hdr in ("X-Forwarded-For", "X-Real-IP", "Forwarded"):
                         val = h.headers.get(hdr)
@@ -10380,7 +10380,7 @@ def _handle_tunnel_start(handler, parsed):
             return _j(handler, {"ok": True, "url": _tunnel_url or "", "status": "already_running"})
         _tunnel_url = None
         _tunnel_log = []
-    port = int(os.getenv("NASMUSICUI_PORT", "5000"))
+    port = int(os.getenv("NASWEBUI_PORT", "5000"))
     try:
         bin_path = _get_cloudflared_bin()
     except Exception as e:
@@ -10884,14 +10884,14 @@ def _file_raw_target(session, sid: str, rel: str) -> tuple[Path, Path] | None:
 
 
 # ─── /api/folder/download ───────────────────────────────────────────────────
-# Configurable caps. Match the NASMUSICUI_MAX_UPLOAD_MB style used elsewhere
+# Configurable caps. Match the NASWEBUI_MAX_UPLOAD_MB style used elsewhere
 # (api/config.py) so operators have one consistent env-var convention.
 # Bound on per-request wall-clock and bandwidth, not RSS. The zip streams
 # straight into handler.wfile, so peak memory is the per-file read buffer
 # inside zipfile, not the cap value.
 def _folder_zip_max_bytes() -> int:
     try:
-        mb = int(os.getenv("NASMUSICUI_FOLDER_ZIP_MAX_MB", "1024"))
+        mb = int(os.getenv("NASWEBUI_FOLDER_ZIP_MAX_MB", "1024"))
     except ValueError:
         mb = 1024
     return max(1, mb) * 1024 * 1024
@@ -10899,7 +10899,7 @@ def _folder_zip_max_bytes() -> int:
 
 def _folder_zip_max_files() -> int:
     try:
-        return max(1, int(os.getenv("NASMUSICUI_FOLDER_ZIP_MAX_FILES", "50000")))
+        return max(1, int(os.getenv("NASWEBUI_FOLDER_ZIP_MAX_FILES", "50000")))
     except ValueError:
         return 50000
 
@@ -10954,7 +10954,7 @@ def _handle_folder_download(handler, parsed):
 
     Streams a zip of <session.workspace>/<path>. Symlinks escaping the
     workspace are skipped. Empty folders return an empty (valid) zip.
-    Respects NASMUSICUI_FOLDER_ZIP_MAX_MB and NASMUSICUI_FOLDER_ZIP_MAX_FILES.
+    Respects NASWEBUI_FOLDER_ZIP_MAX_MB and NASWEBUI_FOLDER_ZIP_MAX_FILES.
     Pre-flights the walk so size/count failures return a clean 413 with JSON
     body BEFORE any zip bytes are sent.
     """
@@ -10991,13 +10991,13 @@ def _handle_folder_download(handler, parsed):
         return j(handler, {
             "error": "too many files",
             "limit": max_files,
-            "configure": "NASMUSICUI_FOLDER_ZIP_MAX_FILES",
+            "configure": "NASWEBUI_FOLDER_ZIP_MAX_FILES",
         }, status=413)
     if limit_hit == "max_bytes":
         return j(handler, {
             "error": "folder too large",
             "limit_bytes": max_bytes,
-            "configure": "NASMUSICUI_FOLDER_ZIP_MAX_MB",
+            "configure": "NASWEBUI_FOLDER_ZIP_MAX_MB",
         }, status=413)
 
     zip_name = (target.name or "workspace") + ".zip"
@@ -12528,7 +12528,7 @@ def _runtime_runner_client_factory():
     `runner-local` remains default-off and bounded: without an explicit runner
     endpoint this factory preserves the existing "runner-local chat backend is
     not configured" 501 path. When
-    `NASMUSICUI_RUNNER_BASE_URL` is set, the WebUI process only acts as a
+    `NASWEBUI_RUNNER_BASE_URL` is set, the WebUI process only acts as a
     transport client; the runner endpoint owns execution, run ids, replay, and
     controls.
     """
@@ -16455,7 +16455,7 @@ def _external_notes_sources_enabled(config_data: dict | None = None) -> bool:
     The Memory panel is a primary surface, so this power-user drawer stays
     default-off unless a deployment opts in through config or environment.
     """
-    env_value = os.getenv("NASMUSICUI_EXTERNAL_NOTES_SOURCES", "")
+    env_value = os.getenv("NASWEBUI_EXTERNAL_NOTES_SOURCES", "")
     if env_value:
         return _webui_truthy(env_value)
     cfg = config_data if isinstance(config_data, dict) else get_config()
@@ -16825,7 +16825,7 @@ def _joplin_prefill_script_path() -> Path | None:
     # configured. Fall back to the legacy generic session prefill script only for
     # deployments that have not opted into WebUI dynamic recall.
     return _script_path_from_config_value(
-        os.getenv("NASMUSICUI_PREFILL_MESSAGES_SCRIPT", "")
+        os.getenv("NASWEBUI_PREFILL_MESSAGES_SCRIPT", "")
         or cfg.get("webui_prefill_messages_script")
         or cfg.get("prefill_messages_script")
     )

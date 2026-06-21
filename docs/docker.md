@@ -158,7 +158,7 @@ provide host kernel drivers or the NVIDIA runtime.
 
 **Cause**: Scheduled cron ticks are not driven by the WebUI itself. The gateway daemon ticks the scheduler every 60 seconds; without one running, scheduled jobs sit idle. "Run now" / "Trigger" buttons still work because the WebUI handles those in-process.
 
-In older gateway builds, or when the daemon runs in a separate container, `gateway_state.json` can become stale and WebUI may lose confidence even if the daemon is up. This is especially visible if only base URLs are configured (e.g. `NASMUSICUI_GATEWAY_BASE_URL`) and local daemon state files are not being refreshed.
+In older gateway builds, or when the daemon runs in a separate container, `gateway_state.json` can become stale and WebUI may lose confidence even if the daemon is up. This is especially visible if only base URLs are configured (e.g. `NASWEBUI_GATEWAY_BASE_URL`) and local daemon state files are not being refreshed.
 
 **Fix**: Run a gateway container alongside the WebUI. The two-container compose file is the recommended path:
 
@@ -172,13 +172,13 @@ The three-container layout adds the dashboard but is otherwise the same shape. I
 **Verify**: Once the gateway is up, the System Settings pill should turn green and the Tasks banner disappear. From the host:
 
 ```bash
-export GATEWAY_BASE_URL="${NASTECH_API_URL:-${NASMUSICUI_GATEWAY_BASE_URL:-http://nastech:8642}}"
+export GATEWAY_BASE_URL="${NASTECH_API_URL:-${NASWEBUI_GATEWAY_BASE_URL:-http://nastech:8642}}"
 docker compose -f docker-compose.two-container.yml exec NasTech-Agent nastech gateway status
 curl -sS "${GATEWAY_BASE_URL%/}/health/detailed" | jq '.gateway_state, .state'
 ```
 
 If the service name differs in your compose file, `docker compose -f docker-compose.two-container.yml ps` lists the running services.
-For container-to-container diagnostics, set one of `NASTECH_API_URL` or `NASMUSICUI_GATEWAY_BASE_URL` in the WebUI environment when using gateway chat mode (`NASMUSICUI_CHAT_BACKEND=gateway`), then restart WebUI.
+For container-to-container diagnostics, set one of `NASTECH_API_URL` or `NASWEBUI_GATEWAY_BASE_URL` in the WebUI environment when using gateway chat mode (`NASWEBUI_CHAT_BACKEND=gateway`), then restart WebUI.
 
 Refs #2785.
 
@@ -234,9 +234,9 @@ services:
       - NasTech-Agent-src:/home/naswebuiwebui/.nastech/NasTech-Agent:ro
       - ${NASTECH_WORKSPACE:-${HOME}/workspace}:/workspace
     environment:
-      - NASMUSICUI_HOST=0.0.0.0
-      - NASMUSICUI_PORT=8787
-      - NASMUSICUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
+      - NASWEBUI_HOST=0.0.0.0
+      - NASWEBUI_PORT=8787
+      - NASWEBUI_STATE_DIR=/home/naswebuiwebui/.nastech/webui
       - WANTED_UID=${UID:-1000}
       - WANTED_GID=${GID:-1000}
     restart: unless-stopped
@@ -310,7 +310,7 @@ failed to load .env: open .env: permission denied
 **Cause**: WebUI's `fix_credential_permissions()` startup hook enforces 0600 by default. This is the right thing for a clean install but conflicts with operator-set modes.
 
 **Fix**: Set one of these env vars in your `.env`:
-- `NASMUSICUI_SKIP_CHMOD=1` — bypass the fixer entirely
+- `NASWEBUI_SKIP_CHMOD=1` — bypass the fixer entirely
 - `NASTECH_HOME_MODE=0640` — allow group bits, only strip world-readable
 
 Both are documented in `api/startup.py::fix_credential_permissions()`.
@@ -492,7 +492,7 @@ volumes:
 1. The host directory MUST be readable by your container UID. Run `id -u` on the host and ensure `~/.nastech` is owned by that UID (or readable via group bits).
 2. ALL containers sharing the volume must run as the SAME UID/GID. Set `UID=$(id -u)` and `GID=$(id -g)` in `.env`.
 3. If you run Compose with sudo, do not rely on `${HOME}` defaults: `sudo` often changes `$HOME` to `/root`, so `${NASTECH_HOME:-${HOME}/.nastech}` becomes `/root/.nastech`. Prefer running Docker as your user; otherwise pass absolute paths with `sudo -E`, for example `NASTECH_HOME=/home/youruser/.nastech NASTECH_WORKSPACE=/home/youruser/workspace sudo -E docker compose up -d`, and confirm the rendered bind mount with `docker compose config`.
-4. If your host `.env` is mode 0640, set `NASMUSICUI_SKIP_CHMOD=1` or `NASTECH_HOME_MODE=0640` so the startup hook doesn't try to enforce 0600.
+4. If your host `.env` is mode 0640, set `NASWEBUI_SKIP_CHMOD=1` or `NASTECH_HOME_MODE=0640` so the startup hook doesn't try to enforce 0600.
 
 ## Reference
 
@@ -506,7 +506,7 @@ volumes:
 ## Related issues
 
 - #1416 — agent-image upgrade requires removing `NasTech-Agent-src` named volume (see [Upgrading the agent container](#upgrading-the-agent-container))
-- #1389 — `NASTECH_HOME_MODE` override (fixed in v0.50.254 — agent honors `NASMUSICUI_SKIP_CHMOD` and `NASTECH_HOME_MODE`)
+- #1389 — `NASTECH_HOME_MODE` override (fixed in v0.50.254 — agent honors `NASWEBUI_SKIP_CHMOD` and `NASTECH_HOME_MODE`)
 - #1399 — UID alignment in compose files (fixed in v0.50.260 via PR #1428 + this guide)
 - #3012 — host `localhost` API URLs fail from Docker containers (use `host.docker.internal` / `host.containers.internal`)
 - #3006 — `sudo docker compose` can mount `/root/.nastech` instead of the user's NasTech home

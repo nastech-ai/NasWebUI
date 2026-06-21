@@ -24,7 +24,7 @@ def test_webui_injects_process_notifications_without_persisting_them_as_user_tex
 def test_webui_sets_gateway_session_platform_for_background_watchers():
     src = Path("api/streaming.py").read_text(encoding="utf-8")
 
-    assert "'NASMUSICUI_SESSION_PLATFORM': 'webui'" in src
-    assert "os.environ['NASMUSICUI_SESSION_PLATFORM'] = 'webui'" in src
-    assert "old_session_platform = os.environ.get('NASMUSICUI_SESSION_PLATFORM')" in src
-    assert "os.environ.pop('NASMUSICUI_SESSION_PLATFORM', None)" in src
+    assert "'NASWEBUI_SESSION_PLATFORM': 'webui'" in src
+    assert "os.environ['NASWEBUI_SESSION_PLATFORM'] = 'webui'" in src
+    assert "old_session_platform = os.environ.get('NASWEBUI_SESSION_PLATFORM')" in src
+    assert "os.environ.pop('NASWEBUI_SESSION_PLATFORM', None)" in src

@@ -82,14 +82,14 @@
 
   | Variable | Description | Default |
   |---|---|---|
-  | `NASMUSICUI_HOST` | Bind address | `127.0.0.1` |
-  | `NASMUSICUI_PORT` | Port | `8787` |
-  | `NASMUSICUI_AGENT_DIR` | Path to NasTech-Agent checkout | auto-discovered |
-  | `NASMUSICUI_STATE_DIR` | Session/state storage | `~/.nastech/webui` |
+  | `NASWEBUI_HOST` | Bind address | `127.0.0.1` |
+  | `NASWEBUI_PORT` | Port | `8787` |
+  | `NASWEBUI_AGENT_DIR` | Path to NasTech-Agent checkout | auto-discovered |
+  | `NASWEBUI_STATE_DIR` | Session/state storage | `~/.nastech/webui` |
   | `NASTECH_HOME` | NasTech home directory | `~/.nastech` |
   | `NASTECH_CONFIG_PATH` | Path to config.yaml | `~/.nastech/config.yaml` |
-  | `NASMUSICUI_DEFAULT_MODEL` | Default model override | agent default |
-  | `NASMUSICUI_BOT_NAME` | Display name for the assistant | `NasTech` |
+  | `NASWEBUI_DEFAULT_MODEL` | Default model override | agent default |
+  | `NASWEBUI_BOT_NAME` | Display name for the assistant | `NasTech` |
 
   ---
 
@@ -112,7 +112,7 @@
 
   NasWebUI auto-discovers your NasTech Agent installation by checking these paths in order:
 
-  1. `NASMUSICUI_AGENT_DIR` environment variable
+  1. `NASWEBUI_AGENT_DIR` environment variable
   2. `NASTECH_HOME/NasTech-Agent/run_agent.py` (default: `~/.nastech/NasTech-Agent`)
   3. `../NasTech-Agent/run_agent.py` (sibling directory)
   4. `~/NasTech-Agent/run_agent.py`
@@ -124,7 +124,7 @@
 
   ```bash
   # Run with auto-reload
-  NASMUSICUI_HOST=0.0.0.0 NASMUSICUI_PORT=5000 python server.py
+  NASWEBUI_HOST=0.0.0.0 NASWEBUI_PORT=5000 python server.py
   ```
 
   Static assets live in `static/`. Backend API routes are in `api/`.

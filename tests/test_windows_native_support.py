@@ -147,7 +147,7 @@ class TestBootstrapForegroundWindows:
         monkeypatch.setattr(bs, "ensure_python_has_webui_deps", lambda *a, **kw: a[0])
         monkeypatch.setattr(bs, "wait_for_health", lambda *a, **kw: True)
         monkeypatch.setattr(bs, "open_browser", lambda *a, **kw: None)
-        monkeypatch.setenv("NASMUSICUI_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("NASWEBUI_STATE_DIR", str(tmp_path / "state"))
         (tmp_path / "agent").mkdir(parents=True, exist_ok=True)
         return bs
 
@@ -160,7 +160,7 @@ class TestBootstrapForegroundWindows:
 
         # Strip supervisor env vars that would interfere
         for var in ("INVOCATION_ID", "JOURNAL_STREAM", "NOTIFY_SOCKET",
-                    "XPC_SERVICE_NAME", "SUPERVISOR_ENABLED", "NASMUSICUI_FOREGROUND"):
+                    "XPC_SERVICE_NAME", "SUPERVISOR_ENABLED", "NASWEBUI_FOREGROUND"):
             monkeypatch.delenv(var, raising=False)
 
         popen_calls = []
@@ -188,7 +188,7 @@ class TestBootstrapForegroundWindows:
         monkeypatch.setattr(os, "chdir", lambda p: None)
 
         for var in ("INVOCATION_ID", "JOURNAL_STREAM", "NOTIFY_SOCKET",
-                    "XPC_SERVICE_NAME", "SUPERVISOR_ENABLED", "NASMUSICUI_FOREGROUND"):
+                    "XPC_SERVICE_NAME", "SUPERVISOR_ENABLED", "NASWEBUI_FOREGROUND"):
             monkeypatch.delenv(var, raising=False)
 
         execv_calls = []

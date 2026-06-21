@@ -44,14 +44,14 @@ def test_folder_download_skips_escaping_symlinks():
 
 def test_folder_download_respects_max_files_env():
     src = ROUTES_PY.read_text(encoding="utf-8")
-    assert 'NASMUSICUI_FOLDER_ZIP_MAX_FILES' in src
+    assert 'NASWEBUI_FOLDER_ZIP_MAX_FILES' in src
     assert '"too many files"' in src
     assert 'status=413' in src
 
 
 def test_folder_download_respects_max_bytes_env():
     src = ROUTES_PY.read_text(encoding="utf-8")
-    assert 'NASMUSICUI_FOLDER_ZIP_MAX_MB' in src
+    assert 'NASWEBUI_FOLDER_ZIP_MAX_MB' in src
     assert '"folder too large"' in src
     assert 'limit_bytes' in src
 

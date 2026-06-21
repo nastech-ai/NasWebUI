@@ -19,13 +19,13 @@ The WSL launcher supports these environment variables:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `NASMUSICUI_REPO` | repo containing the script | WebUI checkout to start |
-| `NASMUSICUI_LOG_DIR` | `$HOME/.nastech/webui/logs` | Autostart and WebUI logs |
-| `NASMUSICUI_HOST` | `127.0.0.1` | Host passed through to `start.sh` / `bootstrap.py` |
-| `NASMUSICUI_PORT` | `8787` | WebUI port and health-check port |
-| `NASMUSICUI_HEALTH_URL` | `http://127.0.0.1:$NASMUSICUI_PORT/health` | URL used to decide whether WebUI is already running |
-| `NASMUSICUI_PID_FILE` | `$NASMUSICUI_LOG_DIR/naswebui.pid` | pid file used for duplicate prevention |
-| `NASMUSICUI_REQUIRE_AGENT_PROCESS` | `0` | Optional: set to `1` only if your local setup requires a separate NasTech process before WebUI starts |
+| `NASWEBUI_REPO` | repo containing the script | WebUI checkout to start |
+| `NASWEBUI_LOG_DIR` | `$HOME/.nastech/webui/logs` | Autostart and WebUI logs |
+| `NASWEBUI_HOST` | `127.0.0.1` | Host passed through to `start.sh` / `bootstrap.py` |
+| `NASWEBUI_PORT` | `8787` | WebUI port and health-check port |
+| `NASWEBUI_HEALTH_URL` | `http://127.0.0.1:$NASWEBUI_PORT/health` | URL used to decide whether WebUI is already running |
+| `NASWEBUI_PID_FILE` | `$NASWEBUI_LOG_DIR/naswebui.pid` | pid file used for duplicate prevention |
+| `NASWEBUI_REQUIRE_AGENT_PROCESS` | `0` | Optional: set to `1` only if your local setup requires a separate NasTech process before WebUI starts |
 
 Make the script executable once inside WSL:
 
@@ -56,7 +56,7 @@ Add this to `~/.profile` or `~/.bashrc` inside WSL, adjusting the repo path:
 
 ```bash
 if [ -x "$HOME/naswebui/scripts/wsl/naswebui_autostart.sh" ]; then
-  NASMUSICUI_REPO="$HOME/naswebui" \
+  NASWEBUI_REPO="$HOME/naswebui" \
     "$HOME/naswebui/scripts/wsl/naswebui_autostart.sh" >/dev/null 2>&1 &
 fi
 ```
@@ -121,6 +121,6 @@ Common causes:
 | Task exists but WebUI is not reachable | WSL script path is wrong for the selected distro | Re-run the PowerShell setup with the correct `-WslScriptPath` and `-Distro` |
 | WebUI starts only after opening WSL | You used the WSL session startup option, not Task Scheduler | Install the Windows scheduled task |
 | Multiple login events happen quickly | Normal Windows startup behavior | The WSL script should log `already running` and avoid duplicate processes |
-| Health check fails but pid exists | WebUI is still booting or the port differs | Check `NASMUSICUI_PORT` and `naswebui.log` |
+| Health check fails but pid exists | WebUI is still booting or the port differs | Check `NASWEBUI_PORT` and `naswebui.log` |
 
 If you want WSL2 systemd integration instead, see `docs/supervisor.md` for foreground process-supervisor guidance and adapt the Linux `systemd --user` pattern to your distro.

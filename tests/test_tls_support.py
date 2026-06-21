@@ -1,5 +1,5 @@
 """
-Tests for optional TLS/HTTPS support (NASMUSICUI_TLS_CERT / TLS_KEY).
+Tests for optional TLS/HTTPS support (NASWEBUI_TLS_CERT / TLS_KEY).
 
 Tests use a self-signed certificate generated at test time via openssl.
 """
@@ -67,15 +67,15 @@ def _wait_for_server(host: str, port: int, use_ssl: bool = False,
 def _start_server(port: int, cert: str = None, key: str = None) -> subprocess.Popen:
     """Start server.py as a subprocess with the given TLS env vars."""
     env = {k: v for k, v in os.environ.items()}
-    env["NASMUSICUI_HOST"] = "127.0.0.1"
-    env["NASMUSICUI_PORT"] = str(port)
-    env.pop("NASMUSICUI_TLS_CERT", None)
-    env.pop("NASMUSICUI_TLS_KEY", None)
+    env["NASWEBUI_HOST"] = "127.0.0.1"
+    env["NASWEBUI_PORT"] = str(port)
+    env.pop("NASWEBUI_TLS_CERT", None)
+    env.pop("NASWEBUI_TLS_KEY", None)
     if cert:
-        env["NASMUSICUI_TLS_CERT"] = cert
+        env["NASWEBUI_TLS_CERT"] = cert
     if key:
-        env["NASMUSICUI_TLS_KEY"] = key
-    env["NASMUSICUI_STATE_DIR"] = str(Path(tempfile.mkdtemp()))
+        env["NASWEBUI_TLS_KEY"] = key
+    env["NASWEBUI_STATE_DIR"] = str(Path(tempfile.mkdtemp()))
     proc = subprocess.Popen(
         [os.sys.executable, str(ROOT / "server.py")],
         env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -92,8 +92,8 @@ class TestTLSConfigFlag(unittest.TestCase):
     def test_tls_enabled_true_when_both_env_set(self):
         code = textwrap.dedent("""\
             import os
-            os.environ['NASMUSICUI_TLS_CERT'] = '/tmp/cert.pem'
-            os.environ['NASMUSICUI_TLS_KEY'] = '/tmp/key.pem'
+            os.environ['NASWEBUI_TLS_CERT'] = '/tmp/cert.pem'
+            os.environ['NASWEBUI_TLS_KEY'] = '/tmp/key.pem'
             from api.config import TLS_ENABLED
             print(TLS_ENABLED)
         """)
@@ -106,11 +106,11 @@ class TestTLSConfigFlag(unittest.TestCase):
 
     def test_tls_enabled_false_when_env_absent(self):
         env = {k: v for k, v in os.environ.items()
-               if k not in ("NASMUSICUI_TLS_CERT", "NASMUSICUI_TLS_KEY")}
+               if k not in ("NASWEBUI_TLS_CERT", "NASWEBUI_TLS_KEY")}
         code = textwrap.dedent("""\
             import os
-            os.environ.pop('NASMUSICUI_TLS_CERT', None)
-            os.environ.pop('NASMUSICUI_TLS_KEY', None)
+            os.environ.pop('NASWEBUI_TLS_CERT', None)
+            os.environ.pop('NASWEBUI_TLS_KEY', None)
             from api.config import TLS_ENABLED
             print(TLS_ENABLED)
         """)
@@ -123,8 +123,8 @@ class TestTLSConfigFlag(unittest.TestCase):
 
     def test_tls_enabled_false_when_only_cert_set(self):
         env = {k: v for k, v in os.environ.items()
-               if k not in ("NASMUSICUI_TLS_CERT", "NASMUSICUI_TLS_KEY")}
-        env["NASMUSICUI_TLS_CERT"] = "/tmp/cert.pem"
+               if k not in ("NASWEBUI_TLS_CERT", "NASWEBUI_TLS_KEY")}
+        env["NASWEBUI_TLS_CERT"] = "/tmp/cert.pem"
         code = textwrap.dedent("""\
             from api.config import TLS_ENABLED
             print(TLS_ENABLED)

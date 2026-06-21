@@ -329,7 +329,7 @@ def start_terminal(session_id: str, workspace: Path, rows: int = 24, cols: int =
                 "COLUMNS": str(cols),
                 "LINES": str(rows),
                 "PWD": cwd,
-                "NASMUSICUI_TERMINAL": "1",
+                "NASWEBUI_TERMINAL": "1",
             }
         )
         shell = _shell_path()

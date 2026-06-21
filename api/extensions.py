@@ -27,9 +27,9 @@ _MAX_URL_LIST = 32
 _warned_urls: set = set()
 
 EXTENSION_ROUTE_PREFIX = "/extensions/"
-_EXTENSION_DIR_ENV = "NASMUSICUI_EXTENSION_DIR"
-_EXTENSION_SCRIPT_URLS_ENV = "NASMUSICUI_EXTENSION_SCRIPT_URLS"
-_EXTENSION_STYLESHEET_URLS_ENV = "NASMUSICUI_EXTENSION_STYLESHEET_URLS"
+_EXTENSION_DIR_ENV = "NASWEBUI_EXTENSION_DIR"
+_EXTENSION_SCRIPT_URLS_ENV = "NASWEBUI_EXTENSION_SCRIPT_URLS"
+_EXTENSION_STYLESHEET_URLS_ENV = "NASWEBUI_EXTENSION_STYLESHEET_URLS"
 _ALLOWED_ASSET_PREFIXES = ("/extensions/", "/static/")
 
 _EXTENSION_MIME = {
@@ -129,7 +129,7 @@ def _read_url_list(env_name: str) -> List[str]:
                 break
         elif value not in _warned_urls:
             # First-time-seen invalid URL: log once per process so a typo
-            # in NASMUSICUI_EXTENSION_*_URLS doesn't disappear silently.
+            # in NASWEBUI_EXTENSION_*_URLS doesn't disappear silently.
             _warned_urls.add(value)
             _log.warning(
                 "Rejected extension URL %r from %s (not a same-origin "

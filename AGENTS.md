@@ -34,7 +34,7 @@ before running commands or inspecting logs.
 
 Follow that checklist's safety rules:
 
-- use isolated `NASTECH_HOME` and `NASMUSICUI_STATE_DIR` for trials unless the
+- use isolated `NASTECH_HOME` and `NASWEBUI_STATE_DIR` for trials unless the
   human explicitly asks to use real state
 - do not delete or overwrite a real `~/.nastech` directory without explicit
   approval
@@ -71,8 +71,8 @@ Prefer isolated trial state for experiments:
 
 ```bash
 NASTECH_HOME=/tmp/naswebui-agent-home \
-NASMUSICUI_STATE_DIR=/tmp/naswebui-agent-state \
-NASMUSICUI_PORT=8789 \
+NASWEBUI_STATE_DIR=/tmp/naswebui-agent-state \
+NASWEBUI_PORT=8789 \
 python3 bootstrap.py
 ```
 

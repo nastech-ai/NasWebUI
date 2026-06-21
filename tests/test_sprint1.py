@@ -339,11 +339,11 @@ def test_upload_text_file(cleanup_test_sessions):
 
 
 def test_upload_respects_attachment_dir_env(monkeypatch, tmp_path):
-    """NASMUSICUI_ATTACHMENT_DIR routes chat uploads to a per-session inbox."""
+    """NASWEBUI_ATTACHMENT_DIR routes chat uploads to a per-session inbox."""
     from api.upload import _session_attachment_dir, _upload_destination
 
     inbox = tmp_path / "attachment-inbox"
-    monkeypatch.setenv("NASMUSICUI_ATTACHMENT_DIR", str(inbox))
+    monkeypatch.setenv("NASWEBUI_ATTACHMENT_DIR", str(inbox))
 
     dest = _upload_destination("session-123", "notes.md")
 
@@ -357,7 +357,7 @@ def test_upload_destination_does_not_overwrite_same_filename(monkeypatch, tmp_pa
     from api.upload import _upload_destination
 
     inbox = tmp_path / "attachment-inbox"
-    monkeypatch.setenv("NASMUSICUI_ATTACHMENT_DIR", str(inbox))
+    monkeypatch.setenv("NASWEBUI_ATTACHMENT_DIR", str(inbox))
 
     first = _upload_destination("session-123", "photo.png")
     first.write_bytes(b"first")

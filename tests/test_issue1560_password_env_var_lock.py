@@ -1,6 +1,6 @@
-"""Tests for issue #1560 — Settings password silently no-ops when NASMUSICUI_PASSWORD env var is set.
+"""Tests for issue #1560 — Settings password silently no-ops when NASWEBUI_PASSWORD env var is set.
 
-Root cause: NASMUSICUI_PASSWORD takes precedence in api.auth.get_password_hash(),
+Root cause: NASWEBUI_PASSWORD takes precedence in api.auth.get_password_hash(),
 but the UI had no way to know — POST /api/settings happily wrote password_hash to
 settings.json, returned 200 + "Saved" toast, while every subsequent login still
 required the env-var password.
@@ -37,8 +37,8 @@ def test_get_settings_surfaces_password_env_var_flag():
 
     assert 'password_env_var' in block, \
         'GET /api/settings must expose password_env_var so UI can disable the field'
-    assert 'NASMUSICUI_PASSWORD' in block, \
-        'GET /api/settings must read NASMUSICUI_PASSWORD env var'
+    assert 'NASWEBUI_PASSWORD' in block, \
+        'GET /api/settings must read NASWEBUI_PASSWORD env var'
 
 
 def test_post_settings_refuses_set_password_when_env_var_shadowed():
@@ -46,7 +46,7 @@ def test_post_settings_refuses_set_password_when_env_var_shadowed():
     src = _read('api/routes.py')
     # The guard lives near the POST /api/settings handler; locate it via the
     # canonical error-message substring (defense-in-depth comment + bad() call).
-    assert 'NASMUSICUI_PASSWORD env var is set' in src, \
+    assert 'NASWEBUI_PASSWORD env var is set' in src, \
         'POST /api/settings must refuse with a clear message naming the env var'
     assert '409' in src, 'POST /api/settings must use HTTP 409 for env-var conflict'
 
@@ -57,7 +57,7 @@ def test_post_settings_refuses_clear_password_when_env_var_shadowed():
     # Same guard must cover both paths
     assert '_clear_password' in src
     # Find the guard and verify it tests both flags
-    guard_idx = src.index('NASMUSICUI_PASSWORD env var is set')
+    guard_idx = src.index('NASWEBUI_PASSWORD env var is set')
     # Look back ~2KB for the conditional that triggers the guard
     window = src[max(0, guard_idx - 2000):guard_idx]
     assert 'requested_password' in window or '_set_password' in window
@@ -150,7 +150,7 @@ def test_i18n_password_env_var_locked_placeholder_in_all_locales():
 
 
 def test_i18n_locked_string_mentions_env_var_name_in_all_locales():
-    """Each locale's banner must literally mention NASMUSICUI_PASSWORD so users can find it."""
+    """Each locale's banner must literally mention NASWEBUI_PASSWORD so users can find it."""
     src = _read('static/i18n.js')
     blocks = _split_locales(src)
     for loc in LOCALES:
@@ -161,22 +161,22 @@ def test_i18n_locked_string_mentions_env_var_name_in_all_locales():
         # Take the rest of that line (the message string)
         line_end = block.index('\n', idx)
         line = block[idx:line_end]
-        assert 'NASMUSICUI_PASSWORD' in line, \
-            f"{loc}: banner must literally name NASMUSICUI_PASSWORD"
+        assert 'NASWEBUI_PASSWORD' in line, \
+            f"{loc}: banner must literally name NASWEBUI_PASSWORD"
 
 
 # ── Live HTTP smoke test (env var NOT set in pytest) ──────────────────────
 
 
 def test_get_settings_returns_password_env_var_false_when_unset(monkeypatch):
-    """When NASMUSICUI_PASSWORD is not set in the test process,
+    """When NASWEBUI_PASSWORD is not set in the test process,
     GET /api/settings must include `password_env_var: False`."""
     # Test the unset branch explicitly. Some suite neighbors intentionally set
-    # NASMUSICUI_PASSWORD while exercising the locked-password path.
-    monkeypatch.delenv('NASMUSICUI_PASSWORD', raising=False)
+    # NASWEBUI_PASSWORD while exercising the locked-password path.
+    monkeypatch.delenv('NASWEBUI_PASSWORD', raising=False)
     # The conftest server inherits a sanitized env; verify this process is clean.
-    assert not os.getenv('NASMUSICUI_PASSWORD', '').strip(), \
-        'this test requires NASMUSICUI_PASSWORD to be unset'
+    assert not os.getenv('NASWEBUI_PASSWORD', '').strip(), \
+        'this test requires NASWEBUI_PASSWORD to be unset'
 
     from tests._pytest_port import BASE
     req = urllib.request.Request(BASE + '/api/settings')

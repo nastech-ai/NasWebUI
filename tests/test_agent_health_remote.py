@@ -1,4 +1,4 @@
-"""Tests for NASMUSICUI_API_URL remote gateway probe (#3281, #3355)."""
+"""Tests for NASWEBUI_API_URL remote gateway probe (#3281, #3355)."""
 from __future__ import annotations
 
 import json
@@ -37,7 +37,7 @@ class _FakeResp:
 
 
 def test_remote_gateway_healthy_when_200(monkeypatch):
-    monkeypatch.setenv("NASMUSICUI_API_URL", "http://gateway:8080")
+    monkeypatch.setenv("NASWEBUI_API_URL", "http://gateway:8080")
     calls: list[str] = []
 
     def fake_urlopen(req, timeout=None):
@@ -54,7 +54,7 @@ def test_remote_gateway_healthy_when_200(monkeypatch):
 
 
 def test_remote_gateway_unreachable_when_network_error(monkeypatch):
-    monkeypatch.setenv("NASMUSICUI_API_URL", "http://gateway:8080/")
+    monkeypatch.setenv("NASWEBUI_API_URL", "http://gateway:8080/")
 
     def fake_urlopen(req, timeout=None):
         raise OSError("connection refused")
@@ -69,7 +69,7 @@ def test_remote_gateway_unreachable_when_network_error(monkeypatch):
 
 
 def test_falls_back_to_local_when_no_env(monkeypatch):
-    monkeypatch.delenv("NASMUSICUI_API_URL", raising=False)
+    monkeypatch.delenv("NASWEBUI_API_URL", raising=False)
 
     # Force the local importlib path to fail so we hit the well-known
     # "gateway_not_configured" terminal state — proving the remote probe was
@@ -85,7 +85,7 @@ def test_falls_back_to_local_when_no_env(monkeypatch):
 
 
 def test_remote_probe_result_cached_for_5s(monkeypatch):
-    monkeypatch.setenv("NASMUSICUI_API_URL", "http://gateway:8080")
+    monkeypatch.setenv("NASWEBUI_API_URL", "http://gateway:8080")
     call_count = {"n": 0}
 
     def fake_urlopen(req, timeout=None):
@@ -110,7 +110,7 @@ def test_remote_probe_result_cached_for_5s(monkeypatch):
 
 def test_gateway_state_populated_from_health_detailed(monkeypatch):
     """Remote probe should extract gateway_state from /health/detailed JSON body."""
-    monkeypatch.setenv("NASMUSICUI_API_URL", "http://fake-gateway:8642")
+    monkeypatch.setenv("NASWEBUI_API_URL", "http://fake-gateway:8642")
     body = json.dumps({"gateway_state": "running", "uptime": 3600}).encode()
 
     def fake_urlopen(req, timeout=None):
@@ -126,7 +126,7 @@ def test_gateway_state_populated_from_health_detailed(monkeypatch):
 
 def test_probe_order_prefers_health_detailed(monkeypatch):
     """First probe path should be /health/detailed so gateway_state is available."""
-    monkeypatch.setenv("NASMUSICUI_API_URL", "http://fake-gateway:8642")
+    monkeypatch.setenv("NASWEBUI_API_URL", "http://fake-gateway:8642")
     probed_urls: list[str] = []
 
     def fake_urlopen(req, timeout=None):
@@ -143,8 +143,8 @@ def test_probe_order_prefers_health_detailed(monkeypatch):
 
 def test_gateway_health_url_env_used(monkeypatch):
     """GATEWAY_HEALTH_URL should be respected by the remote probe."""
-    monkeypatch.delenv("NASMUSICUI_API_URL", raising=False)
-    monkeypatch.delenv("NASMUSICUI_GATEWAY_HEALTH_URL", raising=False)
+    monkeypatch.delenv("NASWEBUI_API_URL", raising=False)
+    monkeypatch.delenv("NASWEBUI_GATEWAY_HEALTH_URL", raising=False)
     monkeypatch.setenv("GATEWAY_HEALTH_URL", "http://custom:9999")
     probed_urls: list[str] = []
 
@@ -161,9 +161,9 @@ def test_gateway_health_url_env_used(monkeypatch):
 
 def test_default_url_when_no_env(monkeypatch):
     """Without any gateway env vars, should fall back to local detection (not remote)."""
-    monkeypatch.delenv("NASMUSICUI_API_URL", raising=False)
+    monkeypatch.delenv("NASWEBUI_API_URL", raising=False)
     monkeypatch.delenv("GATEWAY_HEALTH_URL", raising=False)
-    monkeypatch.delenv("NASMUSICUI_GATEWAY_HEALTH_URL", raising=False)
+    monkeypatch.delenv("NASWEBUI_GATEWAY_HEALTH_URL", raising=False)
 
     # Force the local importlib path to fail so we hit "gateway_status_unavailable",
     # proving the remote probe was NOT invoked.
@@ -180,8 +180,8 @@ def test_default_url_when_no_env(monkeypatch):
 def test_gateway_health_url_with_health_suffix_is_normalized(monkeypatch):
     """A gateway env var that already points AT a health path must not produce
     a doubled path like /health/health/detailed (#3355 Codex follow-up)."""
-    monkeypatch.delenv("NASMUSICUI_API_URL", raising=False)
-    monkeypatch.delenv("NASMUSICUI_GATEWAY_HEALTH_URL", raising=False)
+    monkeypatch.delenv("NASWEBUI_API_URL", raising=False)
+    monkeypatch.delenv("NASWEBUI_GATEWAY_HEALTH_URL", raising=False)
     monkeypatch.setenv("GATEWAY_HEALTH_URL", "http://gw:8642/health")
     probed: list[str] = []
 
@@ -201,11 +201,11 @@ def test_gateway_health_url_with_health_suffix_is_normalized(monkeypatch):
 
 
 def test_gateway_webui_base_url_env_is_used_for_remote_probe(monkeypatch):
-    """`NASMUSICUI_GATEWAY_BASE_URL` should be treated like a gateway health base URL."""
-    monkeypatch.delenv("NASMUSICUI_API_URL", raising=False)
-    monkeypatch.delenv("NASMUSICUI_GATEWAY_HEALTH_URL", raising=False)
+    """`NASWEBUI_GATEWAY_BASE_URL` should be treated like a gateway health base URL."""
+    monkeypatch.delenv("NASWEBUI_API_URL", raising=False)
+    monkeypatch.delenv("NASWEBUI_GATEWAY_HEALTH_URL", raising=False)
     monkeypatch.delenv("GATEWAY_HEALTH_URL", raising=False)
-    monkeypatch.setenv("NASMUSICUI_GATEWAY_BASE_URL", "http://container-gw:8642")
+    monkeypatch.setenv("NASWEBUI_GATEWAY_BASE_URL", "http://container-gw:8642")
     seen = []
 
     def fake_urlopen(req, timeout=None):
@@ -223,7 +223,7 @@ def test_gateway_webui_base_url_env_is_used_for_remote_probe(monkeypatch):
 def test_oversized_remote_body_does_not_hang_and_skips_parse(monkeypatch):
     """A 2xx response with a huge body must be capped (not read unbounded) and
     still report the gateway alive, just without a parsed gateway_state."""
-    monkeypatch.setenv("NASMUSICUI_API_URL", "http://gateway:8080")
+    monkeypatch.setenv("NASWEBUI_API_URL", "http://gateway:8080")
     huge = b"x" * (agent_health._REMOTE_PROBE_BODY_LIMIT_BYTES * 4)
     captured_amt: list[int | None] = []
 

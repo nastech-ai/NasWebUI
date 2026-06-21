@@ -428,7 +428,7 @@ class TestMediaEndpointUnit(unittest.TestCase):
 
             env = {
                 "NASTECH_HOME": str(naswebui_home),
-                "NASMUSICUI_STATE_DIR": str(state_dir),
+                "NASWEBUI_STATE_DIR": str(state_dir),
             }
             with mock.patch.dict(os.environ, env), \
                  mock.patch.object(routes, "get_last_workspace", lambda: str(ws)), \

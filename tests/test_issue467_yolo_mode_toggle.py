@@ -17,7 +17,7 @@ import pytest
 
 from tests.conftest import requires_agent_modules
 
-TEST_BASE = f"http://127.0.0.1:{os.environ.get('NASMUSICUI_TEST_PORT', '8788')}"
+TEST_BASE = f"http://127.0.0.1:{os.environ.get('NASWEBUI_TEST_PORT', '8788')}"
 
 
 def _get(path, expect_ok=True):

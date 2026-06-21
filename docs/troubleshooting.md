@@ -14,7 +14,7 @@ If your symptom isn't listed and the diagnostics don't narrow it down, file a bu
 
 1. **Agent installed but not on `sys.path`.** Most common. The agent is checked out somewhere (e.g. `~/Programmes/NasTech-Agent`), the WebUI was launched with a Python that doesn't know about it, and there's no `pip install -e .` linking the two.
 2. **Symlink with a typo or wrong target.** A symlink to the agent looks correct on `ls`, but `readlink` resolves to a path that doesn't exist or doesn't contain `agent/__init__.py`.
-3. **`NASMUSICUI_AGENT_DIR` set to the wrong directory.** Override env var beats auto-discovery and points at a directory that has no agent code.
+3. **`NASWEBUI_AGENT_DIR` set to the wrong directory.** Override env var beats auto-discovery and points at a directory that has no agent code.
 
 ### Step 1 — confirm the agent location
 
@@ -36,8 +36,8 @@ cd ~/naswebui && ./start.sh 2>&1 | grep -iE 'agent|python|naswebui_python' | hea
 The startup banner prints which Python and agent dir it resolved. If the agent dir is empty or the Python is the wrong one, set the override:
 
 ```bash
-export NASMUSICUI_AGENT_DIR=/absolute/path/to/NasTech-Agent
-export NASMUSICUI_PYTHON=/absolute/path/to/agent/venv/bin/python
+export NASWEBUI_AGENT_DIR=/absolute/path/to/NasTech-Agent
+export NASWEBUI_PYTHON=/absolute/path/to/agent/venv/bin/python
 ./start.sh
 ```
 
@@ -62,18 +62,18 @@ cd ~/naswebui
 If steps 1-3 still don't work, check whether the WebUI's Python can import the agent at all:
 
 ```bash
-$NASMUSICUI_PYTHON -c "from run_agent import AIAgent; print('ok')" 2>&1
+$NASWEBUI_PYTHON -c "from run_agent import AIAgent; print('ok')" 2>&1
 ```
 
-(Replace `$NASMUSICUI_PYTHON` with the actual Python path from step 2 if the env var isn't set.) If this prints `ok`, the agent IS on `sys.path` for that Python — and the WebUI should work.
+(Replace `$NASWEBUI_PYTHON` with the actual Python path from step 2 if the env var isn't set.) If this prints `ok`, the agent IS on `sys.path` for that Python — and the WebUI should work.
 
 If this fails, `import run_agent` itself is broken — check that the agent's pyproject.toml lists `run_agent` as a top-level module or that the agent dir is on PYTHONPATH:
 
 ```bash
-PYTHONPATH=/path/to/NasTech-Agent $NASMUSICUI_PYTHON -c "from run_agent import AIAgent; print('ok')"
+PYTHONPATH=/path/to/NasTech-Agent $NASWEBUI_PYTHON -c "from run_agent import AIAgent; print('ok')"
 ```
 
-If adding PYTHONPATH fixes it, persist the path either via `pip install -e .` (preferred) or by setting `NASMUSICUI_AGENT_DIR` to that directory.
+If adding PYTHONPATH fixes it, persist the path either via `pip install -e .` (preferred) or by setting `NASWEBUI_AGENT_DIR` to that directory.
 
 ### When to file a bug
 
@@ -100,7 +100,7 @@ If after running steps 1-4 the import still fails *and* `pip install -e .` succe
 
 **Diagnostic.**
 
-The on-disk locations below assume the default `~/.nastech/webui` state directory. If you override it via `NASMUSICUI_STATE_DIR`, substitute that path for `~/.nastech/webui` in every step.
+The on-disk locations below assume the default `~/.nastech/webui` state directory. If you override it via `NASWEBUI_STATE_DIR`, substitute that path for `~/.nastech/webui` in every step.
 
 1. Identify the affected session id and stream id from the marker. The marker JSON lives at `~/.nastech/webui/sessions/<sid>.json`; after the fix it shows them on the `_journal_retry_stream_id` key. Pre-fix sessions only carry the legacy wording, with no retry meta.
 2. Check whether the run-journal contains real events:

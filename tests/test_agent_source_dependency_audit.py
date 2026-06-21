@@ -108,9 +108,9 @@ def test_audit_reports_startup_install_dependencies():
     anchors = _anchors(classes["startup_dependency_install"])
     texts = _texts(classes["startup_dependency_install"])
 
-    assert ("api/startup.py", "NASMUSICUI_AGENT_DIR") in anchors
-    assert ("bootstrap.py", "NASMUSICUI_AGENT_DIR") in anchors
-    assert ("start.ps1", "NASMUSICUI_AGENT_DIR") in anchors
+    assert ("api/startup.py", "NASWEBUI_AGENT_DIR") in anchors
+    assert ("bootstrap.py", "NASWEBUI_AGENT_DIR") in anchors
+    assert ("start.ps1", "NASWEBUI_AGENT_DIR") in anchors
     assert ("api/startup.py", "auto_install_agent_deps") in anchors
     assert ("server.py", "auto_install_agent_deps") in anchors
     assert any("uv pip install" in text and "[all]" in text for text in texts)
