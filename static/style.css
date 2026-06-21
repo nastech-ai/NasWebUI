@@ -6007,3 +6007,133 @@ input[type="email"], select, textarea {
 .cf-url-box { border-radius: 10px !important; }
 .cf-btn { border-radius: 10px !important; }
 .cf-log { border-radius: 8px !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NasWebUI — Mobile & PWA Responsive Auto-Fit
+   Breakpoints: ≤480 (phone), ≤768 (tablet/landscape), auto desktop stays same
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Global auto text-size (prevent iOS font inflation) */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+/* ── Tablet + phone: auto-fit layout ────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Sidebar collapses to rail/drawer on mobile */
+  .sidebar { width: 100% !important; max-width: 300px; }
+  .sidebar.collapsed { width: 0 !important; transform: translateX(-100%); }
+
+  /* Main area always fills remaining width */
+  .main { min-width: 0; width: 100%; overflow-x: hidden; }
+
+  /* Messages fit mobile screen — no side-overflow */
+  .messages-inner { max-width: 100% !important; padding: 0 8px; box-sizing: border-box; }
+  .msg-body { max-width: 100% !important; overflow-wrap: anywhere; word-break: break-word; }
+  .msg-body pre { overflow-x: auto; max-width: 100%; }
+
+  /* Topbar compact */
+  .topbar-title { font-size: 13px !important; }
+  .topbar-meta  { font-size: 10px !important; }
+
+  /* Composer fills full width */
+  .composer-box { border-radius: 14px; margin: 0 6px 6px; }
+  #msg           { font-size: 16px; } /* ≥16px prevents iOS zoom on focus */
+
+  /* Toasts stack at bottom on mobile (safe-area aware) */
+  .toast {
+    top: auto !important;
+    bottom: max(16px, env(safe-area-inset-bottom, 16px)) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) translateY(8px) !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+  .toast.toast--visible { transform: translateX(-50%) translateY(0) !important; }
+
+  /* Session list tighter */
+  .session-list { padding: 0 4px 4px; }
+  .session-item { font-size: 13px; padding: 7px 6px; }
+
+  /* Dialogs full-width */
+  .app-dialog { max-width: calc(100vw - 24px) !important; margin: 12px !important; }
+  .onboarding-card { max-width: 100vw !important; border-radius: 16px !important; }
+  .onboarding-main { padding: 18px 14px 16px !important; }
+
+  /* Approval / clarify cards — account for narrow screens */
+  .approval-card, .clarify-card, .queue-card { padding: 0 8px !important; }
+  .approval-inner, .clarify-inner { border-radius: 12px !important; }
+
+  /* System health grid — 2 cols on tablet */
+  .system-health-metrics { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Reconnect / update banners full-width */
+  .reconnect-banner, .update-banner, .agent-health-banner {
+    max-width: calc(100vw - 16px) !important;
+    width: calc(100% - 16px) !important;
+  }
+}
+
+/* ── Phone only (≤480 px) ────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Typography scale slightly down — still legible */
+  body { font-size: 14px; }
+
+  /* Messages single-column, zero side-padding bleed */
+  .messages-inner { padding: 0 4px !important; }
+  .msg-body { padding-left: 0 !important; font-size: 14px !important; }
+
+  /* Topbar */
+  .topbar { padding: 0 8px !important; }
+  .topbar-title { font-size: 13px !important; max-width: 55vw; }
+
+  /* Composer textarea — 16px avoids iOS zoom */
+  #msg { font-size: 16px !important; }
+
+  /* Code blocks wrap instead of horizontal scroll on very narrow screens */
+  .msg-body pre, .preview-md pre {
+    white-space: pre-wrap !important;
+    overflow-x: hidden !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+
+  /* Full-screen health grid */
+  .system-health-metrics { grid-template-columns: 1fr !important; }
+
+  /* Approval buttons stack */
+  .approval-actions { flex-direction: column !important; align-items: stretch !important; }
+  .approval-btn { width: 100% !important; justify-content: center !important; }
+
+  /* Session action menu full-width */
+  .session-action-menu { min-width: calc(100vw - 16px) !important; max-width: calc(100vw - 16px) !important; left: 8px !important; right: 8px !important; }
+
+  /* Hide sub-title on very small screens to save space */
+  .topbar-meta { display: none; }
+}
+
+/* ── Safe-area padding for notch / home-indicator devices ────────────────── */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .composer-wrap {
+    padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
+  }
+  body.pwa-standalone .messages {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* ── Landscape phone: keep sidebar usable ────────────────────────────────── */
+@media (max-width: 896px) and (orientation: landscape) and (max-height: 500px) {
+  .sidebar { max-width: 220px; }
+  .session-list { font-size: 12px; }
+  .composer-box { margin-bottom: 4px; }
+  .messages-inner { max-width: 100% !important; }
+}
+
+/* ── PWA standalone: extra safe-area at top for status bar ───────────────── */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .app-titlebar {
+    padding-top: max(8px, env(safe-area-inset-top, 8px)) !important;
+  }
+  .composer-wrap {
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+  }
+}

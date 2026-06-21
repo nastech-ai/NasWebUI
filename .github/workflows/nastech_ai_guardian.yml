@@ -31,7 +31,7 @@ jobs:
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY:     ${{ secrets.GEMINI_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          GITHUB_TOKEN:       ${{ secrets.NASTECH_AI_TOKEN || github.token }}
+          GITHUB_TOKEN:       ${{ secrets.GH_TOKEN || github.token }}
           REPO:               ${{ github.repository }}
           EVENT:              ${{ github.event_name }}
           REF:                ${{ github.ref }}

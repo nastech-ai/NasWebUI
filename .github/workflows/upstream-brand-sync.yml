@@ -13,7 +13,7 @@ name: "Upstream Brand Sync — Auto NasWebUI"
 #   - Schedule: daily at 06:00 UTC (catches upstream releases overnight)
 #   - workflow_dispatch: run manually any time with optional upstream ref
 #
-# Required secret: NASTECH_AI_TOKEN  (PAT with repo + workflow scope,
+# Required secret: GH_TOKEN  (PAT with repo + workflow scope,
 #   needed to push the sync branch and open the PR)
 
 on:
@@ -40,14 +40,14 @@ jobs:
       UPSTREAM_REPO: "https://github.com/nesquena/hermes-webui.git"
       UPSTREAM_REF:  ${{ github.event.inputs.upstream_ref || 'master' }}
       SYNC_BRANCH:   "upstream-brand-sync"
-      GH_TOKEN:      ${{ secrets.NASTECH_AI_TOKEN || github.token }}
+      GH_TOKEN:      ${{ secrets.GH_TOKEN || github.token }}
 
     steps:
       - name: Checkout NasWebUI (main)
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.NASTECH_AI_TOKEN || github.token }}
+          token: ${{ secrets.GH_TOKEN || github.token }}
 
       - name: Configure git identity
         run: |
