@@ -1,0 +1,32 @@
+name: "PR Diff Summary — Upstream Sync Logic Analyser"
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  diff-summary:
+    name: "Analyse upstream diff and post summary"
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'upstream-sync/')
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate diff summary and post comment
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 scripts/pr_diff_summary.py \
+            "$BASE_SHA" "$HEAD_SHA" "$PR_NUMBER" "$REPO"

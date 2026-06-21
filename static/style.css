@@ -6128,6 +6128,78 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .messages-inner { max-width: 100% !important; }
 }
 
+/* ── NasWebUI Voice Note Player (Telegram-style) ─────────────────────────── */
+.nt-voice-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-2, rgba(0,0,0,.06));
+  border: 1px solid var(--border, rgba(0,0,0,.1));
+  border-radius: 22px;
+  padding: 7px 14px 7px 8px;
+  margin: 6px 0 2px;
+  max-width: 280px;
+  user-select: none;
+  cursor: default;
+}
+.nt-voice-note__btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--accent, #4ca1f7);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  transition: background .15s;
+  padding: 0;
+}
+.nt-voice-note__btn:hover { background: var(--accent-hover, #2e8de0); }
+.nt-voice-note__wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  height: 22px;
+}
+.nt-voice-note__bar {
+  width: 3px;
+  border-radius: 2px;
+  height: var(--nt-bh, 8px);
+  background: var(--text-muted, #9ca3af);
+  transition: background .2s, height .15s;
+}
+.nt-voice-note__time {
+  font-size: 11px;
+  color: var(--text-muted, #9ca3af);
+  min-width: 30px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes nt-bar-pulse {
+  0%, 100% { height: 3px; }
+  50% { height: var(--nt-bh, 12px); }
+}
+.nt-voice-note--playing .nt-voice-note__bar {
+  background: var(--accent, #4ca1f7);
+  animation: nt-bar-pulse .9s ease-in-out infinite;
+}
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(1)  { animation-delay: 0.00s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(2)  { animation-delay: 0.07s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(3)  { animation-delay: 0.14s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(4)  { animation-delay: 0.21s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(5)  { animation-delay: 0.08s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(6)  { animation-delay: 0.16s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(7)  { animation-delay: 0.03s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(8)  { animation-delay: 0.11s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(9)  { animation-delay: 0.19s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(10) { animation-delay: 0.06s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(11) { animation-delay: 0.13s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(12) { animation-delay: 0.00s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(13) { animation-delay: 0.18s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(14) { animation-delay: 0.09s; }
+.nt-voice-note--playing .nt-voice-note__bar:nth-child(15) { animation-delay: 0.04s; }
+.nt-voice-note--playing .nt-voice-note__time { color: var(--accent, #4ca1f7); }
+
 /* ── PWA standalone: extra safe-area at top for status bar ───────────────── */
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .app-titlebar {

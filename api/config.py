@@ -3686,6 +3686,46 @@ def _get_label_for_model(model_id: str, existing_groups: list) -> str:
     )
 
 
+def _seed_provider_models_from_core() -> None:
+    """Enrich ``_PROVIDER_MODELS`` with models found in ``nastech_cli.models``.
+
+    Only enriches providers that *already exist* in the WebUI's static table —
+    adding brand-new vendors is a maintainer curation decision (#4413).
+
+    Only ``ImportError`` is caught here; other exceptions (e.g. ``NameError``
+    inside ``_get_label_for_model``) must propagate so tests can detect regressions.
+    """
+    try:
+        from nastech_cli.models import _PROVIDER_MODELS as _cli_pm  # type: ignore[import]
+    except ImportError:
+        return
+    if not isinstance(_cli_pm, dict):
+        return
+
+    for webui_key in list(_PROVIDER_MODELS.keys()):
+        canonical = _resolve_provider_alias(webui_key)
+        cli_raw = None
+        for lookup in (canonical, webui_key):
+            if lookup in _cli_pm:
+                cli_raw = _cli_pm[lookup]
+                break
+        if not cli_raw or not isinstance(cli_raw, list):
+            continue
+
+        existing: list[dict] = _PROVIDER_MODELS.get(webui_key) or []
+        existing_ids: set[str] = {
+            (m["id"] if isinstance(m, dict) else str(m))
+            for m in existing
+        }
+        for entry in cli_raw:
+            model_id = entry["id"] if isinstance(entry, dict) else str(entry)
+            if not model_id or model_id in existing_ids:
+                continue
+            label = _get_label_for_model(model_id, [{"models": existing}])
+            existing.append({"id": model_id, "label": label})
+            existing_ids.add(model_id)
+
+
 def _read_live_provider_model_ids(provider_id: str) -> list[str]:
     """Return live model IDs from NasTech CLI for a provider, or [] on failure.
 

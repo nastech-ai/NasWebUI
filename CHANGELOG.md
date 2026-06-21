@@ -3,6 +3,28 @@
 
 ## [Unreleased]
 
+## [v0.52.0] — 2026-06-21 — NasTech Platform Release (British voice, voice notes, upstream-sync bot)
+
+Maintained and released by **NasTech AI** — https://github.com/nastech-ai/NasWebUI
+
+### Added
+
+- **Real British accent by default.** Edge TTS now defaults to `en-GB-SoniaNeural` (high-quality Microsoft Neural British English) across the backend (`api/routes.py`) and all frontend call sites (`static/ui.js`). No more Chinese-locale voice fallback.
+- **Telegram-style voice notes.** Clicking the TTS listen button now renders a compact voice-note player bubble — circular play/pause, animated waveform bars, live elapsed timer — directly inside the message. No options panel, no engine picker: just tap-to-play like a Telegram voice message. (`static/ui.js`, `static/style.css`)
+- **Edge TTS as the default engine.** The engine default is now `edge` instead of `browser`, so all users get the high-quality server-side British voice out of the box without touching Settings.
+- **PR diff-summary bot for upstream syncs.** A new `pr-diff-summary.yml` workflow auto-comments on every `upstream-sync/*` pull request with a structured diff analysis — logic changes (added/removed behaviour) vs pure brand-noise — so reviewers can instantly spot real feature additions from NasTech. Credits NasWebUI/NasTech in every comment.
+- **`api/_version.py`** — build-time version shim for Docker/non-git deployments. (`v0.52.0`)
+
+### Changed
+
+- **`GH_PAT` env var in Guardian.** Renamed from reserved `GITHUB_TOKEN` to `GH_PAT` so GitHub Actions no longer rejects the env block at job setup.
+- **Upstream-sync PR body** moved to `.github/pr-body-sync.md` (avoids multi-line YAML heredoc issues).
+
+### Fixed
+
+- **Guardian "Set up job" failure** — caused by using reserved `GITHUB_TOKEN` env-var name in the step `env:` block; renamed to `GH_PAT`.
+- **YAML parse errors** in `upstream-brand-sync.yml` — unindented lines inside `run: |` blocks broke GitHub's YAML validation; commit message and PR body both rewritten.
+
 ## [v0.51.359] — 2026-06-11 — Release LW (assistant turn anchor phase 0 scaffold)
 
 ### Added

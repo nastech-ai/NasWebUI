@@ -4834,16 +4834,65 @@ function _buildBrowserUtterance(text, btn){
   return utter;
 }
 
+function _fmtVoiceTime(s){
+  const m=Math.floor(s/60),ss=Math.floor(s%60);
+  return m+':'+(ss<10?'0':'')+ss;
+}
+
+function _createVoiceNotePlayer(btn){
+  const seg=btn?btn.closest('.assistant-segment,.msg-row'):null;
+  if(!seg) return null;
+  const old=seg.querySelector('.nt-voice-note');
+  if(old) old.remove();
+  const hts=[6,12,8,16,10,14,5,11,15,7,13,9,4,12,8];
+  const bars=hts.map(function(h){return '<span class="nt-voice-note__bar" style="--nt-bh:'+h+'px"></span>';}).join('');
+  const el=document.createElement('div');
+  el.className='nt-voice-note';
+  el.setAttribute('role','region');
+  el.setAttribute('aria-label','Voice note');
+  el.innerHTML=
+    '<button class="nt-voice-note__btn" aria-label="Play">'+
+    '<svg class="nt-vnb-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'+
+    '<svg class="nt-vnb-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'+
+    '</button>'+
+    '<div class="nt-voice-note__wave">'+bars+'</div>'+
+    '<span class="nt-voice-note__time">0:00</span>';
+  const foot=seg.querySelector('.msg-foot');
+  seg.insertBefore(el,foot||null);
+  return el;
+}
+
+function _vnSetState(vn,playing){
+  if(!vn) return;
+  if(playing){
+    vn.classList.add('nt-voice-note--playing');
+    const p=vn.querySelector('.nt-vnb-play'),pa=vn.querySelector('.nt-vnb-pause');
+    if(p) p.style.display='none';
+    if(pa) pa.style.display='';
+  } else {
+    vn.classList.remove('nt-voice-note--playing');
+    const p=vn.querySelector('.nt-vnb-play'),pa=vn.querySelector('.nt-vnb-pause');
+    if(p) p.style.display='';
+    if(pa) pa.style.display='none';
+  }
+}
+
 function _playEdgeTtsChunked(text, btn){
   const chunks=_splitForTTS(text);
+  const vn=_createVoiceNotePlayer(btn);
+  _vnSetState(vn,true);
+  if(btn) btn.dataset.speaking='1';
+  _ttsSpeaking=true;
+
   const _playOne=function(idx){
     if(idx>=chunks.length){
       _ttsSpeaking=false;_playingEdgeAudio=null;
       if(btn) btn.dataset.speaking='0';
+      _vnSetState(vn,false);
       return;
     }
     const chunk=chunks[idx];
-    const voice=localStorage.getItem('nastech-tts-voice')||'zh-CN-XiaoxiaoNeural';
+    const voice=localStorage.getItem('nastech-tts-voice')||'en-GB-SoniaNeural';
     const savedRate=parseFloat(localStorage.getItem('nastech-tts-rate'));
     const savedPitch=parseFloat(localStorage.getItem('nastech-tts-pitch'));
     let rate='', pitch='';
@@ -4867,6 +4916,10 @@ function _playEdgeTtsChunked(text, btn){
       const url=URL.createObjectURL(blob);
       const audio=new Audio(url);
       _playingEdgeAudio=audio;
+      const timeEl=vn?vn.querySelector('.nt-voice-note__time'):null;
+      audio.ontimeupdate=function(){
+        if(timeEl) timeEl.textContent=_fmtVoiceTime(audio.currentTime);
+      };
       audio.onended=function(){
         URL.revokeObjectURL(url);
         _playingEdgeAudio=null;
@@ -4877,21 +4930,45 @@ function _playEdgeTtsChunked(text, btn){
         _playingEdgeAudio=null;
         _ttsSpeaking=false;
         if(btn) btn.dataset.speaking='0';
+        _vnSetState(vn,false);
       };
       audio.play().catch(function(e){
         URL.revokeObjectURL(url);
         _playingEdgeAudio=null;
         _ttsSpeaking=false;
         if(btn) btn.dataset.speaking='0';
-        if(typeof showToast==='function') showToast('Edge TTS error: '+(e&&e.message||e));
+        _vnSetState(vn,false);
+        if(typeof showToast==='function') showToast('Voice: '+(e&&e.message||e));
       });
     })
     .catch(function(e){
       _ttsSpeaking=false;_playingEdgeAudio=null;
       if(btn) btn.dataset.speaking='0';
-      if(typeof showToast==='function') showToast('Edge TTS failed: '+(e&&e.message||e));
+      _vnSetState(vn,false);
+      if(typeof showToast==='function') showToast('Voice failed: '+(e&&e.message||e));
     });
   };
+
+  if(vn){
+    const vnBtn=vn.querySelector('.nt-voice-note__btn');
+    if(vnBtn) vnBtn.addEventListener('click',function(){
+      if(_ttsSpeaking&&_playingEdgeAudio){
+        _playingEdgeAudio.pause();
+        _ttsSpeaking=false;
+        _vnSetState(vn,false);
+        if(btn) btn.dataset.speaking='0';
+      } else if(!_ttsSpeaking&&_playingEdgeAudio){
+        _playingEdgeAudio.play();
+        _ttsSpeaking=true;
+        _vnSetState(vn,true);
+        if(btn) btn.dataset.speaking='1';
+      } else {
+        stopTTS();
+        _playEdgeTtsChunked(text,btn);
+      }
+    });
+  }
+
   _playOne(0);
 }
 
@@ -4909,7 +4986,7 @@ function speakMessage(btn){
   const clean=_stripForTTS(text);
   if(!clean) return;
 
-  const engine=localStorage.getItem('nastech-tts-engine')||'browser';
+  const engine=localStorage.getItem('nastech-tts-engine')||'edge';
   if(engine==='edge'){
     _playEdgeTtsChunked(clean, btn);
     return;
@@ -5007,7 +5084,7 @@ function stopTTS(){
 }
 
 function autoReadLastAssistant(){
-  const engine=localStorage.getItem('nastech-tts-engine')||'browser';
+  const engine=localStorage.getItem('nastech-tts-engine')||'edge';
   if(engine==='browser'&&!('speechSynthesis' in window)) return;
   const pref=localStorage.getItem('nastech-tts-auto-read');
   if(pref!=='true') return;
