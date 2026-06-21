@@ -26,6 +26,7 @@ from api.config import (
 from api.helpers import _redact_text, redact_session_data
 from api.models import get_session, merge_session_messages_append_only
 from api.run_journal import RunJournalWriter
+from api.streaming import _session_payload_with_full_messages
 
 logger = logging.getLogger(__name__)
 
@@ -176,6 +177,53 @@ def _clear_gateway_pending_state(session: Any, stream_id: str) -> None:
     session.pending_attachments = None
     session.pending_started_at = None
     session.save()
+
+
+def _gateway_runs_approval_event(payload: dict) -> dict | None:
+    """Map a gateway approval payload to a WebUI approval event dict.
+
+    Returns None when required fields are absent (empty or unrecognisable payload).
+    Used by both the runs-API path and the legacy /v1/chat/completions path so
+    the approval-handling logic is not duplicated.
+    """
+    command = payload.get("command") or payload.get("tool_input") or ""
+    description = payload.get("description") or ""
+    if not command and not description:
+        return None
+    pattern_key = (
+        payload.get("pattern_key")
+        or (payload.get("pattern_keys") or [None])[0]
+        or payload.get("tool")
+        or "unknown"
+    )
+    choices = list(payload.get("choices") or [])
+    allow_permanent_raw = payload.get("allow_permanent")
+    if allow_permanent_raw is not None:
+        allow_permanent = bool(allow_permanent_raw)
+    else:
+        allow_permanent = "always" in choices
+    return {
+        "tool": pattern_key,
+        "pattern_key": pattern_key,
+        "pattern_keys": list(payload.get("pattern_keys") or [pattern_key]),
+        "command": command,
+        "description": description,
+        "approval_id": payload.get("approval_id") or "",
+        "run_id": payload.get("run_id") or "",
+        "allow_permanent": allow_permanent,
+        "risk_level": payload.get("risk_level") or "high",
+        "choices": choices,
+        "raw": payload,
+    }
+
+
+def submit_gateway_pending_mirror(stream_id: str, approval_event: dict) -> None:
+    """Mirror an approval event to the polling state so non-SSE clients see it."""
+    try:
+        from api.config import PENDING_APPROVALS
+        PENDING_APPROVALS[stream_id] = approval_event
+    except (ImportError, Exception):
+        pass
 
 
 def _run_gateway_chat_streaming(
@@ -349,6 +397,14 @@ def _run_gateway_chat_streaming(
                     payload = json.loads(data)
                 except json.JSONDecodeError:
                     continue
+                event_from_payload = payload.get("event") if isinstance(payload, dict) else None
+                if sse_event in ("approval.request", "nastech.approval.request") or event_from_payload in ("approval.request", "nastech.approval.request"):
+                    approval_event = _gateway_runs_approval_event(payload)
+                    if approval_event is not None:
+                        put_gateway_event("approval", approval_event)
+                        submit_gateway_pending_mirror(stream_id, approval_event)
+                    sse_event = "message"
+                    continue
                 if sse_event == "nastech.tool.progress":
                     translated = _gateway_tool_progress_event(payload)
                     if translated:
@@ -452,7 +508,7 @@ def _run_gateway_chat_streaming(
             s.model = model
             s.model_provider = model_provider
             s.save()
-        gateway_session_payload = s.compact() | {"messages": s.messages, "tool_calls": []}
+        gateway_session_payload = _session_payload_with_full_messages(s, tool_calls=[])
         put_gateway_event("done", {"session": redact_session_data(gateway_session_payload), "usage": usage})
         put_gateway_event("stream_end", {"session_id": session_id})
     except urllib.error.HTTPError as exc:

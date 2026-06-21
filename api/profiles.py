@@ -164,6 +164,41 @@ def _resolve_base_nastech_home() -> Path:
 
 _DEFAULT_NASTECH_HOME = _resolve_base_nastech_home()
 
+_INITIAL_NASTECH_HOME: str = os.environ.get("NASTECH_HOME", str(_DEFAULT_NASTECH_HOME))
+
+
+def _isolated_profile_opt_in() -> bool:
+    """Return True only when the explicit NASWEBUI_ISOLATED_PROFILE opt-in is set.
+
+    Accepts any commonly-used truthy string: 1, true, TRUE, yes, on.
+    Isolated multi-user deployment mode must be explicitly opted into.  The
+    profile-directory shape alone (~/.nastech/profiles/<name>) is NOT sufficient
+    because the NasTech Agent launcher exports exactly that shape for any named
+    profile in a normal single-user deployment (#4586).
+    """
+    return os.environ.get("NASWEBUI_ISOLATED_PROFILE", "").strip().lower() in (
+        "1", "true", "yes", "on"
+    )
+
+
+def _is_isolated_profile_mode() -> bool:
+    """Return True when WebUI is pinned to a single isolated profile.
+
+    Requires BOTH:
+    1. NASTECH_HOME points to ~/.nastech/profiles/<name>  (profile-shaped path)
+    2. NASWEBUI_ISOLATED_PROFILE=1  (explicit operator opt-in, #4586)
+    """
+    if not _isolated_profile_opt_in():
+        return False
+    home_str = _INITIAL_NASTECH_HOME
+    try:
+        home = Path(home_str).expanduser().resolve()
+        if home.parent.name == "profiles":
+            return True
+    except Exception:
+        pass
+    return False
+
 
 def _read_active_profile_file() -> str:
     """Read the sticky active profile from ~/.nastech/active_profile."""

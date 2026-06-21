@@ -2413,6 +2413,75 @@ def _extract_title_response(resp, *, aux: bool = False) -> tuple[str, str]:
         return '', f'llm_empty{suffix}'
 
 
+def _session_payload_with_full_messages(session, *, tool_calls) -> dict:
+    """Build a settled SSE payload using live messages (not stale compact metadata).
+
+    The compact() snapshot stores message_count as an integer cached at save
+    time, which diverges from len(session.messages) during long streaming turns
+    (tool-call rounds add messages without flushing compact).  Callers that emit
+    the final done/apperror SSE event must use this helper to guarantee that
+    message_count matches the embedded transcript (#streaming-done-payload).
+    """
+    base = session.compact()
+    base['messages'] = list(session.messages)
+    base['message_count'] = len(session.messages)
+    base['tool_calls'] = list(tool_calls) if tool_calls else []
+    return base
+
+
+_REASONING_EXTRA_REJECT_PROVIDERS = frozenset({
+    'openai',
+    'openai-codex',
+    'azure',
+    'azure-foundry',
+    'azure-ai-foundry',
+    'azure-ai',
+})
+
+_OPENROUTER_ANTHROPIC_MANDATORY_REASONING_MODELS = frozenset({
+    'anthropic/claude-sonnet-4.6',
+    'anthropic/claude-opus-4.8',
+})
+
+
+def _route_rejects_reasoning_extra(provider: str, model: str, base_url: str) -> bool:
+    """Return True when the route rejects the *reasoning* extra_body parameter.
+
+    OpenAI direct, Azure (all variants), and specific OpenRouter Anthropic models
+    that require mandatory thinking reject the reasoning-disable injection.
+    Host-based detection is against the parsed hostname only (not a substring of
+    the full URL path) to avoid false positives from proxy paths.
+    """
+    provider_lower = str(provider or '').lower().split('/')[0]
+
+    if provider_lower in _REASONING_EXTRA_REJECT_PROVIDERS:
+        return True
+
+    if provider_lower.startswith('azure'):
+        return True
+
+    url_lower = str(base_url or '').lower()
+    if url_lower:
+        try:
+            from urllib.parse import urlparse
+            host = urlparse(url_lower).hostname or ''
+            if host == 'api.openai.com':
+                return True
+            if (host.endswith('.openai.azure.com')
+                    or host.endswith('.services.ai.azure.com')
+                    or host.endswith('.cognitiveservices.azure.com')):
+                return True
+        except Exception:
+            pass
+
+    if provider_lower == 'openrouter':
+        model_lower = str(model or '').lower()
+        if model_lower in _OPENROUTER_ANTHROPIC_MANDATORY_REASONING_MODELS:
+            return True
+
+    return False
+
+
 def generate_title_raw_via_aux(
     user_text: str,
     assistant_text: str,
@@ -6904,7 +6973,7 @@ def _run_agent_streaming(
                         except Exception:
                             pass
                         _error_payload['session'] = redact_session_data(
-                            s.compact() | {'messages': s.messages, 'tool_calls': s.tool_calls}
+                            _session_payload_with_full_messages(s, tool_calls=s.tool_calls)
                         )
                         _error_payload['session_id'] = s.session_id
                         _error_payload['old_session_id'] = _compression_origin_session_id
@@ -7600,8 +7669,9 @@ def _run_agent_streaming(
                         })
             except Exception as _goal_exc:
                 logger.debug("Goal continuation hook failed for session %s: %s", session_id, _goal_exc)
-            raw_session = s.compact() | {'messages': s.messages, 'tool_calls': tool_calls}
-            put('done', {'session': redact_session_data(raw_session), 'usage': usage})
+            raw_session = _session_payload_with_full_messages(s, tool_calls=tool_calls)
+            _done_payload = {'session': redact_session_data(raw_session), 'usage': usage}
+            put('done', _done_payload)
             # Emit one last metering packet for the live message-header TPS label.
             meter_stats = meter().get_stats()
             meter_stats['session_id'] = session_id

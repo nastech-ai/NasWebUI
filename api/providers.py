@@ -85,6 +85,7 @@ _ACCOUNT_USAGE_PROVIDERS = frozenset({"openai-codex", "anthropic"})
 # deliberately low (2) since _ACCOUNT_USAGE_SUBPROCESS_TIMEOUT_SECONDS is
 # already 35 s and probe I/O is lightweight HTTP calls.
 _MAX_CONCURRENT_ACCOUNT_USAGE_PROBES = 2
+_ACCOUNT_USAGE_WORKERS_PER_HOME = 2
 
 # Parent-death-signal setup: on Linux, arrange for the quota-probe child to
 # receive SIGTERM when the WebUI parent dies (e.g. systemctl restart, OOM kill).
@@ -131,7 +132,7 @@ _account_usage_probe_semaphore: threading.BoundedSemaphore | None = None
 # represented as non-None snapshots and remain cacheable.
 _account_usage_status_cache: dict[tuple[str, str, str], tuple[float, Any]] = {}
 _account_usage_status_cache_lock = threading.Lock()
-_account_usage_worker_pool: dict[str, "_AccountUsageProbeWorker"] = {}
+_account_usage_worker_pool: dict[str, list["_AccountUsageProbeWorker"]] = {}
 _account_usage_worker_pool_lock = threading.Lock()
 
 
@@ -1423,14 +1424,25 @@ def _fetch_account_usage_once_for_home(provider: str, home: Path, *, api_key: st
     return _account_usage_payload_to_snapshot(payload)
 
 
-def _get_account_usage_probe_worker(home: Path) -> _AccountUsageProbeWorker:
+def _get_account_usage_probe_worker(home: Path) -> "_AccountUsageProbeWorker | None":
+    """Return an idle worker for *home* with its _lock HELD (non-blocking), or None.
+
+    The pool maps str(home) → a list of _ACCOUNT_USAGE_WORKERS_PER_HOME workers.
+    Tries each worker in order; returns the first one whose lock can be acquired
+    immediately (non-blocking).  Returns None when all workers are busy.
+
+    Callers must release worker._lock when done.
+    """
     key = str(Path(home))
     with _account_usage_worker_pool_lock:
-        worker = _account_usage_worker_pool.get(key)
-        if worker is None:
-            worker = _AccountUsageProbeWorker(Path(home))
-            _account_usage_worker_pool[key] = worker
-        return worker
+        workers = _account_usage_worker_pool.get(key)
+        if workers is None:
+            workers = [_AccountUsageProbeWorker(Path(home)) for _ in range(_ACCOUNT_USAGE_WORKERS_PER_HOME)]
+            _account_usage_worker_pool[key] = workers
+        for worker in workers:
+            if worker._lock.acquire(blocking=False):
+                return worker
+    return None
 
 
 def _cleanup_account_usage_probe_workers(
@@ -1439,43 +1451,64 @@ def _cleanup_account_usage_probe_workers(
     idle_seconds: float = _ACCOUNT_USAGE_WORKER_IDLE_SECONDS,
 ) -> None:
     cutoff = time.monotonic() if now is None else now
-    stale: list[tuple[str, _AccountUsageProbeWorker]] = []
+    stale: list[_AccountUsageProbeWorker] = []
     with _account_usage_worker_pool_lock:
-        for key, worker in list(_account_usage_worker_pool.items()):
-            if worker._lock.acquire(blocking=False):
-                try:
-                    proc = worker._proc
-                    is_dead = proc is None or proc.poll() is not None
-                    if is_dead or cutoff - worker.last_used >= idle_seconds:
-                        stale.append((key, worker))
-                        _account_usage_worker_pool.pop(key, None)
-                finally:
-                    worker._lock.release()
-    for _key, worker in stale:
+        for key, workers in list(_account_usage_worker_pool.items()):
+            home = Path(key)
+            alive: list[_AccountUsageProbeWorker] = []
+            busy: list[_AccountUsageProbeWorker] = []
+            for worker in workers:
+                if worker._lock.acquire(blocking=False):
+                    try:
+                        proc = worker._proc
+                        is_dead = proc is None or proc.poll() is not None
+                        if is_dead or cutoff - worker.last_used >= idle_seconds:
+                            stale.append(worker)
+                        else:
+                            alive.append(worker)
+                    finally:
+                        worker._lock.release()
+                else:
+                    busy.append(worker)
+                    alive.append(worker)
+            if not alive and not busy:
+                _account_usage_worker_pool.pop(key, None)
+            elif busy:
+                while len(alive) < _ACCOUNT_USAGE_WORKERS_PER_HOME:
+                    alive.append(_AccountUsageProbeWorker(home))
+                _account_usage_worker_pool[key] = alive
+            else:
+                _account_usage_worker_pool.pop(key, None)
+    for worker in stale:
         worker.close()
 
 
 def _close_account_usage_probe_workers() -> None:
     with _account_usage_worker_pool_lock:
-        workers = list(_account_usage_worker_pool.values())
+        all_workers = [w for ws in _account_usage_worker_pool.values() for w in ws]
         _account_usage_worker_pool.clear()
-    _close_account_usage_probe_worker_list(workers)
+    _close_account_usage_probe_worker_list(all_workers)
 
 
-def _close_account_usage_probe_worker_list(workers: list[_AccountUsageProbeWorker]) -> None:
+def _close_account_usage_probe_worker_list(workers: list["_AccountUsageProbeWorker"]) -> None:
     for worker in workers:
         worker.close()
 
 
-def _close_account_usage_probe_workers_async() -> None:
+def _close_account_usage_probe_workers_async(home: "Path | None" = None) -> None:
     with _account_usage_worker_pool_lock:
-        workers = list(_account_usage_worker_pool.values())
-        _account_usage_worker_pool.clear()
-    if not workers:
+        if home is not None:
+            key = str(Path(home))
+            workers = _account_usage_worker_pool.pop(key, [])
+            all_workers = list(workers)
+        else:
+            all_workers = [w for ws in _account_usage_worker_pool.values() for w in ws]
+            _account_usage_worker_pool.clear()
+    if not all_workers:
         return
     thread = threading.Thread(
         target=_close_account_usage_probe_worker_list,
-        args=(workers,),
+        args=(all_workers,),
         daemon=True,
         name="account-usage-worker-close",
     )
@@ -1514,7 +1547,15 @@ def invalidate_account_usage_status_cache(provider_id: str | None = None) -> Non
             for key in list(_account_usage_status_cache):
                 if key[0] == normalized:
                     _account_usage_status_cache.pop(key, None)
-    _close_account_usage_probe_workers_async()
+    if normalized:
+        try:
+            from api.profiles import _get_nastech_home
+            active_home: "Path | None" = _get_nastech_home()
+        except Exception:
+            active_home = None
+        _close_account_usage_probe_workers_async(home=active_home)
+    else:
+        _close_account_usage_probe_workers_async(home=None)
 
 
 def _set_cached_account_usage(
@@ -1547,7 +1588,13 @@ def _set_cached_account_usage(
 def _agent_fetch_account_usage_for_home(provider: str, home: Path, *, api_key: str | None = None) -> Any:
     try:
         _cleanup_account_usage_probe_workers()
-        return _get_account_usage_probe_worker(home).fetch(provider, api_key=api_key)
+        worker = _get_account_usage_probe_worker(home)
+        if worker is None:
+            return _fetch_account_usage_once_for_home(provider, home, api_key=api_key)
+        try:
+            return worker._fetch_locked(provider, api_key=api_key)
+        finally:
+            worker._lock.release()
     except Exception:
         logger.debug("Account usage probe for %s failed", provider, exc_info=True)
         return None
@@ -1622,6 +1669,97 @@ def _provider_account_usage_status(provider: str, display_name: str, *, refresh:
     }
 
 
+def _local_pool_snapshot(provider: str) -> Any:
+    """Return a snapshot of the local credential pool for *provider*, or None.
+
+    Uses agent.credential_pool.load_pool to inspect the live pool.  Filters out
+    ambient gh-cli entries (which are not real user credentials).  Returns None
+    when the pool is absent, empty, or contains only ambient entries.
+    """
+    try:
+        from agent.credential_pool import load_pool
+        pool = load_pool(provider)
+    except (ImportError, Exception):
+        return None
+    if pool is None:
+        return None
+    try:
+        entries = pool.entries()
+    except Exception:
+        return None
+    if not entries:
+        return None
+
+    from api.config import _is_ambient_gh_cli_entry
+    filtered = []
+    for entry in entries:
+        src = str(getattr(entry, 'source', '') or '').strip()
+        lbl = str(getattr(entry, 'label', '') or '').strip()
+        ksrc = str(getattr(entry, 'key_source', '') or '').strip()
+        try:
+            if _is_ambient_gh_cli_entry(src, lbl, ksrc):
+                continue
+        except Exception:
+            pass
+        filtered.append(entry)
+
+    if not filtered:
+        return None
+
+    total = len(filtered)
+    available_entries = [e for e in filtered if getattr(e, 'last_status', None) == 'available']
+    exhausted_entries = [e for e in filtered if getattr(e, 'last_status', None) in ('exhausted', 'dead')]
+    available_count = len(available_entries)
+    exhausted_count = total - available_count
+
+    credential_list = []
+    for entry in filtered:
+        cred: dict[str, Any] = {
+            'label': getattr(entry, 'label', ''),
+            'status': getattr(entry, 'last_status', 'unknown') or 'unknown',
+        }
+        if getattr(entry, 'last_error_code', None):
+            cred['error_code'] = entry.last_error_code
+        if getattr(entry, 'last_error_reset_at', None):
+            try:
+                cred['reset_at'] = str(entry.last_error_reset_at)
+            except Exception:
+                pass
+        credential_list.append(cred)
+
+    if available_count > 0:
+        details = f"{available_count}/{total} credentials available"
+        if exhausted_count > 0:
+            details += f", {exhausted_count} exhausted"
+    elif exhausted_count > 0:
+        details = f"{exhausted_count} exhausted"
+    else:
+        details = f"{total} credentials, none available"
+
+    dead_count = len([e for e in filtered if getattr(e, 'last_status', None) == 'dead'])
+    pool_info = {
+        'total_credentials': total,
+        'available_credentials': available_count,
+        'exhausted_credentials': exhausted_count,
+        'dead_credentials': dead_count,
+        'credentials': credential_list,
+    }
+    unavailable_reason = ''
+    if available_count == 0:
+        unavailable_reason = f'All pool credentials are unavailable ({details}).'
+
+    return SimpleNamespace(
+        provider=provider,
+        source='local_pool',
+        available=available_count > 0,
+        pool=pool_info,
+        details=details,
+        unavailable_reason=unavailable_reason,
+        title=f'{provider.replace("-", " ").title()} credential pool',
+        plan=None,
+    )
+
+
 def get_provider_quota(provider_id: str | None = None, *, refresh: bool = False) -> dict[str, Any]:
     """Return sanitized quota/rate-limit status for the active provider.
 
@@ -1646,6 +1784,39 @@ def get_provider_quota(provider_id: str | None = None, *, refresh: bool = False)
         return _provider_account_usage_status(provider, display_name, refresh=refresh)
 
     if provider != "openrouter":
+        pool_snap = _local_pool_snapshot(provider)
+        if pool_snap is not None:
+            account_limits = {
+                "source": pool_snap.source,
+                "available": pool_snap.available,
+                "title": pool_snap.title,
+                "details": pool_snap.details,
+                "pool": pool_snap.pool,
+            }
+            if pool_snap.unavailable_reason:
+                account_limits["unavailable_reason"] = pool_snap.unavailable_reason
+            if pool_snap.available:
+                return {
+                    "ok": True,
+                    "provider": provider,
+                    "display_name": display_name,
+                    "supported": True,
+                    "status": "available",
+                    "label": pool_snap.title,
+                    "quota": None,
+                    "account_limits": account_limits,
+                    "message": f"{display_name} credential pool available. {pool_snap.details}.",
+                }
+            return {
+                "ok": False,
+                "provider": provider,
+                "display_name": display_name,
+                "supported": True,
+                "status": "unavailable",
+                "quota": None,
+                "account_limits": account_limits,
+                "message": f"{display_name}: all credentials are unavailable. {pool_snap.details}.",
+            }
         detail = "OpenAI/Anthropic rate-limit headers are a follow-up once WebUI captures provider response metadata."
         return {
             "ok": False,
